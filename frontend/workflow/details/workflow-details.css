@@ -1,0 +1,31 @@
+body{
+    background:#f4f7fb;
+    font-family:Arial;
+    padding:40px;
+}
+
+.details-card{
+    background:white;
+    max-width:700px;
+    margin:auto;
+    padding:40px;
+    border-radius:12px;
+}
+
+.detail-row{
+    margin:25px 0;
+}
+
+.pending{
+    color:orange;
+    font-weight:bold;
+}
+
+button{
+    padding:14px 20px;
+    background:#1a73e8;
+    color:white;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+}

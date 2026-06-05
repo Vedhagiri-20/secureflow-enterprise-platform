@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+    content="width=device-width, initial-scale=1.0">
+
+    <title>SecureFlow Login</title>
+
+    <link rel="stylesheet" href="login.css">
+
+</head>
+<body>
+
+<div class="login-container">
+
+    <div class="login-card">
+
+        <h1>SecureFlow Login</h1>
+
+        <!-- USER ROLE -->
+
+        <select id="role">
+
+            <option value="">
+                Select Role
+            </option>
+
+            <option value="employee">
+                Employee
+            </option>
+
+            <option value="manager">
+                Manager
+            </option>
+
+            <option value="admin">
+                Admin
+            </option>
+
+        </select>
+
+        <!-- EMAIL -->
+
+        <input
+            type="email"
+            id="email"
+            placeholder="Enter Email"
+        >
+
+        <!-- PASSWORD -->
+
+        <input
+            type="password"
+            id="password"
+            placeholder="Enter Password"
+        >
+
+        <!-- ERROR MESSAGE -->
+
+        <p id="error-message"></p>
+
+        <!-- LOGIN BUTTON -->
+
+        <button onclick="login()">
+            Login
+        </button>
+
+        <a href="../forgot-password/forgot-password.html">
+            Forgot Password?
+        </a>
+
+    </div>
+
+</div>
+
+<script src="login.js"></script>
+
+</body>
+</html>

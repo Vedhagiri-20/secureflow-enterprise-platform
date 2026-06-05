@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Workflow</title>
+    <link rel="stylesheet" href="create-workflow.css">
+</head>
+<body>
+
+<div class="container">
+
+    <div class="form-card">
+
+        <h1>Create New Workflow</h1>
+
+        <form id="workflowForm">
+
+            <div class="form-group">
+                <label>Workflow Title</label>
+                <input type="text" placeholder="Enter workflow title">
+            </div>
+
+            <div class="form-group">
+                <label>Description</label>
+                <textarea rows="5"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Select Manager</label>
+                <select>
+                    <option>John Manager</option>
+                    <option>Sarah Manager</option>
+                    <option>Mike Manager</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Priority</label>
+                <select>
+                    <option>Low</option>
+                    <option>Medium</option>
+                    <option>High</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Upload Documents</label>
+                <input type="file">
+            </div>
+
+            <button type="submit">Submit Workflow</button>
+
+        </form>
+
+    </div>
+
+</div>
+
+<script src="create-workflow.js"></script>
+</body>
+</html>

@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manager Dashboard</title>
+
+    <link rel="stylesheet" href="manager-dashboard.css">
+
+</head>
+<body>
+
+<div class="sidebar">
+
+    <h2>Manager Panel</h2>
+
+    <ul>
+
+        <li>
+            <a href="manager-dashboard.html">
+                Dashboard
+            </a>
+        </li>
+
+        <li>
+            <a href="../../workflow/pending/pending-approvals.html">
+                Pending Approvals
+            </a>
+        </li>
+
+        <li>
+            <a href="../../workflow/details/workflow-details.html">
+                Workflow Details
+            </a>
+        </li>
+
+        <li>
+            <a href="../../audit/audit-log.html">
+                Audit Logs
+            </a>
+        </li>
+
+        <li>
+            <a href="../../notifications/notifications.html">
+                Notifications
+            </a>
+        </li>
+
+        <li>
+            <a href="../../index.html">
+                Logout
+            </a>
+        </li>
+
+    </ul>
+
+</div>
+
+<div class="main-content">
+
+    <div class="topbar">
+
+        <h1>Manager Dashboard</h1>
+
+    </div>
+
+    <div class="cards">
+
+        <div class="card">
+            <h3>Total Requests</h3>
+            <p>24</p>
+        </div>
+
+        <div class="card pending">
+            <h3>Pending</h3>
+            <p>8</p>
+        </div>
+
+        <div class="card approved">
+            <h3>Approved</h3>
+            <p>12</p>
+        </div>
+
+        <div class="card rejected">
+            <h3>Rejected</h3>
+            <p>4</p>
+        </div>
+
+    </div>
+
+    <div class="table-section">
+
+        <h2>Pending Approval Requests</h2>
+
+        <table>
+
+            <thead>
+
+            <tr>
+                <th>ID</th>
+                <th>Employee</th>
+                <th>Workflow</th>
+                <th>Status</th>
+            </tr>
+
+            </thead>
+
+            <tbody>
+
+            <tr>
+                <td>#WF101</td>
+                <td>Ved</td>
+                <td>Bank Verification</td>
+                <td>Pending</td>
+            </tr>
+
+            <tr>
+                <td>#WF102</td>
+                <td>Rahul</td>
+                <td>Insurance Approval</td>
+                <td>Approved</td>
+            </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+<script src="manager-dashboard.js"></script>
+
+</body>
+</html>
