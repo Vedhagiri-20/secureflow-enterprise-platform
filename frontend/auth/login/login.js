@@ -1,83 +1,63 @@
-function login(){
+function login(event){
 
-    const role =
-    document.getElementById("role").value;
+    event.preventDefault();
 
-    const email =
-    document.getElementById("email").value;
-
-    const password =
-    document.getElementById("password").value;
-
-    const error =
-    document.getElementById("error-message");
+    const role = document.getElementById("role").value;
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value.trim();
+    const error = document.getElementById("error-message");
 
     error.innerText = "";
 
-    // ROLE VALIDATION
-
     if(role === ""){
-
-        error.innerText =
-        "Please select user role";
-
+        error.innerText = "Please select your user role.";
         return;
     }
-
-    // EMAIL VALIDATION
 
     if(email === ""){
-
-        error.innerText =
-        "Email is mandatory";
-
+        error.innerText = "Email address is mandatory.";
         return;
     }
 
-    // EMAIL FORMAT CHECK
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
-    const emailPattern =
-    /^[^ ]+@[^ ]+\.[a-z]{2,3}$/;
-
-    if(!email.match(emailPattern)){
-
-        error.innerText =
-        "Enter valid email";
-
+    if(!emailPattern.test(email)){
+        error.innerText = "Please enter a valid email address.";
         return;
     }
-
-    // PASSWORD VALIDATION
 
     if(password === ""){
-
-        error.innerText =
-        "Password is mandatory";
-
+        error.innerText = "Password is mandatory.";
         return;
     }
 
-    // ROLE BASED REDIRECTION
+    if(password.length < 6){
+        error.innerText = "Password must be at least 6 characters.";
+        return;
+    }
 
     if(role === "employee"){
-
-        window.location.href =
-        "../../dashboard/employee/employee-dashboard.html";
-
+        window.location.href = "../../dashboard/employee/employee-dashboard.html";
     }
-
     else if(role === "manager"){
-
-        window.location.href =
-        "../../dashboard/manager/manager-dashboard.html";
-
+        window.location.href = "../../dashboard/manager/manager-dashboard.html";
     }
-
     else if(role === "admin"){
-
-        window.location.href =
-        "../../dashboard/admin/admin-dashboard.html";
-
+        window.location.href = "../../dashboard/admin/admin-dashboard.html";
     }
+}
 
+function togglePassword(){
+
+    const password = document.getElementById("password");
+    const toggleBtn = document.querySelector(".toggle-btn");
+
+    if(password.type === "password"){
+        password.type = "text";
+        toggleBtn.innerText = "Hide";
+    }
+    else{
+        password.type = "password";
+        toggleBtn.innerText = "Show";
+    }
 }

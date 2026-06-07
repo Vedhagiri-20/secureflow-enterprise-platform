@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SecureFlow Notifications</title>
+    <link rel="stylesheet" href="notifications.css">
+</head>
+<body>
+
+<div class="notification-wrapper">
+
+    <aside class="sidebar">
+
+        <nav class="side-menu">
+            <a href="../dashboard/employee/employee-dashboard.html">Home</a>
+            <a href="../workflow/create/create-workflow.html">Create</a>
+            <a href="../report/report.html">Reports</a>
+            <a href="notifications.html" class="active">Notifications</a>
+        </nav>
+
+        <a href="../index.html" class="logout">Logout</a>
+
+    </aside>
+
+    <main class="notification-panel">
+
+        <header class="topbar">
+
+            <div class="company">
+                <div class="company-icon">S</div>
+                <div>
+                    <h3>SecureFlow Enterprise</h3>
+                    <p>Employee Notification Center</p>
+                </div>
+            </div>
+
+            <div class="profile">
+                <span id="welcomeText">Hi Ved!</span>
+                <div class="avatar">V</div>
+            </div>
+
+        </header>
+
+        <section class="page-title">
+            <span>Notification Center</span>
+            <h1>Workflow Notifications</h1>
+            <p>
+                Track messages from managers, approval updates, rejection reasons, and document requests.
+            </p>
+        </section>
+
+        <section class="summary-grid">
+
+            <div class="summary-card">
+                <p>Total Notifications</p>
+                <h2 id="totalCount">0</h2>
+                <span>All messages</span>
+            </div>
+
+            <div class="summary-card unread-card">
+                <p>Unread</p>
+                <h2 id="unreadCount">0</h2>
+                <span>Needs attention</span>
+            </div>
+
+            <div class="summary-card approved-card">
+                <p>Approved</p>
+                <h2 id="approvedCount">0</h2>
+                <span>Successful workflows</span>
+            </div>
+
+            <div class="summary-card rejected-card">
+                <p>Rejected</p>
+                <h2 id="rejectedCount">0</h2>
+                <span>Declined workflows</span>
+            </div>
+
+        </section>
+
+        <section class="notification-tools">
+
+            <div class="search-box">
+                <span>⌕</span>
+                <input type="text" id="searchInput" placeholder="Search by work item, status, manager, or message">
+            </div>
+
+            <button id="markAllReadBtn">Mark All as Read</button>
+
+        </section>
+
+        <section class="notification-list" id="notificationList"></section>
+
+    </main>
+
+</div>
+
+<script src="notifications.js"></script>
+
+</body>
+</html>

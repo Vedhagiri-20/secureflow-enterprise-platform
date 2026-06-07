@@ -3,60 +3,207 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Workflow</title>
+    <title>Create Loan Workflow</title>
     <link rel="stylesheet" href="create-workflow.css">
 </head>
 <body>
 
-<div class="container">
+<div class="page-wrapper">
 
-    <div class="form-card">
+    <div class="workflow-shell">
 
-        <h1>Create New Workflow</h1>
-
-        <form id="workflowForm">
-
-            <div class="form-group">
-                <label>Workflow Title</label>
-                <input type="text" placeholder="Enter workflow title">
+        <header class="topbar">
+            <div class="brand">
+                <div class="brand-logo">S</div>
+                <div>
+                    <h2>SecureFlow Enterprise</h2>
+                    <p>Banking Loan Workflow Platform</p>
+                </div>
             </div>
 
-            <div class="form-group">
-                <label>Description</label>
-                <textarea rows="5"></textarea>
-            </div>
+            <a href="../../dashboard/employee/employee-dashboard.html" class="back-btn">
+                Back to Dashboard
+            </a>
+        </header>
 
-            <div class="form-group">
-                <label>Select Manager</label>
-                <select>
-                    <option>John Manager</option>
-                    <option>Sarah Manager</option>
-                    <option>Mike Manager</option>
-                </select>
-            </div>
+        <main class="content-grid">
 
-            <div class="form-group">
-                <label>Priority</label>
-                <select>
-                    <option>Low</option>
-                    <option>Medium</option>
-                    <option>High</option>
-                </select>
-            </div>
+            <section class="form-card">
 
-            <div class="form-group">
-                <label>Upload Documents</label>
-                <input type="file">
-            </div>
+                <span class="badge">Create Workflow</span>
 
-            <button type="submit">Submit Workflow</button>
+                <h1>Create Loan Request</h1>
 
-        </form>
+                <p class="subtitle">
+                    Submit a banking loan workflow. SecureFlow will route it to the correct manager based on loan type.
+                </p>
+
+                <form id="workflowForm">
+
+                    <div class="section-title">Loan Details</div>
+
+                    <div class="form-grid">
+
+                        <div class="form-group">
+                            <label>Loan Type</label>
+                            <select id="loanType">
+                                <option value="">Select loan type</option>
+                                <option value="home">Home Loan</option>
+                                <option value="housing">Housing Loan</option>
+                                <option value="car">Car Loan</option>
+                                <option value="education">Education Loan</option>
+                                <option value="personal">Personal Loan</option>
+                                <option value="business">Business Loan</option>
+                                <option value="gold">Gold Loan</option>
+                                <option value="mortgage">Mortgage Loan</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Loan Amount</label>
+                            <input type="number" id="loanAmount" placeholder="Enter loan amount">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Priority</label>
+                            <select id="priority">
+                                <option value="">Select priority</option>
+                                <option value="Low">Low</option>
+                                <option value="Medium">Medium</option>
+                                <option value="High">High</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Assigned Manager</label>
+                            <input type="text" id="managerName" placeholder="Auto assigned manager" readonly>
+                        </div>
+
+                    </div>
+
+                    <div class="form-group">
+                        <label>Loan Purpose / Description</label>
+                        <textarea id="description" rows="4" placeholder="Briefly describe why this loan is required"></textarea>
+                    </div>
+
+                    <div class="section-title">Applicant Details</div>
+
+                    <div class="form-grid">
+
+                        <div class="form-group">
+                            <label>Applicant Name</label>
+                            <input type="text" id="applicantName" placeholder="Enter applicant name">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Email Address</label>
+                            <input type="email" id="email" placeholder="Enter email address">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Phone Number</label>
+                            <input type="tel" id="phone" placeholder="Enter phone number">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Employment Type</label>
+                            <select id="employmentType">
+                                <option value="">Select employment type</option>
+                                <option>Salaried</option>
+                                <option>Self Employed</option>
+                                <option>Business Owner</option>
+                                <option>Student</option>
+                                <option>Retired</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Government ID Type</label>
+                            <select id="idType">
+                                <option value="">Select ID type</option>
+                                <option>PAN Card</option>
+                                <option>Aadhaar Card</option>
+                                <option>SSN</option>
+                                <option>Passport</option>
+                                <option>National ID</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Government ID Number</label>
+                            <input type="text" id="idNumber" placeholder="Enter ID number">
+                        </div>
+
+                    </div>
+
+                    <div class="form-group">
+                        <label>Residential Address</label>
+                        <textarea id="address" rows="3" placeholder="Enter full residential address"></textarea>
+                    </div>
+
+                    <div class="section-title">Required Documents</div>
+
+                    <div id="documentList" class="document-list">
+                        <p>Please select a loan type to view required documents.</p>
+                    </div>
+
+                    <p id="errorMessage"></p>
+
+                    <button type="submit" class="submit-btn">
+                        Submit Loan Workflow
+                    </button>
+
+                </form>
+
+            </section>
+
+            <aside class="preview-panel">
+
+                <div class="preview-card main-preview">
+
+                    <span class="preview-label">Workflow Routing</span>
+
+                    <h2>Employee → Manager → Senior Manager</h2>
+
+                    <div class="flow-line">
+                        <div>Employee</div>
+                        <span></span>
+                        <div id="previewManager">Manager</div>
+                        <span></span>
+                        <div>Senior Manager</div>
+                    </div>
+
+                    <div class="decision-row">
+                        <div class="approve">Approved</div>
+                        <div class="reject">Rejected</div>
+                    </div>
+
+                </div>
+
+                <div class="preview-card">
+                    <h3>Selected Loan</h3>
+                    <p id="previewLoan">Not selected</p>
+                </div>
+
+                <div class="preview-card">
+                    <h3>Estimated Priority</h3>
+                    <p id="previewPriority">Not selected</p>
+                </div>
+
+                <div class="preview-card">
+                    <h3>Required Document Count</h3>
+                    <p id="previewDocs">0 documents</p>
+                </div>
+
+            </aside>
+
+        </main>
 
     </div>
 
 </div>
 
 <script src="create-workflow.js"></script>
+
 </body>
 </html>

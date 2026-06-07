@@ -1,82 +1,187 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-
-    <title>Employee Dashboard</title>
-
-    <link rel="stylesheet"
-    href="employee-dashboard.css">
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SecureFlow Employee Dashboard</title>
+    <link rel="stylesheet" href="employee-dashboard.css">
 </head>
 <body>
 
-<div class="sidebar">
+<div class="dashboard-wrapper">
 
-    <h2>SecureFlow</h2>
+    <aside class="sidebar">
 
-    <ul>
+        <nav class="side-menu">
+            <a href="employee-dashboard.html" class="active">Home</a>
+            <a href="../../workflow/create/create-workflow.html">Create</a>
+            <a href="../../report/report.html">Reports</a>
+            <a href="../../notification/notifications.html">Notifications</a>
+           
+        </nav>
 
-        <li>
-            <a href="employee-dashboard.html">
-                Dashboard
-            </a>
-        </li>
+        <a href="../../index.html" class="logout">Logout</a>
 
-        <li>
-            <a href="../../workflow/create/create-workflow.html">
-                Create Workflow
-            </a>
-        </li>
+    </aside>
 
-        <li>
-            <a href="../../workflow/history/workflow-history.html">
-                Workflow History
-            </a>
-        </li>
+    <main class="main-panel">
 
-        <li>
-            <a href="../../notifications/notifications.html">
-                Notifications
-            </a>
-        </li>
+        <header class="topbar">
 
-        <li>
-            <a href="../../index.html">
-                Logout
-            </a>
-        </li>
+            <div class="company">
+                <div class="company-icon">S</div>
+                <h3>SecureFlow Enterprise</h3>
+            </div>
 
-    </ul>
+            <div></div>
 
-</div>
+            <div class="profile">
+                <span id="welcomeText">Hi Ved!</span>
+                <div class="avatar">V</div>
+            </div>
 
-<div class="main-content">
+        </header>
 
-    <h1>Employee Dashboard</h1>
+        <section class="hero-section">
 
-    <div class="cards">
+            <div class="dashboard-title">
+                <h1>Employee Dashboard</h1>
+            </div>
 
-        <div class="card">
-            <h3>Total Workflows</h3>
-            <p>15</p>
-        </div>
+            <div class="dashboard-grid">
 
-        <div class="card pending">
-            <h3>Pending</h3>
-            <p>5</p>
-        </div>
+                <div class="card workflow-flow">
+                    <div class="card-header">
+                        <h3>Workflow Status</h3>
+                        <a href="../../report/report.html">View All ›</a>
+                    </div>
 
-        <div class="card approved">
-            <h3>Approved</h3>
-            <p>7</p>
-        </div>
+                    <div class="circle-status-grid">
 
-        <div class="card rejected">
-            <h3>Rejected</h3>
-            <p>3</p>
-        </div>
+                        <div class="status-circle-card">
+                            <div class="status-circle pending-circle">
+                                <h2>5</h2>
+                            </div>
+                            <p>Pending</p>
+                        </div>
 
-    </div>
+                        <div class="status-circle-card">
+                            <div class="status-circle approved-circle">
+                                <h2>7</h2>
+                            </div>
+                            <p>Approved</p>
+                        </div>
+
+                        <div class="status-circle-card">
+                            <div class="status-circle rejected-circle">
+                                <h2>3</h2>
+                            </div>
+                            <p>Rejected</p>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="card progress-card">
+                    <div class="card-header">
+                        <h3>Available Work Items</h3>
+                        <a href="../../report/report.html">View All ›</a>
+                    </div>
+
+                    <div class="donut-wrapper">
+                        <div class="donut">
+                            <div>
+                                <h4>15</h4>
+                                <p>Total Items</p>
+                            </div>
+                        </div>
+
+                        <ul>
+                            <li><span class="dot pending-dot"></span> Pending - 5</li>
+                            <li><span class="dot approved-dot"></span> Approved - 7</li>
+                            <li><span class="dot rejected-dot"></span> Rejected - 3</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="mini-card">
+                    <p>Total Workflows</p>
+                    <h2>15</h2>
+                    <span>+12% this week</span>
+                </div>
+
+                <div class="mini-card">
+                    <p>Pending Requests</p>
+                    <h2>5</h2>
+                    <span>Needs action</span>
+                </div>
+
+            </div>
+
+        </section>
+
+        <aside class="right-panel">
+
+            <div class="summary-card">
+                <div class="summary-top">
+                    <p>Workflow Health</p>
+                    <button>+</button>
+                </div>
+
+                <h2>92.8%</h2>
+                <span>Enterprise approval efficiency</span>
+            </div>
+
+            <div class="quick-search-card">
+                <div class="card-header">
+                    <h3>Quick Search</h3>
+                    <a href="../../report/report.html">Advanced ›</a>
+                </div>
+
+                <p class="quick-info">
+                    Search by work item number or loan type.
+                </p>
+
+                <div class="search-form">
+                    <label>Work Item Number</label>
+                    <input type="text" id="workItemSearch" placeholder="Example: HL-0001">
+
+                    <label>Loan Type</label>
+                    <select id="loanTypeSearch">
+                        <option value="">Select loan type</option>
+                        <option value="Home Loan">Home Loan</option>
+                        <option value="Housing Loan">Housing Loan</option>
+                        <option value="Car Loan">Car Loan</option>
+                        <option value="Education Loan">Education Loan</option>
+                        <option value="Personal Loan">Personal Loan</option>
+                        <option value="Business Loan">Business Loan</option>
+                        <option value="Gold Loan">Gold Loan</option>
+                        <option value="Mortgage Loan">Mortgage Loan</option>
+                    </select>
+
+                    <button onclick="quickSearch()">Search</button>
+                </div>
+
+                <p id="searchMessage"></p>
+            </div>
+
+            <div class="bottom-widgets">
+
+                <div>
+                    <h4>Team Updates</h4>
+                    <p>3 new workflow comments</p>
+                </div>
+
+                <div>
+                    <h4>Activity</h4>
+                    <div class="wave"></div>
+                </div>
+
+            </div>
+
+        </aside>
+
+    </main>
 
 </div>
 

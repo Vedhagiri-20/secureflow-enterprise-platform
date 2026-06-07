@@ -2,73 +2,124 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport"
-    content="width=device-width, initial-scale=1.0">
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SecureFlow Login</title>
-
     <link rel="stylesheet" href="login.css">
-
 </head>
 <body>
 
-<div class="login-container">
+<div class="page-wrapper">
 
-    <div class="login-card">
+    <div class="login-shell">
 
-        <h1>SecureFlow Login</h1>
+        <div class="login-panel">
 
-        <!-- USER ROLE -->
+            <div class="brand">
+                <div class="brand-logo">S</div>
+                <div>
+                    <h2>SecureFlow</h2>
+                    <p>Enterprise Platform</p>
+                </div>
+            </div>
 
-        <select id="role">
+            <div class="login-content">
+                <span class="welcome-badge">Secure Access</span>
+                <h1>Welcome Back</h1>
+                
 
-            <option value="">
-                Select Role
-            </option>
+                <form onsubmit="login(event)">
 
-            <option value="employee">
+                    <label>User Role</label>
+                    <select id="role">
+                        <option value="">Select Role</option>
+                        <option value="employee">Employee</option>
+                        <option value="manager">Manager</option>
+                        <option value="admin">Admin</option>
+                    </select>
+
+                    <label>Email Address</label>
+                    <input type="email" id="email" placeholder="Enter your email">
+
+                    <label>Password</label>
+                    <div class="password-box">
+                        <input type="password" id="password" placeholder="Enter your password">
+                        <button type="button" class="toggle-btn" onclick="togglePassword()">Show</button>
+                    </div>
+
+                    <div class="options-row">
+                        <label class="remember">
+                            <input type="checkbox">
+                            Remember me
+                        </label>
+
+                        <a href="../forgot-password/forgot-password.html">Forgot Password?</a>
+                    </div>
+
+                    <p id="error-message"></p>
+
+                    <button type="submit" class="login-btn">Login</button>
+
+                </form>
+            </div>
+
+        </div>
+
+<div class="visual-panel">
+
+    <div class="secureflow-diagram">
+
+        <div class="diagram-badge">
+            Smart workflow routing for banking approvals
+        </div>
+
+        <h2>SecureFlow approval engine</h2>
+     
+
+        <div class="flow-area">
+
+            <div class="flow-node left-node employee-node">
                 Employee
-            </option>
+            </div>
 
-            <option value="manager">
+            <div class="flow-node left-node manager-node">
                 Manager
-            </option>
+            </div>
 
-            <option value="admin">
-                Admin
-            </option>
+            <div class="flow-node left-node senior-node">
+                Senior Manager
+            </div>
 
-        </select>
+            <div class="center-engine">
+                <div class="engine-ring">
+                    <span>Secure<br>Flow</span>
+                </div>
+            </div>
 
-        <!-- EMAIL -->
+            <div class="flow-node right-node home-loan">
+                Home Loan
+            </div>
 
-        <input
-            type="email"
-            id="email"
-            placeholder="Enter Email"
-        >
+            <div class="flow-node right-node car-loan">
+                Car Loan
+            </div>
 
-        <!-- PASSWORD -->
+            <div class="flow-node right-node personal-loan">
+                Personal Loan
+            </div>
 
-        <input
-            type="password"
-            id="password"
-            placeholder="Enter Password"
-        >
+            <div class="decision-card approve-card">
+                Approved
+            </div>
 
-        <!-- ERROR MESSAGE -->
+            <div class="decision-card reject-card">
+                Rejected
+            </div>
 
-        <p id="error-message"></p>
+        </div>
 
-        <!-- LOGIN BUTTON -->
+    </div>
 
-        <button onclick="login()">
-            Login
-        </button>
-
-        <a href="../forgot-password/forgot-password.html">
-            Forgot Password?
-        </a>
+</div>
 
     </div>
 
