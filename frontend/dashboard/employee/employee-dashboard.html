@@ -11,23 +11,19 @@
 <div class="dashboard-wrapper">
 
     <aside class="sidebar">
-
         <nav class="side-menu">
             <a href="employee-dashboard.html" class="active">Home</a>
             <a href="../../workflow/create/create-workflow.html">Create</a>
             <a href="../../report/report.html">Reports</a>
             <a href="../../notification/notifications.html">Notifications</a>
-           
         </nav>
 
         <a href="../../index.html" class="logout">Logout</a>
-
     </aside>
 
     <main class="main-panel">
 
         <header class="topbar">
-
             <div class="company">
                 <div class="company-icon">S</div>
                 <h3>SecureFlow Enterprise</h3>
@@ -36,10 +32,9 @@
             <div></div>
 
             <div class="profile">
-                <span id="welcomeText">Hi Ved!</span>
-                <div class="avatar">V</div>
+                <span id="welcomeText">Hi User!</span>
+                <div class="avatar" id="userAvatar">U</div>
             </div>
-
         </header>
 
         <section class="hero-section">
@@ -60,21 +55,21 @@
 
                         <div class="status-circle-card">
                             <div class="status-circle pending-circle">
-                                <h2>5</h2>
+                                <h2 id="pendingCount">0</h2>
                             </div>
                             <p>Pending</p>
                         </div>
 
                         <div class="status-circle-card">
                             <div class="status-circle approved-circle">
-                                <h2>7</h2>
+                                <h2 id="approvedCount">0</h2>
                             </div>
                             <p>Approved</p>
                         </div>
 
                         <div class="status-circle-card">
                             <div class="status-circle rejected-circle">
-                                <h2>3</h2>
+                                <h2 id="rejectedCount">0</h2>
                             </div>
                             <p>Rejected</p>
                         </div>
@@ -91,28 +86,28 @@
                     <div class="donut-wrapper">
                         <div class="donut">
                             <div>
-                                <h4>15</h4>
+                                <h4 id="donutTotalCount">0</h4>
                                 <p>Total Items</p>
                             </div>
                         </div>
 
                         <ul>
-                            <li><span class="dot pending-dot"></span> Pending - 5</li>
-                            <li><span class="dot approved-dot"></span> Approved - 7</li>
-                            <li><span class="dot rejected-dot"></span> Rejected - 3</li>
+                            <li id="pendingLegend"><span class="dot pending-dot"></span> Pending - 0</li>
+                            <li id="approvedLegend"><span class="dot approved-dot"></span> Approved - 0</li>
+                            <li id="rejectedLegend"><span class="dot rejected-dot"></span> Rejected - 0</li>
                         </ul>
                     </div>
                 </div>
 
                 <div class="mini-card">
                     <p>Total Workflows</p>
-                    <h2>15</h2>
-                    <span>+12% this week</span>
+                    <h2 id="totalWorkflowCount">0</h2>
+                    <span>Live from database</span>
                 </div>
 
                 <div class="mini-card">
                     <p>Pending Requests</p>
-                    <h2>5</h2>
+                    <h2 id="pendingWorkflowCount">0</h2>
                     <span>Needs action</span>
                 </div>
 
@@ -128,7 +123,7 @@
                     <button>+</button>
                 </div>
 
-                <h2>92.8%</h2>
+                <h2 id="workflowHealth">0%</h2>
                 <span>Enterprise approval efficiency</span>
             </div>
 
@@ -139,24 +134,20 @@
                 </div>
 
                 <p class="quick-info">
-                    Search by work item number or loan type.
+                    Search by work item number, number only, applicant, or loan type.
                 </p>
 
                 <div class="search-form">
                     <label>Work Item Number</label>
-                    <input type="text" id="workItemSearch" placeholder="Example: HL-0001">
+                    <input type="text" id="workItemSearch" placeholder="Example: HL-0007 or 7">
 
                     <label>Loan Type</label>
                     <select id="loanTypeSearch">
-                        <option value="">Select loan type</option>
+                        <option value="">Optional loan type</option>
                         <option value="Home Loan">Home Loan</option>
-                        <option value="Housing Loan">Housing Loan</option>
                         <option value="Car Loan">Car Loan</option>
                         <option value="Education Loan">Education Loan</option>
-                        <option value="Personal Loan">Personal Loan</option>
                         <option value="Business Loan">Business Loan</option>
-                        <option value="Gold Loan">Gold Loan</option>
-                        <option value="Mortgage Loan">Mortgage Loan</option>
                     </select>
 
                     <button onclick="quickSearch()">Search</button>
@@ -169,7 +160,7 @@
 
                 <div>
                     <h4>Team Updates</h4>
-                    <p>3 new workflow comments</p>
+                    <p id="teamUpdateText">Loading workflow updates...</p>
                 </div>
 
                 <div>
@@ -183,6 +174,67 @@
 
     </main>
 
+</div>
+
+<div class="workflow-modal" id="workflowModal">
+    <div class="workflow-modal-card">
+        <button class="modal-close" onclick="closeWorkflowModal()">×</button>
+
+        <span class="modal-badge">Workflow Detail</span>
+        <h2 id="modalWorkItem">HL-0000</h2>
+
+        <div class="modal-grid">
+            <div>
+                <p>Loan Type</p>
+                <h4 id="modalLoanType">-</h4>
+            </div>
+
+            <div>
+                <p>Status</p>
+                <h4 id="modalStatus">-</h4>
+            </div>
+
+            <div>
+                <p>Applicant</p>
+                <h4 id="modalApplicant">-</h4>
+            </div>
+
+            <div>
+                <p>Email</p>
+                <h4 id="modalEmail">-</h4>
+            </div>
+
+            <div>
+                <p>Phone</p>
+                <h4 id="modalPhone">-</h4>
+            </div>
+
+            <div>
+                <p>Loan Amount</p>
+                <h4 id="modalAmount">-</h4>
+            </div>
+
+            <div>
+                <p>Priority</p>
+                <h4 id="modalPriority">-</h4>
+            </div>
+
+            <div>
+                <p>Manager</p>
+                <h4 id="modalManager">-</h4>
+            </div>
+
+            <div>
+                <p>Created Date</p>
+                <h4 id="modalCreatedDate">-</h4>
+            </div>
+        </div>
+
+        <div class="modal-description">
+            <p>Loan Purpose</p>
+            <h4 id="modalPurpose">-</h4>
+        </div>
+    </div>
 </div>
 
 <script src="employee-dashboard.js"></script>

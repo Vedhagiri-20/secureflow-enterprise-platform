@@ -582,3 +582,94 @@ body{
         font-size:30px;
     }
 }
+.workflow-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.68);
+    backdrop-filter: blur(12px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    padding: 24px;
+}
+
+.workflow-modal.show {
+    display: flex;
+}
+
+.workflow-modal-card {
+    width: min(760px, 95%);
+    border-radius: 28px;
+    padding: 32px;
+    background: linear-gradient(145deg, rgba(36, 58, 52, 0.96), rgba(14, 28, 25, 0.96));
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    box-shadow: 0 30px 90px rgba(0, 0, 0, 0.5);
+    color: #ffffff;
+    position: relative;
+}
+
+.modal-close {
+    position: absolute;
+    top: 20px;
+    right: 22px;
+    width: 42px;
+    height: 42px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.12);
+    color: #ffffff;
+    font-size: 28px;
+    cursor: pointer;
+}
+
+.modal-badge {
+    display: inline-block;
+    padding: 9px 16px;
+    border-radius: 20px;
+    background: rgba(57, 217, 190, 0.16);
+    color: #40f0cf;
+    font-weight: 700;
+    margin-bottom: 14px;
+}
+
+.workflow-modal-card h2 {
+    font-size: 38px;
+    margin-bottom: 24px;
+}
+
+.modal-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}
+
+.modal-grid div,
+.modal-description {
+    padding: 18px;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.modal-grid p,
+.modal-description p {
+    color: #aebfba;
+    font-size: 13px;
+    margin-bottom: 6px;
+}
+
+.modal-grid h4,
+.modal-description h4 {
+    font-size: 16px;
+    color: #ffffff;
+}
+
+.modal-description {
+    margin-top: 16px;
+}
+
+@media (max-width: 720px) {
+    .modal-grid {
+        grid-template-columns: 1fr;
+    }
+}

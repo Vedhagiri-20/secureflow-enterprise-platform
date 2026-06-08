@@ -341,7 +341,90 @@ body{
     color:#ff8d8d;
 }
 
-/* Tablet */
+.success-modal {
+    position: fixed;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: rgba(0, 0, 0, 0.72);
+    backdrop-filter: blur(14px);
+    z-index: 9999;
+}
+
+.success-modal.show {
+    display: flex;
+}
+
+.success-modal-card {
+    width: min(520px, 94%);
+    padding: 36px;
+    border-radius: 30px;
+    text-align: center;
+    color: #ffffff;
+    background: linear-gradient(145deg, rgba(35, 67, 59, 0.98), rgba(11, 24, 21, 0.98));
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    box-shadow: 0 32px 90px rgba(0, 0, 0, 0.55);
+}
+
+.success-icon {
+    width: 72px;
+    height: 72px;
+    margin: 0 auto 18px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    font-size: 34px;
+    font-weight: 900;
+    color: #08251f;
+    background: linear-gradient(135deg, #41e6c7, #7b6cff);
+}
+
+.success-badge {
+    display: inline-block;
+    padding: 9px 18px;
+    border-radius: 999px;
+    color: #40f0cf;
+    background: rgba(57, 217, 190, 0.15);
+    font-weight: 800;
+    margin-bottom: 16px;
+}
+
+.success-modal-card h2 {
+    font-size: 28px;
+    margin-bottom: 12px;
+}
+
+.success-modal-card p {
+    color: #b6c9c4;
+    margin-bottom: 14px;
+}
+
+.work-item-highlight {
+    margin: 18px auto 26px;
+    padding: 18px 24px;
+    border-radius: 20px;
+    font-size: 34px;
+    font-weight: 900;
+    color: #40f0cf;
+    background: rgba(64, 240, 207, 0.12);
+    border: 1px solid rgba(64, 240, 207, 0.32);
+    letter-spacing: 1px;
+}
+
+.success-modal-card button {
+    width: 100%;
+    border: none;
+    border-radius: 20px;
+    padding: 16px;
+    font-size: 16px;
+    font-weight: 900;
+    cursor: pointer;
+    color: #07100e;
+    background: linear-gradient(135deg, #41e6c7, #7b6cff);
+}
+
 @media(max-width:1050px){
     .content-grid{
         grid-template-columns:1fr;
@@ -357,7 +440,6 @@ body{
     }
 }
 
-/* Mobile */
 @media(max-width:700px){
     .page-wrapper{
         padding:16px;
@@ -390,7 +472,6 @@ body{
     }
 }
 
-/* Small Mobile */
 @media(max-width:420px){
     .form-card h1{
         font-size:28px;
@@ -402,5 +483,13 @@ body{
 
     .brand p{
         font-size:12px;
+    }
+
+    .success-modal-card h2 {
+        font-size: 23px;
+    }
+
+    .work-item-highlight {
+        font-size: 26px;
     }
 }

@@ -49,13 +49,9 @@
                             <select id="loanType">
                                 <option value="">Select loan type</option>
                                 <option value="home">Home Loan</option>
-                                <option value="housing">Housing Loan</option>
                                 <option value="car">Car Loan</option>
                                 <option value="education">Education Loan</option>
-                                <option value="personal">Personal Loan</option>
                                 <option value="business">Business Loan</option>
-                                <option value="gold">Gold Loan</option>
-                                <option value="mortgage">Mortgage Loan</option>
                             </select>
                         </div>
 
@@ -201,6 +197,26 @@
 
     </div>
 
+</div>
+
+<div class="success-modal" id="successModal">
+    <div class="success-modal-card">
+        <div class="success-icon">✓</div>
+
+        <span class="success-badge">Workflow Created</span>
+
+        <h2>Loan workflow submitted successfully!</h2>
+
+        <p>Your new work item number is</p>
+
+        <div class="work-item-highlight" id="successWorkItemNumber">
+            HL-0000
+        </div>
+
+        <button onclick="goToDashboard()">
+            Go to Dashboard
+        </button>
+    </div>
 </div>
 
 <script src="create-workflow.js"></script>
