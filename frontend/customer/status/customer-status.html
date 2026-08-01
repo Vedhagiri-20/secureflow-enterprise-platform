@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Applications - SecureFlow</title>
+    <link rel="stylesheet" href="customer-status.css">
+</head>
+<body>
+
+<div class="page-wrapper">
+
+    <div class="status-shell">
+
+        <header class="topbar">
+            <div class="brand">
+                <div class="brand-logo">S</div>
+                <div>
+                    <h2>SecureFlow Enterprise</h2>
+                    <p>Customer Application Status</p>
+                </div>
+            </div>
+
+            <a href="../customer-dashboard.html" class="back-btn">Back to Dashboard</a>
+        </header>
+
+        <section class="title-section">
+            <span>My Applications</span>
+            <h1>Track Loan Application Status</h1>
+            <p>
+                View submitted loan applications and monitor where each request is currently pending.
+            </p>
+        </section>
+
+        <section id="applicationContainer" class="application-list"></section>
+
+        <section id="emptyState" class="empty-state">
+            <h2>No applications found</h2>
+            <p>You have not submitted any loan applications yet.</p>
+            <a href="../apply/customer-application.html">Apply for Loan</a>
+        </section>
+
+    </div>
+
+</div>
+
+<script src="customer-status.js"></script>
+
+</body>
+</html>

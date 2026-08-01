@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apply Loan - SecureFlow</title>
+    <link rel="stylesheet" href="customer-application.css">
+</head>
+<body>
+
+<div class="page-wrapper">
+
+    <div class="application-shell">
+
+        <header class="topbar">
+            <div class="brand">
+                <div class="brand-logo">S</div>
+                <div>
+                    <h2>SecureFlow Enterprise</h2>
+                    <p>Customer Loan Application</p>
+                </div>
+            </div>
+
+            <a href="../customer-dashboard.html" class="back-btn">Back to Dashboard</a>
+        </header>
+
+        <main class="content-grid">
+
+            <section class="form-card">
+
+                <span class="badge">Apply Loan</span>
+
+                <h1>Submit Loan Application</h1>
+
+                <p class="subtitle">
+                    Complete your details and submit your application for employee verification.
+                </p>
+
+                <div class="info-box" id="eligibilityNotice">
+                    Eligibility data not found. You can still apply, or check eligibility first.
+                    <a href="../eligibility/eligibility.html">Check Eligibility</a>
+                </div>
+
+                <form id="applicationForm">
+
+                    <div class="section-title">Personal Information</div>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Full Name</label>
+                            <input type="text" id="fullName" placeholder="Enter full name">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Email Address</label>
+                            <input type="email" id="email" placeholder="Enter email address">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Phone Number</label>
+                            <input type="tel" id="phone" placeholder="Enter phone number">
+                        </div>
+                    </div>
+
+                    <div class="section-title">Loan Information</div>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Loan Type</label>
+                            <select id="loanType">
+                                <option value="">Select loan type</option>
+                                <option value="home">Home Loan</option>
+                                <option value="car">Car Loan</option>
+                                <option value="education">Education Loan</option>
+                                <option value="business">Business Loan</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Requested Amount</label>
+                            <input type="number" id="loanAmount" placeholder="Enter loan amount">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Tenure</label>
+                            <select id="tenure">
+                                <option value="">Select tenure</option>
+                                <option value="12">1 Year</option>
+                                <option value="36">3 Years</option>
+                                <option value="60">5 Years</option>
+                                <option value="120">10 Years</option>
+                                <option value="240">20 Years</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Employment Type</label>
+                            <select id="employmentType">
+                                <option value="">Select employment type</option>
+                                <option value="salaried">Salaried</option>
+                                <option value="self-employed">Self Employed</option>
+                                <option value="business">Business Owner</option>
+                                <option value="student">Student</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Loan Purpose</label>
+                        <textarea id="loanPurpose" rows="4" placeholder="Briefly describe why you need this loan"></textarea>
+                    </div>
+
+                    <div class="section-title">Eligibility Summary</div>
+
+                    <div class="eligibility-summary">
+                        <div>
+                            <p>Eligibility Score</p>
+                            <h3 id="summaryScore">Not checked</h3>
+                        </div>
+
+                        <div>
+                            <p>Risk Level</p>
+                            <h3 id="summaryRisk">Not checked</h3>
+                        </div>
+
+                        <div>
+                            <p>Approval Chance</p>
+                            <h3 id="summaryChance">Not checked</h3>
+                        </div>
+
+                        <div>
+                            <p>Suggested Capacity</p>
+                            <h3 id="summaryCapacity">Not checked</h3>
+                        </div>
+                    </div>
+
+                    <p id="errorMessage"></p>
+
+                    <button type="submit" class="submit-btn">Submit Loan Application</button>
+
+                </form>
+
+            </section>
+
+            <aside class="workflow-panel">
+
+                <div class="workflow-card">
+                    <span>Application Flow</span>
+                    <h2>Customer → Employee → Manager</h2>
+
+                    <div class="timeline">
+                        <div class="step active">
+                            <div class="dot"></div>
+                            <p>Customer Submission</p>
+                        </div>
+
+                        <div class="line"></div>
+
+                        <div class="step">
+                            <div class="dot"></div>
+                            <p>Employee Review</p>
+                        </div>
+
+                        <div class="line"></div>
+
+                        <div class="step">
+                            <div class="dot"></div>
+                            <p>Manager Decision</p>
+                        </div>
+
+                        <div class="line"></div>
+
+                        <div class="step">
+                            <div class="dot"></div>
+                            <p>Final Status</p>
+                        </div>
+                    </div>
+                </div>
+
+            </aside>
+
+        </main>
+
+    </div>
+
+</div>
+
+<div id="successModal" class="modal-overlay">
+    <div class="modal-box">
+        <div class="modal-icon">✓</div>
+
+        <p class="modal-label">Application Submitted Successfully</p>
+
+        <h2 id="modalApplicationId">APP-0001</h2>
+
+        <p class="modal-status">
+            Status: <strong>Pending Employee Review</strong>
+        </p>
+
+        <div class="modal-actions">
+            <a href="../status/customer-status.html" class="modal-btn primary">View My Applications</a>
+            <a href="../customer-dashboard.html" class="modal-btn secondary">Back to Dashboard</a>
+        </div>
+    </div>
+</div>
+
+<script src="customer-application.js"></script>
+
+</body>
+</html>

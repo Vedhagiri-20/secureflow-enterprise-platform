@@ -673,3 +673,48 @@ body{
         grid-template-columns: 1fr;
     }
 }
+
+.dashboard-title span{
+    display:inline-block;
+    padding:9px 16px;
+    border-radius:999px;
+    background:rgba(55,220,184,.15);
+    color:#47e0bd;
+    font-size:13px;
+    font-weight:800;
+    margin-bottom:16px;
+}
+
+.dashboard-title p{
+    color:#a8bbb6;
+    font-size:15px;
+    line-height:1.6;
+    margin-bottom:24px;
+}
+
+.modal-actions{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:14px;
+    margin-top:20px;
+}
+
+.modal-btn{
+    border:none;
+    text-decoration:none;
+    border-radius:16px;
+    padding:14px 18px;
+    font-weight:900;
+    text-align:center;
+    cursor:pointer;
+}
+
+.modal-btn.primary{
+    background:linear-gradient(135deg,#37dcb8,#7d68ff);
+    color:#07100e;
+}
+
+.modal-btn.secondary{
+    background:rgba(255,255,255,.12);
+    color:#ffffff;
+}
