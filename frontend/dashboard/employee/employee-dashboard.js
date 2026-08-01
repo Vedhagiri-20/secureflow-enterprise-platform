@@ -1,13 +1,15 @@
-console.log("Employee Dashboard Loaded");
+
+checkAuthentication("EMPLOYEE");
+console.log("Employee Verification Dashboard Loaded");
 
 document.addEventListener("DOMContentLoaded", async function () {
 
     const savedEmail =
-        localStorage.getItem("secureFlowUserEmail") ||
+        sessionStorage.getItem("secureFlowUserEmail") ||
         "employee@secureflow.com";
 
     const savedName =
-        localStorage.getItem("secureFlowUserName") ||
+        sessionStorage.getItem("secureFlowUserName") ||
         getNameFromEmail(savedEmail);
 
     setUserProfile(savedName);
@@ -16,49 +18,30 @@ document.addEventListener("DOMContentLoaded", async function () {
 });
 
 function getNameFromEmail(email) {
+    if (!email || !email.includes("@")) return "User";
 
-    if (!email || !email.includes("@")) {
-        return "User";
-    }
-
-    const namePart = email.split("@")[0];
-
-    return namePart
+    return email
+        .split("@")[0]
         .replace(/[0-9._-]/g, " ")
         .trim()
         .split(" ")[0] || "User";
 }
 
 function formatShortName(name) {
-
-    if (!name) {
-        return "User";
-    }
-
-    const cleanName = name.trim();
-
-    if (cleanName.length <= 5) {
-        return cleanName;
-    }
-
-    return cleanName.substring(0, 5);
+    if (!name) return "User";
+    return name.trim().length <= 5 ? name.trim() : name.trim().substring(0, 5);
 }
 
 function setUserProfile(name) {
-
-    const welcomeText = document.getElementById("welcomeText");
-    const avatar = document.getElementById("userAvatar");
-
     const displayName = formatShortName(name);
 
-    welcomeText.innerText = `Hi ${displayName}!`;
-    avatar.innerText = displayName.charAt(0).toUpperCase();
+    document.getElementById("welcomeText").innerText = `Hi ${displayName}!`;
+    document.getElementById("userAvatar").innerText =
+        displayName.charAt(0).toUpperCase();
 }
 
 async function loadEmployeeDashboard(email) {
-
     try {
-
         const response = await fetch(
             `http://localhost:8080/api/dashboard/employee?email=${encodeURIComponent(email)}`
         );
@@ -69,45 +52,47 @@ async function loadEmployeeDashboard(email) {
 
         const data = await response.json();
 
-        document.getElementById("pendingCount").innerText = data.pending;
-        document.getElementById("approvedCount").innerText = data.approved;
-        document.getElementById("rejectedCount").innerText = data.rejected;
+        const pending = data.pending || 0;
+        const forwarded = data.approved || 0;
+        const rejected = data.rejected || 0;
+        const total = data.total || 0;
 
-        document.getElementById("totalWorkflowCount").innerText = data.total;
-        document.getElementById("pendingWorkflowCount").innerText = data.pending;
-        document.getElementById("donutTotalCount").innerText = data.total;
+        document.getElementById("pendingCount").innerText = pending;
+        document.getElementById("forwardedCount").innerText = forwarded;
+        document.getElementById("rejectedCount").innerText = rejected;
+
+        document.getElementById("totalApplicationCount").innerText = total;
+        document.getElementById("pendingApplicationCount").innerText = pending;
+        document.getElementById("donutTotalCount").innerText = total;
 
         document.getElementById("pendingLegend").innerHTML =
-            `<span class="dot pending-dot"></span> Pending - ${data.pending}`;
+            `<span class="dot pending-dot"></span> Pending - ${pending}`;
 
-        document.getElementById("approvedLegend").innerHTML =
-            `<span class="dot approved-dot"></span> Approved - ${data.approved}`;
+        document.getElementById("forwardedLegend").innerHTML =
+            `<span class="dot approved-dot"></span> Forwarded - ${forwarded}`;
 
         document.getElementById("rejectedLegend").innerHTML =
-            `<span class="dot rejected-dot"></span> Rejected - ${data.rejected}`;
+            `<span class="dot rejected-dot"></span> Rejected - ${rejected}`;
 
         const health =
-            data.total === 0
-                ? 0
-                : Math.round((data.approved / data.total) * 100);
+            total === 0 ? 0 : Math.round((forwarded / total) * 100);
 
         document.getElementById("workflowHealth").innerText = `${health}%`;
 
         document.getElementById("teamUpdateText").innerText =
-            `${data.pending} pending workflows need review.`;
+            pending > 0
+                ? `${pending} applications need employee verification.`
+                : "No pending employee verification items.";
 
     } catch (error) {
-
         console.error("Dashboard API Error:", error);
 
         document.getElementById("teamUpdateText").innerText =
             "Unable to load dashboard data. Start Spring Boot server.";
-
     }
 }
 
 async function quickSearch() {
-
     const workItemNumber =
         document.getElementById("workItemSearch").value.trim();
 
@@ -118,18 +103,17 @@ async function quickSearch() {
         document.getElementById("searchMessage");
 
     const savedEmail =
-        localStorage.getItem("secureFlowUserEmail") ||
+        sessionStorage.getItem("secureFlowUserEmail") ||
         "employee@secureflow.com";
 
     message.innerText = "";
 
     if (workItemNumber === "" && loanType === "") {
-        message.innerText = "Enter work item number or select loan type.";
+        message.innerText = "Enter application ID, work item number, or select loan type.";
         return;
     }
 
     try {
-
         const params = new URLSearchParams();
 
         params.append("email", savedEmail);
@@ -147,7 +131,7 @@ async function quickSearch() {
         );
 
         if (!response.ok) {
-            message.innerText = "No workflow found for your search.";
+            message.innerText = "No application found for your search.";
             return;
         }
 
@@ -156,16 +140,14 @@ async function quickSearch() {
         openWorkflowModal(workflow);
 
     } catch (error) {
-
         console.error("Quick Search Error:", error);
         message.innerText = "Unable to search. Please start Spring Boot server.";
     }
 }
 
 function openWorkflowModal(workflow) {
-
     document.getElementById("modalWorkItem").innerText =
-        workflow.workItemNumber || "-";
+        workflow.workItemNumber || workflow.applicationId || "-";
 
     document.getElementById("modalLoanType").innerText =
         workflow.loanType || "-";
@@ -174,24 +156,24 @@ function openWorkflowModal(workflow) {
         workflow.status || "-";
 
     document.getElementById("modalApplicant").innerText =
-        workflow.applicantName || "-";
+        workflow.applicantName || workflow.customerName || "-";
 
     document.getElementById("modalEmail").innerText =
-        workflow.applicantEmail || "-";
+        workflow.applicantEmail || workflow.customerEmail || "-";
 
     document.getElementById("modalPhone").innerText =
-        workflow.applicantPhone || "-";
+        workflow.applicantPhone || workflow.customerPhone || "-";
 
     document.getElementById("modalAmount").innerText =
         workflow.loanAmount
             ? "$" + Number(workflow.loanAmount).toLocaleString()
             : "-";
 
-    document.getElementById("modalPriority").innerText =
-        workflow.priority || "-";
+    document.getElementById("modalEligibility").innerText =
+        workflow.eligibilityScore || "Not checked";
 
-    document.getElementById("modalManager").innerText =
-        workflow.managerName || "-";
+    document.getElementById("modalRisk").innerText =
+        workflow.eligibilityRisk || "Not checked";
 
     document.getElementById("modalCreatedDate").innerText =
         workflow.createdDate
@@ -209,15 +191,11 @@ function closeWorkflowModal() {
 }
 
 function formatDate(dateString) {
-
     const date = new Date(dateString);
 
-    return date.toLocaleDateString(
-        "en-US",
-        {
-            year: "numeric",
-            month: "short",
-            day: "numeric"
-        }
-    );
+    return date.toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "short",
+        day: "numeric"
+    });
 }

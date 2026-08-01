@@ -13,12 +13,12 @@
     <aside class="sidebar">
         <nav class="side-menu">
             <a href="employee-dashboard.html" class="active">Home</a>
-            <a href="../../workflow/create/create-workflow.html">Create</a>
+            <a href="../../workflow/review/employee-review.html">Review Applications</a>
             <a href="../../report/report.html">Reports</a>
             <a href="../../notification/notifications.html">Notifications</a>
         </nav>
 
-        <a href="../../index.html" class="logout">Logout</a>
+        <a href="../../auth/login/login.html" class="logout" onclick="logout()">Logout</a>
     </aside>
 
     <main class="main-panel">
@@ -40,15 +40,17 @@
         <section class="hero-section">
 
             <div class="dashboard-title">
+                <span>Employee Verification Workspace</span>
                 <h1>Employee Dashboard</h1>
+                <p>Review customer loan applications, verify details, and forward eligible requests to managers.</p>
             </div>
 
             <div class="dashboard-grid">
 
                 <div class="card workflow-flow">
                     <div class="card-header">
-                        <h3>Workflow Status</h3>
-                        <a href="../../report/report.html">View All ›</a>
+                        <h3>Application Review Status</h3>
+                        <a href="../../workflow/review/employee-review.html">Review All ›</a>
                     </div>
 
                     <div class="circle-status-grid">
@@ -57,14 +59,14 @@
                             <div class="status-circle pending-circle">
                                 <h2 id="pendingCount">0</h2>
                             </div>
-                            <p>Pending</p>
+                            <p>Pending Review</p>
                         </div>
 
                         <div class="status-circle-card">
                             <div class="status-circle approved-circle">
-                                <h2 id="approvedCount">0</h2>
+                                <h2 id="forwardedCount">0</h2>
                             </div>
-                            <p>Approved</p>
+                            <p>Forwarded</p>
                         </div>
 
                         <div class="status-circle-card">
@@ -79,8 +81,8 @@
 
                 <div class="card progress-card">
                     <div class="card-header">
-                        <h3>Available Work Items</h3>
-                        <a href="../../report/report.html">View All ›</a>
+                        <h3>Assigned Applications</h3>
+                        <a href="../../workflow/review/employee-review.html">View All ›</a>
                     </div>
 
                     <div class="donut-wrapper">
@@ -93,22 +95,22 @@
 
                         <ul>
                             <li id="pendingLegend"><span class="dot pending-dot"></span> Pending - 0</li>
-                            <li id="approvedLegend"><span class="dot approved-dot"></span> Approved - 0</li>
+                            <li id="forwardedLegend"><span class="dot approved-dot"></span> Forwarded - 0</li>
                             <li id="rejectedLegend"><span class="dot rejected-dot"></span> Rejected - 0</li>
                         </ul>
                     </div>
                 </div>
 
                 <div class="mini-card">
-                    <p>Total Workflows</p>
-                    <h2 id="totalWorkflowCount">0</h2>
-                    <span>Live from database</span>
+                    <p>Total Applications</p>
+                    <h2 id="totalApplicationCount">0</h2>
+                    <span>Customer submitted</span>
                 </div>
 
                 <div class="mini-card">
-                    <p>Pending Requests</p>
-                    <h2 id="pendingWorkflowCount">0</h2>
-                    <span>Needs action</span>
+                    <p>Need Verification</p>
+                    <h2 id="pendingApplicationCount">0</h2>
+                    <span>Employee action required</span>
                 </div>
 
             </div>
@@ -119,27 +121,27 @@
 
             <div class="summary-card">
                 <div class="summary-top">
-                    <p>Workflow Health</p>
+                    <p>Verification Health</p>
                     <button>+</button>
                 </div>
 
                 <h2 id="workflowHealth">0%</h2>
-                <span>Enterprise approval efficiency</span>
+                <span>Forwarded application efficiency</span>
             </div>
 
             <div class="quick-search-card">
                 <div class="card-header">
                     <h3>Quick Search</h3>
-                    <a href="../../report/report.html">Advanced ›</a>
+                    <a href="../../workflow/review/employee-review.html">Advanced ›</a>
                 </div>
 
                 <p class="quick-info">
-                    Search by work item number, number only, applicant, or loan type.
+                    Search by application ID, applicant name, email, or loan type.
                 </p>
 
                 <div class="search-form">
-                    <label>Work Item Number</label>
-                    <input type="text" id="workItemSearch" placeholder="Example: HL-0007 or 7">
+                    <label>Application / Work Item</label>
+                    <input type="text" id="workItemSearch" placeholder="Example: APP-0001 or 1">
 
                     <label>Loan Type</label>
                     <select id="loanTypeSearch">
@@ -160,7 +162,7 @@
 
                 <div>
                     <h4>Team Updates</h4>
-                    <p id="teamUpdateText">Loading workflow updates...</p>
+                    <p id="teamUpdateText">Loading employee review queue...</p>
                 </div>
 
                 <div>
@@ -180,63 +182,37 @@
     <div class="workflow-modal-card">
         <button class="modal-close" onclick="closeWorkflowModal()">×</button>
 
-        <span class="modal-badge">Workflow Detail</span>
-        <h2 id="modalWorkItem">HL-0000</h2>
+        <span class="modal-badge">Application Detail</span>
+        <h2 id="modalWorkItem">APP-0000</h2>
 
         <div class="modal-grid">
-            <div>
-                <p>Loan Type</p>
-                <h4 id="modalLoanType">-</h4>
-            </div>
-
-            <div>
-                <p>Status</p>
-                <h4 id="modalStatus">-</h4>
-            </div>
-
-            <div>
-                <p>Applicant</p>
-                <h4 id="modalApplicant">-</h4>
-            </div>
-
-            <div>
-                <p>Email</p>
-                <h4 id="modalEmail">-</h4>
-            </div>
-
-            <div>
-                <p>Phone</p>
-                <h4 id="modalPhone">-</h4>
-            </div>
-
-            <div>
-                <p>Loan Amount</p>
-                <h4 id="modalAmount">-</h4>
-            </div>
-
-            <div>
-                <p>Priority</p>
-                <h4 id="modalPriority">-</h4>
-            </div>
-
-            <div>
-                <p>Manager</p>
-                <h4 id="modalManager">-</h4>
-            </div>
-
-            <div>
-                <p>Created Date</p>
-                <h4 id="modalCreatedDate">-</h4>
-            </div>
+            <div><p>Loan Type</p><h4 id="modalLoanType">-</h4></div>
+            <div><p>Status</p><h4 id="modalStatus">-</h4></div>
+            <div><p>Applicant</p><h4 id="modalApplicant">-</h4></div>
+            <div><p>Email</p><h4 id="modalEmail">-</h4></div>
+            <div><p>Phone</p><h4 id="modalPhone">-</h4></div>
+            <div><p>Loan Amount</p><h4 id="modalAmount">-</h4></div>
+            <div><p>Eligibility Score</p><h4 id="modalEligibility">-</h4></div>
+            <div><p>Risk Level</p><h4 id="modalRisk">-</h4></div>
+            <div><p>Created Date</p><h4 id="modalCreatedDate">-</h4></div>
         </div>
 
         <div class="modal-description">
             <p>Loan Purpose</p>
             <h4 id="modalPurpose">-</h4>
         </div>
+
+        <div class="modal-actions">
+            <a href="../../workflow/review/employee-review.html" class="modal-btn primary">Open Review Page</a>
+            <button class="modal-btn secondary" onclick="closeWorkflowModal()">Close</button>
+        </div>
     </div>
 </div>
 
+<script src="../../auth/auth-guard.js"></script>
+<script>
+    checkAuthentication("EMPLOYEE");
+</script>
 <script src="employee-dashboard.js"></script>
 
 </body>

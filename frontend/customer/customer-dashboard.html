@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SecureFlow Customer Dashboard</title>
+    <link rel="stylesheet" href="customer-dashboard.css">
+</head>
+<body>
+
+<div class="dashboard-wrapper">
+
+    <aside class="sidebar">
+        <nav class="side-menu">
+            <a href="customer-dashboard.html" class="active">Home</a>
+            <a href="eligibility/eligibility.html">Eligibility Check</a>
+            <a href="apply/customer-application.html">Apply Loan</a>
+            <a href="status/customer-status.html">My Applications</a>
+        </nav>
+
+        <a href="../index.html" class="logout" onclick="logout()">Logout</a>
+    </aside>
+
+    <main class="main-panel">
+
+        <header class="topbar">
+            <div class="company">
+                <div class="company-icon">S</div>
+                <h3>SecureFlow Enterprise</h3>
+            </div>
+
+            <div class="profile">
+                <span id="welcomeText">Hi Customer!</span>
+                <div class="avatar">C</div>
+            </div>
+        </header>
+
+        <section class="hero-section">
+
+            <div class="dashboard-title">
+                <span>Customer Banking Portal</span>
+                <h1>Customer Dashboard</h1>
+                <p>Check eligibility, apply for loans, and track your application progress.</p>
+            </div>
+
+            <div class="dashboard-grid">
+
+                <div class="card hero-card">
+                    <div>
+                        <p class="card-label">AI Eligibility Engine</p>
+                        <h2>Check your loan approval chance before applying.</h2>
+                        <p>
+                            Get an estimated eligibility score, risk level, interest range,
+                            and suggested loan capacity.
+                        </p>
+                    </div>
+
+                    <a href="eligibility/eligibility.html" class="action-btn">
+                        Check Eligibility
+                    </a>
+                </div>
+
+                <div class="mini-card">
+                    <p>Available Loans</p>
+                    <h2>4</h2>
+                    <span>Home, Car, Education, Business</span>
+                </div>
+
+                <div class="mini-card">
+                    <p>Application Status</p>
+                    <h2>Track</h2>
+                    <span>Live workflow updates</span>
+                </div>
+
+                <div class="card action-card">
+                    <h3>Apply for Loan</h3>
+                    <p>Submit your loan application securely and send it for employee review.</p>
+                    <a href="apply/customer-application.html" class="action-btn small-btn">Apply Now</a>
+                </div>
+
+                <div class="card action-card">
+                    <h3>My Applications</h3>
+                    <p>View your submitted applications and approval progress.</p>
+                    <a href="status/customer-status.html" class="action-btn small-btn">View Status</a>
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+
+<script src="../auth/auth-guard.js"></script>
+<script src="customer-dashboard.js"></script>
+
+</body>
+</html>
