@@ -8,6 +8,7 @@ import com.secureflow.dto.CreateWorkflowResponse;
 import com.secureflow.dto.CustomerDashboardResponse;
 import com.secureflow.dto.EmployeeApplicationResponse;
 import com.secureflow.dto.WorkflowDetailResponse;
+import com.secureflow.dto.WorkflowHistoryResponse;
 import com.secureflow.entity.LoanType;
 import com.secureflow.entity.User;
 import com.secureflow.entity.WorkflowRequest;
@@ -32,6 +33,9 @@ public class WorkflowService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private WorkflowHistoryService workflowHistoryService;
+
     public ApplicationDetailResponse createApplication(
             CreateApplicationRequest request
     ) {
@@ -39,7 +43,11 @@ public class WorkflowService {
 
         LoanType loanType = loanTypeRepository
                 .findById(request.getLoanTypeId())
-                .orElseThrow(() -> new RuntimeException("Loan type not found"));
+                .orElseThrow(
+                        () -> new RuntimeException(
+                                "Loan type not found"
+                        )
+                );
 
         WorkflowRequest workflow = new WorkflowRequest();
 
@@ -65,10 +73,20 @@ public class WorkflowService {
         saved.setWorkItemNumber(
                 loanType.getLoanCode()
                         + "-"
-                        + String.format("%04d", saved.getWorkflowId())
+                        + String.format(
+                                "%04d",
+                                saved.getWorkflowId()
+                        )
         );
 
         saved = workflowRequestRepository.save(saved);
+
+        workflowHistoryService.record(
+                saved,
+                WorkflowStatus.SUBMITTED,
+                customer.getEmail(),
+                "CUSTOMER"
+        );
 
         return toApplicationDetail(saved);
     }
@@ -91,20 +109,32 @@ public class WorkflowService {
     ) {
         User customer = getCustomer(email);
 
-        WorkflowRequest workflow = workflowRequestRepository
-                .findByWorkflowIdAndCreatedByUser(workflowId, customer)
-                .orElseThrow(
-                        () -> new RuntimeException("Application not found")
-                );
+        WorkflowRequest workflow =
+                findCustomerWorkflow(workflowId, customer);
 
         return toApplicationDetail(workflow);
     }
 
-    public CustomerDashboardResponse getCustomerDashboard(String email) {
+    public List<WorkflowHistoryResponse>
+            getCustomerApplicationHistory(
+                    Long workflowId,
+                    String email
+            ) {
+        User customer = getCustomer(email);
+
+        findCustomerWorkflow(workflowId, customer);
+
+        return workflowHistoryService.getHistory(workflowId);
+    }
+
+    public CustomerDashboardResponse getCustomerDashboard(
+            String email
+    ) {
         User customer = getCustomer(email);
 
         long total =
-                workflowRequestRepository.countByCreatedByUser(customer);
+                workflowRequestRepository
+                        .countByCreatedByUser(customer);
 
         long submitted =
                 workflowRequestRepository
@@ -124,7 +154,9 @@ public class WorkflowService {
                 workflowRequestRepository
                         .countByCreatedByUserAndCurrentStatus(
                                 customer,
-                                WorkflowStatus.FORWARDED_TO_MANAGER.name()
+                                WorkflowStatus
+                                        .FORWARDED_TO_MANAGER
+                                        .name()
                         );
 
         long approved =
@@ -151,9 +183,8 @@ public class WorkflowService {
         );
     }
 
-    public List<EmployeeApplicationResponse> getAvailableApplications(
-            String email
-    ) {
+    public List<EmployeeApplicationResponse>
+            getAvailableApplications(String email) {
         getEmployee(email);
 
         return workflowRequestRepository
@@ -165,13 +196,14 @@ public class WorkflowService {
                 .toList();
     }
 
-    public List<EmployeeApplicationResponse> getEmployeeApplications(
-            String email
-    ) {
+    public List<EmployeeApplicationResponse>
+            getEmployeeApplications(String email) {
         User employee = getEmployee(email);
 
         return workflowRequestRepository
-                .findByAssignedEmployeeOrderByUpdatedAtDesc(employee)
+                .findByAssignedEmployeeOrderByUpdatedAtDesc(
+                        employee
+                )
                 .stream()
                 .map(this::toEmployeeApplication)
                 .toList();
@@ -183,11 +215,14 @@ public class WorkflowService {
     ) {
         User employee = getEmployee(email);
 
-        WorkflowRequest workflow = workflowRequestRepository
-                .findById(workflowId)
-                .orElseThrow(
-                        () -> new RuntimeException("Application not found")
-                );
+        WorkflowRequest workflow =
+                workflowRequestRepository
+                        .findById(workflowId)
+                        .orElseThrow(
+                                () -> new RuntimeException(
+                                        "Application not found"
+                                )
+                        );
 
         if (!WorkflowStatus.SUBMITTED.name()
                 .equals(workflow.getCurrentStatus())) {
@@ -203,10 +238,19 @@ public class WorkflowService {
         }
 
         workflow.setAssignedEmployee(employee);
-        workflow.setCurrentStatus(WorkflowStatus.UNDER_REVIEW);
+        workflow.setCurrentStatus(
+                WorkflowStatus.UNDER_REVIEW
+        );
 
         WorkflowRequest saved =
                 workflowRequestRepository.save(workflow);
+
+        workflowHistoryService.record(
+                saved,
+                WorkflowStatus.UNDER_REVIEW,
+                employee.getEmail(),
+                "EMPLOYEE"
+        );
 
         return toEmployeeApplication(saved);
     }
@@ -217,15 +261,10 @@ public class WorkflowService {
     ) {
         User employee = getEmployee(email);
 
-        WorkflowRequest workflow = workflowRequestRepository
-                .findByWorkflowIdAndAssignedEmployee(
+        WorkflowRequest workflow =
+                findEmployeeWorkflow(
                         workflowId,
                         employee
-                )
-                .orElseThrow(
-                        () -> new RuntimeException(
-                                "Application not assigned to this employee"
-                        )
                 );
 
         if (!WorkflowStatus.UNDER_REVIEW.name()
@@ -248,6 +287,13 @@ public class WorkflowService {
         WorkflowRequest saved =
                 workflowRequestRepository.save(workflow);
 
+        workflowHistoryService.record(
+                saved,
+                WorkflowStatus.FORWARDED_TO_MANAGER,
+                employee.getEmail(),
+                "EMPLOYEE"
+        );
+
         return toEmployeeApplication(saved);
     }
 
@@ -257,15 +303,10 @@ public class WorkflowService {
     ) {
         User employee = getEmployee(email);
 
-        WorkflowRequest workflow = workflowRequestRepository
-                .findByWorkflowIdAndAssignedEmployee(
+        WorkflowRequest workflow =
+                findEmployeeWorkflow(
                         workflowId,
                         employee
-                )
-                .orElseThrow(
-                        () -> new RuntimeException(
-                                "Application not assigned to this employee"
-                        )
                 );
 
         if (!WorkflowStatus.UNDER_REVIEW.name()
@@ -275,12 +316,53 @@ public class WorkflowService {
             );
         }
 
-        workflow.setCurrentStatus(WorkflowStatus.REJECTED);
+        workflow.setCurrentStatus(
+                WorkflowStatus.REJECTED
+        );
 
         WorkflowRequest saved =
                 workflowRequestRepository.save(workflow);
 
+        workflowHistoryService.record(
+                saved,
+                WorkflowStatus.REJECTED,
+                employee.getEmail(),
+                "EMPLOYEE"
+        );
+
         return toEmployeeApplication(saved);
+    }
+
+    private WorkflowRequest findCustomerWorkflow(
+            Long workflowId,
+            User customer
+    ) {
+        return workflowRequestRepository
+                .findByWorkflowIdAndCreatedByUser(
+                        workflowId,
+                        customer
+                )
+                .orElseThrow(
+                        () -> new RuntimeException(
+                                "Application not found"
+                        )
+                );
+    }
+
+    private WorkflowRequest findEmployeeWorkflow(
+            Long workflowId,
+            User employee
+    ) {
+        return workflowRequestRepository
+                .findByWorkflowIdAndAssignedEmployee(
+                        workflowId,
+                        employee
+                )
+                .orElseThrow(
+                        () -> new RuntimeException(
+                                "Application not assigned to this employee"
+                        )
+                );
     }
 
     private User getCustomer(String email) {
@@ -291,22 +373,36 @@ public class WorkflowService {
         return getUserByRole(email, "EMPLOYEE");
     }
 
-    private User getUserByRole(String email, String roleName) {
+    private User getUserByRole(
+            String email,
+            String roleName
+    ) {
         if (email == null || email.isBlank()) {
-            throw new RuntimeException("Email is required");
+            throw new RuntimeException(
+                    "Email is required"
+            );
         }
 
-        User user = userRepository.findByEmail(email.trim())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userRepository
+                .findByEmail(email.trim())
+                .orElseThrow(
+                        () -> new RuntimeException(
+                                "User not found"
+                        )
+                );
 
         if (Boolean.FALSE.equals(user.getIsActive())) {
-            throw new RuntimeException("User account is inactive");
+            throw new RuntimeException(
+                    "User account is inactive"
+            );
         }
 
-        if (user.getRole() == null
-                || !roleName.equalsIgnoreCase(
-                        user.getRole().getRoleName()
-                )) {
+        if (
+                user.getRole() == null
+                        || !roleName.equalsIgnoreCase(
+                                user.getRole().getRoleName()
+                        )
+        ) {
             throw new RuntimeException(
                     "User does not have the required role"
             );
@@ -331,13 +427,19 @@ public class WorkflowService {
     private ApplicationDetailResponse toApplicationDetail(
             WorkflowRequest workflow
     ) {
-        String employeeName = workflow.getAssignedEmployee() == null
-                ? "Not Assigned"
-                : workflow.getAssignedEmployee().getFullName();
+        String employeeName =
+                workflow.getAssignedEmployee() == null
+                        ? "Not Assigned"
+                        : workflow
+                        .getAssignedEmployee()
+                        .getFullName();
 
-        String managerName = workflow.getAssignedManager() == null
-                ? "Not Assigned"
-                : workflow.getAssignedManager().getFullName();
+        String managerName =
+                workflow.getAssignedManager() == null
+                        ? "Not Assigned"
+                        : workflow
+                        .getAssignedManager()
+                        .getFullName();
 
         return new ApplicationDetailResponse(
                 workflow.getWorkflowId(),
@@ -380,39 +482,82 @@ public class WorkflowService {
     public CreateWorkflowResponse createWorkflow(
             CreateWorkflowRequest request
     ) {
-        LoanType loanType = loanTypeRepository
-                .findById(request.getLoanTypeId())
-                .orElseThrow(() -> new RuntimeException("Loan type not found"));
+        LoanType loanType =
+                loanTypeRepository
+                        .findById(request.getLoanTypeId())
+                        .orElseThrow(
+                                () -> new RuntimeException(
+                                        "Loan type not found"
+                                )
+                        );
 
-        User employee = userRepository
-                .findByEmail(request.getEmployeeEmail())
-                .orElseThrow(() -> new RuntimeException("Employee not found"));
+        User employee =
+                userRepository
+                        .findByEmail(
+                                request.getEmployeeEmail()
+                        )
+                        .orElseThrow(
+                                () -> new RuntimeException(
+                                        "Employee not found"
+                                )
+                        );
 
-        WorkflowRequest workflow = new WorkflowRequest();
+        WorkflowRequest workflow =
+                new WorkflowRequest();
 
         workflow.setLoanType(loanType);
         workflow.setCreatedByUser(employee);
-        workflow.setAssignedManager(loanType.getManager());
-        workflow.setApplicantName(request.getApplicantName());
-        workflow.setApplicantEmail(request.getApplicantEmail());
-        workflow.setApplicantPhone(request.getApplicantPhone());
-        workflow.setLoanAmount(request.getLoanAmount());
-        workflow.setLoanPurpose(request.getLoanPurpose());
-        workflow.setEmploymentType(request.getEmploymentType());
-        workflow.setGovernmentIdType(request.getGovernmentIdType());
-        workflow.setGovernmentIdNumber(request.getGovernmentIdNumber());
-        workflow.setResidentialAddress(request.getResidentialAddress());
+        workflow.setAssignedManager(
+                loanType.getManager()
+        );
+        workflow.setApplicantName(
+                request.getApplicantName()
+        );
+        workflow.setApplicantEmail(
+                request.getApplicantEmail()
+        );
+        workflow.setApplicantPhone(
+                request.getApplicantPhone()
+        );
+        workflow.setLoanAmount(
+                request.getLoanAmount()
+        );
+        workflow.setLoanPurpose(
+                request.getLoanPurpose()
+        );
+        workflow.setEmploymentType(
+                request.getEmploymentType()
+        );
+        workflow.setGovernmentIdType(
+                request.getGovernmentIdType()
+        );
+        workflow.setGovernmentIdNumber(
+                request.getGovernmentIdNumber()
+        );
+        workflow.setResidentialAddress(
+                request.getResidentialAddress()
+        );
 
-        if (request.getPriority() != null
-                && !request.getPriority().isBlank()) {
-            workflow.setPriority(request.getPriority());
+        if (
+                request.getPriority() != null
+                        && !request.getPriority().isBlank()
+        ) {
+            workflow.setPriority(
+                    request.getPriority()
+            );
         } else {
-            workflow.setPriority(loanType.getDefaultPriority());
+            workflow.setPriority(
+                    loanType.getDefaultPriority()
+            );
         }
 
         workflow.setCurrentStatus("Pending");
-        workflow.setSubmittedAt(LocalDateTime.now());
-        workflow.setUpdatedAt(LocalDateTime.now());
+        workflow.setSubmittedAt(
+                LocalDateTime.now()
+        );
+        workflow.setUpdatedAt(
+                LocalDateTime.now()
+        );
 
         WorkflowRequest saved =
                 workflowRequestRepository.save(workflow);
@@ -420,10 +565,14 @@ public class WorkflowService {
         saved.setWorkItemNumber(
                 loanType.getLoanCode()
                         + "-"
-                        + String.format("%04d", saved.getWorkflowId())
+                        + String.format(
+                                "%04d",
+                                saved.getWorkflowId()
+                        )
         );
 
-        saved = workflowRequestRepository.save(saved);
+        saved =
+                workflowRequestRepository.save(saved);
 
         return new CreateWorkflowResponse(
                 "Workflow Created Successfully",
@@ -436,50 +585,72 @@ public class WorkflowService {
             String query,
             String loanType
     ) {
-        User employee = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("Employee not found"));
+        User employee =
+                userRepository
+                        .findByEmail(email)
+                        .orElseThrow(
+                                () -> new RuntimeException(
+                                        "Employee not found"
+                                )
+                        );
 
         List<WorkflowRequest> workflows =
                 workflowRequestRepository
-                        .findByCreatedByUserOrderBySubmittedAtDesc(employee);
+                        .findByCreatedByUserOrderBySubmittedAtDesc(
+                                employee
+                        );
 
         String searchText =
-                query == null ? "" : query.trim().toLowerCase();
+                query == null
+                        ? ""
+                        : query.trim().toLowerCase();
 
         String selectedLoan =
-                loanType == null ? "" : loanType.trim().toLowerCase();
+                loanType == null
+                        ? ""
+                        : loanType.trim().toLowerCase();
 
-        WorkflowRequest workflow = workflows.stream()
-                .filter(item -> {
-                    boolean loanMatches =
-                            selectedLoan.isEmpty()
-                                    || item.getLoanType()
-                                    .getLoanName()
-                                    .toLowerCase()
-                                    .equals(selectedLoan);
+        WorkflowRequest workflow =
+                workflows.stream()
+                        .filter(item -> {
+                            boolean loanMatches =
+                                    selectedLoan.isEmpty()
+                                            || item
+                                            .getLoanType()
+                                            .getLoanName()
+                                            .toLowerCase()
+                                            .equals(
+                                                    selectedLoan
+                                            );
 
-                    boolean queryMatches =
-                            searchText.isEmpty()
-                                    || String.valueOf(
-                                            item.getWorkflowId()
-                                    ).equals(searchText)
-                                    || item.getWorkItemNumber()
-                                    .toLowerCase()
-                                    .contains(searchText)
-                                    || item.getApplicantName()
-                                    .toLowerCase()
-                                    .contains(searchText)
-                                    || item.getLoanType()
-                                    .getLoanName()
-                                    .toLowerCase()
-                                    .contains(searchText);
+                            boolean queryMatches =
+                                    searchText.isEmpty()
+                                            || String.valueOf(
+                                                    item.getWorkflowId()
+                                            ).equals(searchText)
+                                            || item
+                                            .getWorkItemNumber()
+                                            .toLowerCase()
+                                            .contains(searchText)
+                                            || item
+                                            .getApplicantName()
+                                            .toLowerCase()
+                                            .contains(searchText)
+                                            || item
+                                            .getLoanType()
+                                            .getLoanName()
+                                            .toLowerCase()
+                                            .contains(searchText);
 
-                    return loanMatches && queryMatches;
-                })
-                .findFirst()
-                .orElseThrow(
-                        () -> new RuntimeException("Workflow not found")
-                );
+                            return loanMatches
+                                    && queryMatches;
+                        })
+                        .findFirst()
+                        .orElseThrow(
+                                () -> new RuntimeException(
+                                        "Workflow not found"
+                                )
+                        );
 
         return new WorkflowDetailResponse(
                 workflow.getWorkItemNumber(),
@@ -492,7 +663,9 @@ public class WorkflowService {
                 workflow.getCurrentStatus(),
                 workflow.getPriority(),
                 workflow.getAssignedManager() != null
-                        ? workflow.getAssignedManager().getFullName()
+                        ? workflow
+                        .getAssignedManager()
+                        .getFullName()
                         : "Not Assigned",
                 workflow.getSubmittedAt()
         );

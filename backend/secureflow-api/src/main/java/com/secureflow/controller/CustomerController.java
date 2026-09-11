@@ -4,6 +4,7 @@ import com.secureflow.dto.ApplicationDetailResponse;
 import com.secureflow.dto.ApplicationSummaryResponse;
 import com.secureflow.dto.CreateApplicationRequest;
 import com.secureflow.dto.CustomerDashboardResponse;
+import com.secureflow.dto.WorkflowHistoryResponse;
 import com.secureflow.service.WorkflowService;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +36,8 @@ public class CustomerController {
     public List<ApplicationSummaryResponse> getApplications(
             @RequestParam String email
     ) {
-        return workflowService.getCustomerApplications(email);
+        return workflowService
+                .getCustomerApplications(email);
     }
 
     @GetMapping("/applications/{workflowId}")
@@ -43,13 +45,32 @@ public class CustomerController {
             @PathVariable Long workflowId,
             @RequestParam String email
     ) {
-        return workflowService.getCustomerApplication(workflowId, email);
+        return workflowService
+                .getCustomerApplication(
+                        workflowId,
+                        email
+                );
+    }
+
+    @GetMapping(
+            "/applications/{workflowId}/history"
+    )
+    public List<WorkflowHistoryResponse> getHistory(
+            @PathVariable Long workflowId,
+            @RequestParam String email
+    ) {
+        return workflowService
+                .getCustomerApplicationHistory(
+                        workflowId,
+                        email
+                );
     }
 
     @GetMapping("/dashboard")
     public CustomerDashboardResponse getDashboard(
             @RequestParam String email
     ) {
-        return workflowService.getCustomerDashboard(email);
+        return workflowService
+                .getCustomerDashboard(email);
     }
 }
