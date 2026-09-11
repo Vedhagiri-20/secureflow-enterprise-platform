@@ -3,181 +3,225 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Loan Eligibility Checker</title>
+    <title>Eligibility Check | SecureFlow</title>
     <link rel="stylesheet" href="eligibility.css">
 </head>
 <body>
 
-<div class="page-wrapper">
+<div class="page">
 
-    <div class="eligibility-shell">
+    <header class="topbar">
+        <div>
+            <h2>SecureFlow Enterprise</h2>
+            <p>Loan Eligibility Check</p>
+        </div>
 
-        <header class="topbar">
-            <div class="brand">
-                <div class="brand-logo">S</div>
-                <div>
-                    <h2>SecureFlow Enterprise</h2>
-                    <p>AI-Assisted Loan Eligibility Engine</p>
-                </div>
-            </div>
+        <a
+            href="../../dashboard/customer/customer-dashboard.html"
+            class="back-button"
+        >
+            Back to Dashboard
+        </a>
+    </header>
 
-            <a href="../customer-dashboard.html" class="back-btn">Back to Dashboard</a>
-        </header>
+    <main class="layout">
 
-        <main class="content-grid">
+        <section class="card">
 
-            <section class="form-card">
-                <span class="badge">AI Eligibility Check</span>
+            <span class="badge">Eligibility</span>
 
-                <h1>Check Loan Eligibility</h1>
+            <h1>Check Loan Readiness</h1>
 
-                <p class="subtitle">
-                    Enter your financial details to estimate approval chance, risk level,
-                    interest range, and suggested loan capacity.
-                </p>
+            <p class="subtitle">
+                Enter your financial information to receive a simple
+                rule-based eligibility score.
+            </p>
 
-                <form id="eligibilityForm">
+            <form id="eligibilityForm">
 
-                    <div class="form-grid">
+                <div class="form-grid">
 
-                        <div class="form-group">
-                            <label>Loan Type</label>
-                            <select id="loanType">
-                                <option value="">Select loan type</option>
-                                <option value="home">Home Loan</option>
-                                <option value="car">Car Loan</option>
-                                <option value="education">Education Loan</option>
-                                <option value="business">Business Loan</option>
-                            </select>
-                        </div>
+                    <div>
+                        <label for="loanType">Loan Type</label>
 
-                        <div class="form-group">
-                            <label>Age</label>
-                            <input type="number" id="age" min="18" max="75" placeholder="18 to 75">
-                        </div>
-
-                        <div class="form-group">
-                            <label>Monthly Income</label>
-                            <input type="number" id="income" min="500" max="1000000" placeholder="500 to 1,000,000">
-                        </div>
-
-                        <div class="form-group">
-                            <label>Employment Type</label>
-                            <select id="employmentType">
-                                <option value="">Select employment type</option>
-                                <option value="salaried">Salaried</option>
-                                <option value="self-employed">Self Employed</option>
-                                <option value="business">Business Owner</option>
-                                <option value="student">Student</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label>Credit Score</label>
-                            <input type="number" id="creditScore" min="300" max="850" placeholder="300 to 850">
-                        </div>
-
-                        <div class="form-group">
-                            <label>Existing Monthly EMI</label>
-                            <input type="number" id="existingEmi" min="0" max="500000" placeholder="0 to 500,000">
-                        </div>
-
-                        <div class="form-group">
-                            <label>Requested Loan Amount</label>
-                            <input type="number" id="loanAmount" min="1000" max="10000000" placeholder="1,000 to 10,000,000">
-                        </div>
-
-                        <div class="form-group">
-                            <label>Tenure</label>
-                            <select id="tenure">
-                                <option value="">Select tenure</option>
-                                <option value="12">1 Year</option>
-                                <option value="36">3 Years</option>
-                                <option value="60">5 Years</option>
-                                <option value="120">10 Years</option>
-                                <option value="240">20 Years</option>
-                            </select>
-                        </div>
-
+                        <select id="loanType" required>
+                            <option value="">Select loan type</option>
+                            <option value="Home Loan">Home Loan</option>
+                            <option value="Car Loan">Car Loan</option>
+                            <option value="Education Loan">
+                                Education Loan
+                            </option>
+                            <option value="Business Loan">
+                                Business Loan
+                            </option>
+                        </select>
                     </div>
 
-                    <p id="errorMessage"></p>
+                    <div>
+                        <label for="age">Age</label>
 
-                    <button type="submit" class="submit-btn">Analyze Eligibility</button>
+                        <input
+                            id="age"
+                            type="number"
+                            min="18"
+                            max="100"
+                            required
+                        >
+                    </div>
 
-                </form>
-            </section>
+                    <div>
+                        <label for="monthlyIncome">
+                            Monthly Income
+                        </label>
 
-            <aside class="result-panel">
+                        <input
+                            id="monthlyIncome"
+                            type="number"
+                            min="1"
+                            step="0.01"
+                            required
+                        >
+                    </div>
 
-                <div class="result-card highlight">
-                    <p>Eligibility Score</p>
-                    <h2 id="scoreResult">--</h2>
-                    <span id="chanceResult">Waiting for details</span>
+                    <div>
+                        <label for="employmentType">
+                            Employment Type
+                        </label>
+
+                        <select id="employmentType" required>
+                            <option value="">Select employment</option>
+                            <option value="Salaried">Salaried</option>
+                            <option value="Self Employed">
+                                Self Employed
+                            </option>
+                            <option value="Business Owner">
+                                Business Owner
+                            </option>
+                            <option value="Student">Student</option>
+                            <option value="Retired">Retired</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="creditScore">
+                            Credit Score
+                        </label>
+
+                        <input
+                            id="creditScore"
+                            type="number"
+                            min="300"
+                            max="900"
+                            required
+                        >
+                    </div>
+
+                    <div>
+                        <label for="existingEmi">
+                            Existing Monthly EMI
+                        </label>
+
+                        <input
+                            id="existingEmi"
+                            type="number"
+                            min="0"
+                            step="0.01"
+                            value="0"
+                            required
+                        >
+                    </div>
+
+                    <div>
+                        <label for="requestedAmount">
+                            Requested Amount
+                        </label>
+
+                        <input
+                            id="requestedAmount"
+                            type="number"
+                            min="1"
+                            step="0.01"
+                            required
+                        >
+                    </div>
+
+                    <div>
+                        <label for="tenureMonths">
+                            Tenure (Months)
+                        </label>
+
+                        <input
+                            id="tenureMonths"
+                            type="number"
+                            min="1"
+                            value="60"
+                            required
+                        >
+                    </div>
+
                 </div>
 
-                <div class="result-card">
-                    <p>Risk Level</p>
-                    <h3 id="riskResult">Not calculated</h3>
-                </div>
+                <p id="errorMessage"></p>
 
-                <div class="result-card">
-                    <p>Interest Range</p>
-                    <h3 id="interestResult">--</h3>
-                </div>
+                <button type="submit">
+                    Check Eligibility
+                </button>
 
-                <div class="result-card">
-                    <p>Suggested Loan Capacity</p>
-                    <h3 id="capacityResult">--</h3>
-                </div>
+            </form>
 
-                <div class="result-card message-card">
-                    <p>Recommendation</p>
-                    <h3 id="recommendationResult">Complete the form to get your eligibility overview.</h3>
-                </div>
+        </section>
 
-            </aside>
 
-        </main>
+        <section class="card result-card">
 
-    </div>
+            <span class="badge">Result</span>
 
-</div>
+            <h2>Eligibility Result</h2>
 
-<div id="eligibilityModal" class="modal-overlay">
-    <div class="modal-box">
-        <button class="modal-close" onclick="closeEligibilityModal()">×</button>
-
-        <div class="modal-icon">✓</div>
-
-        <p class="modal-label">AI Eligibility Result</p>
-        <h2 id="modalScore">--</h2>
-        <h3 id="modalChance">--</h3>
-
-        <div class="modal-details">
-            <div>
-                <span>Risk Level</span>
-                <strong id="modalRisk">--</strong>
+            <div id="emptyResult" class="empty-result">
+                Complete the form to view your eligibility result.
             </div>
 
-            <div>
-                <span>Interest Range</span>
-                <strong id="modalInterest">--</strong>
+            <div id="result" class="result hidden">
+
+                <div class="score-box">
+                    <strong id="score">0</strong>
+                    <span>/ 100</span>
+                </div>
+
+                <div class="result-row">
+                    <span>Risk Level</span>
+                    <strong id="riskLevel">-</strong>
+                </div>
+
+                <div class="result-row">
+                    <span>Suggested Capacity</span>
+                    <strong id="capacity">-</strong>
+                </div>
+
+                <div class="result-row">
+                    <span>Illustrative Interest Range</span>
+                    <strong id="interestRange">-</strong>
+                </div>
+
+                <div class="recommendation">
+                    <span>Recommendation</span>
+                    <p id="recommendation">-</p>
+                </div>
+
+                <a
+                    href="../../workflow/create/create-workflow.html"
+                    class="apply-link"
+                >
+                    Apply for Loan
+                </a>
+
             </div>
 
-            <div>
-                <span>Suggested Capacity</span>
-                <strong id="modalCapacity">--</strong>
-            </div>
-        </div>
+        </section>
 
-        <p id="modalRecommendation" class="modal-message"></p>
+    </main>
 
-        <div class="modal-actions">
-            <a href="../apply/customer-application.html" class="modal-btn primary">Apply for Loan</a>
-            <a href="../customer-dashboard.html" class="modal-btn secondary">Back to Dashboard</a>
-        </div>
-    </div>
 </div>
 
 <script src="eligibility.js"></script>

@@ -3,178 +3,119 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SecureFlow Reports</title>
+    <title>Employee Reports | SecureFlow</title>
     <link rel="stylesheet" href="report.css">
 </head>
 <body>
 
-<div class="report-wrapper">
+<div class="page">
 
-    <aside class="sidebar">
+    <header class="topbar">
 
-        <nav class="side-menu">
-            <a href="../dashboard/employee/employee-dashboard.html">Home</a>
-            <a href="../workflow/create/create-workflow.html">Create</a>
-            <a href="report.html" class="active">Reports</a>
-            <a href="../notification/notifications.html">Notifications</a>
-        </nav>
+        <div>
+            <h2>SecureFlow Enterprise</h2>
+            <p>Employee Reports</p>
+        </div>
 
-        <a href="../index.html" class="logout">Logout</a>
+        <a
+            href="../dashboard/employee/employee-dashboard.html"
+            class="back-button"
+        >
+            Back to Dashboard
+        </a>
 
-    </aside>
+    </header>
 
-    <main class="report-panel">
+    <main>
 
-        <header class="topbar">
+        <section class="intro">
 
-            <div class="company">
-                <div class="company-icon">S</div>
-                <div>
-                    <h3>SecureFlow Enterprise</h3>
-                    <p>Loan Workflow Reports</p>
-                </div>
-            </div>
+            <span class="badge">Reports</span>
 
-            <div class="search-box">
-                <span>⌕</span>
-                <input type="text" id="searchInput" placeholder="Search report by loan, applicant, or work item">
-            </div>
+            <h1>Workflow Report</h1>
 
-            <div class="profile">
-                <span id="welcomeText">Hi Ved!</span>
-                <div class="avatar">V</div>
-            </div>
-
-        </header>
-
-        <section class="report-title">
-            <span>Analytics Center</span>
-            <h1>Workflow Reports</h1>
             <p>
-                View complete loan workflow status, loan-wise breakdown, approvals, pending items, and rejected requests.
+                Review applications handled by the currently logged-in
+                employee.
             </p>
-        </section>
-
-        <section class="summary-grid">
-
-            <div class="summary-card">
-                <p>Total Workflows</p>
-                <h2 id="totalWorkflows">0</h2>
-                <span>All loan requests</span>
-            </div>
-
-            <div class="summary-card pending-card">
-                <p>Pending</p>
-                <h2 id="pendingCount">0</h2>
-                <span>Waiting for approval</span>
-            </div>
-
-            <div class="summary-card approved-card">
-                <p>Approved</p>
-                <h2 id="approvedCount">0</h2>
-                <span>Completed workflows</span>
-            </div>
-
-            <div class="summary-card rejected-card">
-                <p>Rejected</p>
-                <h2 id="rejectedCount">0</h2>
-                <span>Declined workflows</span>
-            </div>
 
         </section>
 
-        <section class="analytics-grid">
 
-            <div class="glass-card status-card">
+        <section class="stats">
 
-                <div class="card-header">
-                    <h3>Overall Workflow Status</h3>
-                    <a href="#">View All ›</a>
-                </div>
-
-                <div class="circle-status-grid">
-
-                    <div class="status-circle-box">
-                        <div class="status-circle pending-circle">
-                            <h2 id="pendingCircle">0</h2>
-                        </div>
-                        <p>Pending</p>
-                    </div>
-
-                    <div class="status-circle-box">
-                        <div class="status-circle approved-circle">
-                            <h2 id="approvedCircle">0</h2>
-                        </div>
-                        <p>Approved</p>
-                    </div>
-
-                    <div class="status-circle-box">
-                        <div class="status-circle rejected-circle">
-                            <h2 id="rejectedCircle">0</h2>
-                        </div>
-                        <p>Rejected</p>
-                    </div>
-
-                </div>
-
+            <div class="stat-card">
+                <span>Total</span>
+                <strong id="totalWorkflows">0</strong>
             </div>
 
-            <div class="glass-card donut-card">
+            <div class="stat-card">
+                <span>Pending</span>
+                <strong id="pendingCount">0</strong>
+            </div>
 
-                <div class="card-header">
-                    <h3>Loan Distribution</h3>
-                    <a href="#">View All ›</a>
-                </div>
+            <div class="stat-card">
+                <span>Approved</span>
+                <strong id="approvedCount">0</strong>
+            </div>
 
-                <div class="donut-wrapper">
-                    <div class="donut">
-                        <div>
-                            <h4 id="donutTotal">0</h4>
-                            <p>Total Loans</p>
-                        </div>
-                    </div>
-
-                    <ul id="loanLegend"></ul>
-                </div>
-
+            <div class="stat-card">
+                <span>Rejected</span>
+                <strong id="rejectedCount">0</strong>
             </div>
 
         </section>
 
-        <section class="glass-card loan-breakdown-card">
 
-            <div class="card-header">
-                <h3>Loan-wise Detailed Breakdown</h3>
-                <a href="#">Detailed View ›</a>
-            </div>
+        <section class="card">
 
-            <div class="loan-grid" id="loanBreakdown"></div>
+            <h2>Loan Type Breakdown</h2>
+
+            <div
+                id="loanBreakdown"
+                class="loan-grid"
+            ></div>
 
         </section>
 
-        <section class="glass-card table-card">
 
-            <div class="card-header">
-                <h3>Detailed Workflow Report</h3>
-                <a href="#">Export ›</a>
+        <section class="card">
+
+            <div class="table-header">
+
+                <div>
+                    <h2>Applications</h2>
+                    <p id="employeeEmail"></p>
+                </div>
+
+                <input
+                    id="searchInput"
+                    type="text"
+                    placeholder="Search applications..."
+                >
+
             </div>
 
-            <div class="table-container">
+            <p id="message"></p>
+
+            <div class="table-wrapper">
 
                 <table>
+
                     <thead>
-                        <tr>
-                            <th>Work Item No</th>
-                            <th>Loan Type</th>
-                            <th>Applicant</th>
-                            <th>Amount</th>
-                            <th>Status</th>
-                            <th>Manager</th>
-                            <th>Created Date</th>
-                        </tr>
+                    <tr>
+                        <th>Application</th>
+                        <th>Loan Type</th>
+                        <th>Applicant</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                        <th>Manager</th>
+                        <th>Submitted</th>
+                    </tr>
                     </thead>
 
                     <tbody id="reportTableBody"></tbody>
+
                 </table>
 
             </div>

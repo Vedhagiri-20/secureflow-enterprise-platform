@@ -3,216 +3,137 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SecureFlow Employee Dashboard</title>
+    <title>Employee Dashboard | SecureFlow</title>
     <link rel="stylesheet" href="employee-dashboard.css">
 </head>
 <body>
 
-<div class="dashboard-wrapper">
+<div class="page">
 
-    <aside class="sidebar">
-        <nav class="side-menu">
-            <a href="employee-dashboard.html" class="active">Home</a>
-            <a href="../../workflow/review/employee-review.html">Review Applications</a>
-            <a href="../../report/report.html">Reports</a>
-            <a href="../../notification/notifications.html">Notifications</a>
-        </nav>
+    <header class="topbar">
+        <div>
+            <h2>SecureFlow Enterprise</h2>
+            <p>Employee Review Workspace</p>
+        </div>
 
-        <a href="../../auth/login/login.html" class="logout" onclick="logout()">Logout</a>
-    </aside>
+        <div class="user-area">
+            <span id="employeeEmail"></span>
+            <button type="button" onclick="logout()">Logout</button>
+        </div>
+    </header>
 
-    <main class="main-panel">
+    <main>
 
-        <header class="topbar">
-            <div class="company">
-                <div class="company-icon">S</div>
-                <h3>SecureFlow Enterprise</h3>
+        <section class="intro">
+            <div>
+                <span class="badge">Employee</span>
+                <h1>Application Review</h1>
+                <p>
+                    Review customer loan applications and forward qualified
+                    applications to the manager.
+                </p>
             </div>
 
-            <div></div>
+            <button type="button" class="refresh" onclick="loadPage()">
+                Refresh
+            </button>
+        </section>
 
-            <div class="profile">
-                <span id="welcomeText">Hi User!</span>
-                <div class="avatar" id="userAvatar">U</div>
-            </div>
-        </header>
+        <section class="stats">
 
-        <section class="hero-section">
-
-            <div class="dashboard-title">
-                <span>Employee Verification Workspace</span>
-                <h1>Employee Dashboard</h1>
-                <p>Review customer loan applications, verify details, and forward eligible requests to managers.</p>
+            <div class="stat-card">
+                <span>Available</span>
+                <strong id="availableCount">0</strong>
             </div>
 
-            <div class="dashboard-grid">
+            <div class="stat-card">
+                <span>My Applications</span>
+                <strong id="assignedCount">0</strong>
+            </div>
 
-                <div class="card workflow-flow">
-                    <div class="card-header">
-                        <h3>Application Review Status</h3>
-                        <a href="../../workflow/review/employee-review.html">Review All ›</a>
-                    </div>
+            <div class="stat-card">
+                <span>Under Review</span>
+                <strong id="reviewCount">0</strong>
+            </div>
 
-                    <div class="circle-status-grid">
+            <div class="stat-card">
+                <span>Forwarded</span>
+                <strong id="forwardedCount">0</strong>
+            </div>
 
-                        <div class="status-circle-card">
-                            <div class="status-circle pending-circle">
-                                <h2 id="pendingCount">0</h2>
-                            </div>
-                            <p>Pending Review</p>
-                        </div>
-
-                        <div class="status-circle-card">
-                            <div class="status-circle approved-circle">
-                                <h2 id="forwardedCount">0</h2>
-                            </div>
-                            <p>Forwarded</p>
-                        </div>
-
-                        <div class="status-circle-card">
-                            <div class="status-circle rejected-circle">
-                                <h2 id="rejectedCount">0</h2>
-                            </div>
-                            <p>Rejected</p>
-                        </div>
-
-                    </div>
-                </div>
-
-                <div class="card progress-card">
-                    <div class="card-header">
-                        <h3>Assigned Applications</h3>
-                        <a href="../../workflow/review/employee-review.html">View All ›</a>
-                    </div>
-
-                    <div class="donut-wrapper">
-                        <div class="donut">
-                            <div>
-                                <h4 id="donutTotalCount">0</h4>
-                                <p>Total Items</p>
-                            </div>
-                        </div>
-
-                        <ul>
-                            <li id="pendingLegend"><span class="dot pending-dot"></span> Pending - 0</li>
-                            <li id="forwardedLegend"><span class="dot approved-dot"></span> Forwarded - 0</li>
-                            <li id="rejectedLegend"><span class="dot rejected-dot"></span> Rejected - 0</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="mini-card">
-                    <p>Total Applications</p>
-                    <h2 id="totalApplicationCount">0</h2>
-                    <span>Customer submitted</span>
-                </div>
-
-                <div class="mini-card">
-                    <p>Need Verification</p>
-                    <h2 id="pendingApplicationCount">0</h2>
-                    <span>Employee action required</span>
-                </div>
-
+            <div class="stat-card">
+                <span>Rejected</span>
+                <strong id="rejectedCount">0</strong>
             </div>
 
         </section>
 
-        <aside class="right-panel">
+        <p id="message"></p>
 
-            <div class="summary-card">
-                <div class="summary-top">
-                    <p>Verification Health</p>
-                    <button>+</button>
-                </div>
+        <section class="card">
 
-                <h2 id="workflowHealth">0%</h2>
-                <span>Forwarded application efficiency</span>
-            </div>
-
-            <div class="quick-search-card">
-                <div class="card-header">
-                    <h3>Quick Search</h3>
-                    <a href="../../workflow/review/employee-review.html">Advanced ›</a>
-                </div>
-
-                <p class="quick-info">
-                    Search by application ID, applicant name, email, or loan type.
-                </p>
-
-                <div class="search-form">
-                    <label>Application / Work Item</label>
-                    <input type="text" id="workItemSearch" placeholder="Example: APP-0001 or 1">
-
-                    <label>Loan Type</label>
-                    <select id="loanTypeSearch">
-                        <option value="">Optional loan type</option>
-                        <option value="Home Loan">Home Loan</option>
-                        <option value="Car Loan">Car Loan</option>
-                        <option value="Education Loan">Education Loan</option>
-                        <option value="Business Loan">Business Loan</option>
-                    </select>
-
-                    <button onclick="quickSearch()">Search</button>
-                </div>
-
-                <p id="searchMessage"></p>
-            </div>
-
-            <div class="bottom-widgets">
-
+            <div class="section-header">
                 <div>
-                    <h4>Team Updates</h4>
-                    <p id="teamUpdateText">Loading employee review queue...</p>
+                    <h2>Available Applications</h2>
+                    <p>
+                        New customer applications waiting for an employee.
+                    </p>
                 </div>
-
-                <div>
-                    <h4>Activity</h4>
-                    <div class="wave"></div>
-                </div>
-
             </div>
 
-        </aside>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Application</th>
+                        <th>Applicant</th>
+                        <th>Loan Type</th>
+                        <th>Amount</th>
+                        <th>Priority</th>
+                        <th>Action</th>
+                    </tr>
+                    </thead>
+
+                    <tbody id="availableTable"></tbody>
+                </table>
+            </div>
+
+        </section>
+
+        <section class="card">
+
+            <div class="section-header">
+                <div>
+                    <h2>My Applications</h2>
+                    <p>
+                        Applications currently or previously handled by you.
+                    </p>
+                </div>
+            </div>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Application</th>
+                        <th>Applicant</th>
+                        <th>Loan Type</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                    </thead>
+
+                    <tbody id="assignedTable"></tbody>
+                </table>
+            </div>
+
+        </section>
 
     </main>
 
 </div>
 
-<div class="workflow-modal" id="workflowModal">
-    <div class="workflow-modal-card">
-        <button class="modal-close" onclick="closeWorkflowModal()">×</button>
-
-        <span class="modal-badge">Application Detail</span>
-        <h2 id="modalWorkItem">APP-0000</h2>
-
-        <div class="modal-grid">
-            <div><p>Loan Type</p><h4 id="modalLoanType">-</h4></div>
-            <div><p>Status</p><h4 id="modalStatus">-</h4></div>
-            <div><p>Applicant</p><h4 id="modalApplicant">-</h4></div>
-            <div><p>Email</p><h4 id="modalEmail">-</h4></div>
-            <div><p>Phone</p><h4 id="modalPhone">-</h4></div>
-            <div><p>Loan Amount</p><h4 id="modalAmount">-</h4></div>
-            <div><p>Eligibility Score</p><h4 id="modalEligibility">-</h4></div>
-            <div><p>Risk Level</p><h4 id="modalRisk">-</h4></div>
-            <div><p>Created Date</p><h4 id="modalCreatedDate">-</h4></div>
-        </div>
-
-        <div class="modal-description">
-            <p>Loan Purpose</p>
-            <h4 id="modalPurpose">-</h4>
-        </div>
-
-        <div class="modal-actions">
-            <a href="../../workflow/review/employee-review.html" class="modal-btn primary">Open Review Page</a>
-            <button class="modal-btn secondary" onclick="closeWorkflowModal()">Close</button>
-        </div>
-    </div>
-</div>
-
-<script src="../../auth/auth-guard.js"></script>
-<script>
-    checkAuthentication("EMPLOYEE");
-</script>
 <script src="employee-dashboard.js"></script>
 
 </body>

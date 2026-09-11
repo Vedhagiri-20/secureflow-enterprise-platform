@@ -1,135 +1,174 @@
-document.addEventListener("DOMContentLoaded", async () => {
+const API_URL =
+    "http://localhost:8080/api/reports/employee";
 
-    const savedName =
-        localStorage.getItem("secureFlowUserName") ||
-        "Ved";
+const email = localStorage.getItem("secureFlowUserEmail");
+const role = localStorage.getItem("secureFlowUserRole");
 
-    const savedEmail =
-        localStorage.getItem("secureFlowUserEmail") ||
-        "employee@secureflow.com";
+let allWorkflows = [];
 
-    document.getElementById("welcomeText").innerText =
-        `Hi ${savedName}!`;
+if (!email || role !== "EMPLOYEE") {
+    window.location.href =
+        "../auth/login/login.html";
+}
 
-    document.querySelector(".avatar").innerText =
-        savedName.charAt(0).toUpperCase();
+document.getElementById("employeeEmail").textContent =
+    email || "";
 
-    await loadReport(savedEmail);
-});
+document
+    .getElementById("searchInput")
+    .addEventListener("input", filterWorkflows);
 
-async function loadReport(email) {
+loadReport();
 
+async function loadReport() {
     try {
-
         const response = await fetch(
-            `http://localhost:8080/api/reports/employee?email=${email}`
+            `${API_URL}?email=${encodeURIComponent(email)}`
         );
+
+        if (!response.ok) {
+            throw new Error("Report request failed");
+        }
 
         const data = await response.json();
 
-        loadSummary(data);
+        document.getElementById("totalWorkflows").textContent =
+            data.total;
 
-        loadLoanBreakdown(data);
+        document.getElementById("pendingCount").textContent =
+            data.pending;
 
-        loadWorkflowTable(data);
+        document.getElementById("approvedCount").textContent =
+            data.approved;
 
-    }
-    catch(error){
+        document.getElementById("rejectedCount").textContent =
+            data.rejected;
+
+        allWorkflows = data.workflows || [];
+
+        renderLoanBreakdown(data.loanBreakdown || {});
+        renderWorkflows(allWorkflows);
+    } catch (error) {
+        document.getElementById("message").textContent =
+            "Unable to load report.";
 
         console.error(error);
-
-        alert("Unable to load report data.");
     }
 }
 
-function loadSummary(data){
-
-    document.getElementById("totalWorkflows").innerText =
-        data.total;
-
-    document.getElementById("pendingCount").innerText =
-        data.pending;
-
-    document.getElementById("approvedCount").innerText =
-        data.approved;
-
-    document.getElementById("rejectedCount").innerText =
-        data.rejected;
-
-    document.getElementById("pendingCircle").innerText =
-        data.pending;
-
-    document.getElementById("approvedCircle").innerText =
-        data.approved;
-
-    document.getElementById("rejectedCircle").innerText =
-        data.rejected;
-
-    document.getElementById("donutTotal").innerText =
-        data.total;
-}
-
-function loadLoanBreakdown(data){
-
-    const legend =
-        document.getElementById("loanLegend");
-
-    const breakdown =
+function renderLoanBreakdown(breakdown) {
+    const container =
         document.getElementById("loanBreakdown");
 
-    legend.innerHTML = "";
-    breakdown.innerHTML = "";
+    const entries = Object.entries(breakdown);
 
-    Object.entries(data.loanBreakdown)
-        .forEach(([loan,count]) => {
+    if (entries.length === 0) {
+        container.innerHTML = `
+            <div class="loan-card">
+                <span>No application data available.</span>
+            </div>
+        `;
 
-            legend.innerHTML += `
-                <li>${loan} - ${count}</li>
-            `;
+        return;
+    }
 
-            breakdown.innerHTML += `
-                <div class="loan-card">
-                    <h4>${loan}</h4>
-                    <h2>${count}</h2>
-                    <p>Total Workflows</p>
-                </div>
-            `;
-        });
+    container.innerHTML = entries
+        .map(([loanType, count]) => `
+            <div class="loan-card">
+                <span>${escapeHtml(loanType)}</span>
+                <strong>${count}</strong>
+            </div>
+        `)
+        .join("");
 }
 
-function loadWorkflowTable(data){
-
-    const tbody =
+function renderWorkflows(workflows) {
+    const table =
         document.getElementById("reportTableBody");
 
-    tbody.innerHTML = "";
-
-    data.workflows.forEach(workflow => {
-
-        tbody.innerHTML += `
+    if (workflows.length === 0) {
+        table.innerHTML = `
             <tr>
-                <td>${workflow.workItemNumber}</td>
-                <td>${workflow.loanType}</td>
-                <td>${workflow.applicantName}</td>
-                <td>$${Number(workflow.loanAmount).toLocaleString()}</td>
-                <td>${workflow.status}</td>
-                <td>${workflow.managerName}</td>
-                <td>${formatDate(workflow.createdDate)}</td>
+                <td colspan="7" class="empty">
+                    No matching applications.
+                </td>
             </tr>
         `;
+
+        return;
+    }
+
+    table.innerHTML = workflows
+        .map(workflow => `
+            <tr>
+                <td>${escapeHtml(workflow.workItemNumber)}</td>
+                <td>${escapeHtml(workflow.loanType)}</td>
+                <td>${escapeHtml(workflow.applicantName)}</td>
+                <td>${formatAmount(workflow.loanAmount)}</td>
+                <td>
+                    <span class="status">
+                        ${formatStatus(workflow.status)}
+                    </span>
+                </td>
+                <td>${escapeHtml(workflow.managerName)}</td>
+                <td>${formatDate(workflow.createdDate)}</td>
+            </tr>
+        `)
+        .join("");
+}
+
+function filterWorkflows() {
+    const query =
+        document
+            .getElementById("searchInput")
+            .value
+            .trim()
+            .toLowerCase();
+
+    if (!query) {
+        renderWorkflows(allWorkflows);
+        return;
+    }
+
+    const filtered = allWorkflows.filter(workflow =>
+        workflow.workItemNumber.toLowerCase().includes(query)
+        || workflow.loanType.toLowerCase().includes(query)
+        || workflow.applicantName.toLowerCase().includes(query)
+        || workflow.status.toLowerCase().includes(query)
+    );
+
+    renderWorkflows(filtered);
+}
+
+function formatAmount(amount) {
+    return Number(amount).toLocaleString("en-US", {
+        style: "currency",
+        currency: "USD",
+        maximumFractionDigits: 0
     });
 }
 
-function formatDate(dateString){
+function formatStatus(status) {
+    if (!status) {
+        return "-";
+    }
 
-    const date = new Date(dateString);
+    return status
+        .replaceAll("_", " ")
+        .toLowerCase()
+        .replace(/\b\w/g, letter => letter.toUpperCase());
+}
 
-    return date.toLocaleDateString(
-        "en-US",
-        {
-            year:"numeric",
-            month:"short",
-            day:"numeric"
-        }
-    );
+function formatDate(value) {
+    if (!value) {
+        return "-";
+    }
+
+    return new Date(value).toLocaleDateString();
+}
+
+function escapeHtml(value) {
+    const element = document.createElement("div");
+    element.textContent = value || "-";
+    return element.innerHTML;
 }

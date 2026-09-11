@@ -1,201 +1,299 @@
+const API_URL = "http://localhost:8080/api/employee";
 
-checkAuthentication("EMPLOYEE");
-console.log("Employee Verification Dashboard Loaded");
+const employeeEmail = localStorage.getItem("secureFlowUserEmail");
+const employeeRole = localStorage.getItem("secureFlowUserRole");
 
-document.addEventListener("DOMContentLoaded", async function () {
-
-    const savedEmail =
-        sessionStorage.getItem("secureFlowUserEmail") ||
-        "employee@secureflow.com";
-
-    const savedName =
-        sessionStorage.getItem("secureFlowUserName") ||
-        getNameFromEmail(savedEmail);
-
-    setUserProfile(savedName);
-
-    await loadEmployeeDashboard(savedEmail);
-});
-
-function getNameFromEmail(email) {
-    if (!email || !email.includes("@")) return "User";
-
-    return email
-        .split("@")[0]
-        .replace(/[0-9._-]/g, " ")
-        .trim()
-        .split(" ")[0] || "User";
+if (!employeeEmail || employeeRole !== "EMPLOYEE") {
+    window.location.href = "../../auth/login/login.html";
 }
 
-function formatShortName(name) {
-    if (!name) return "User";
-    return name.trim().length <= 5 ? name.trim() : name.trim().substring(0, 5);
-}
+document.getElementById("employeeEmail").textContent =
+    employeeEmail || "";
 
-function setUserProfile(name) {
-    const displayName = formatShortName(name);
+async function loadPage() {
+    clearMessage();
 
-    document.getElementById("welcomeText").innerText = `Hi ${displayName}!`;
-    document.getElementById("userAvatar").innerText =
-        displayName.charAt(0).toUpperCase();
-}
-
-async function loadEmployeeDashboard(email) {
     try {
-        const response = await fetch(
-            `http://localhost:8080/api/dashboard/employee?email=${encodeURIComponent(email)}`
-        );
-
-        if (!response.ok) {
-            throw new Error("Failed to fetch dashboard data");
-        }
-
-        const data = await response.json();
-
-        const pending = data.pending || 0;
-        const forwarded = data.approved || 0;
-        const rejected = data.rejected || 0;
-        const total = data.total || 0;
-
-        document.getElementById("pendingCount").innerText = pending;
-        document.getElementById("forwardedCount").innerText = forwarded;
-        document.getElementById("rejectedCount").innerText = rejected;
-
-        document.getElementById("totalApplicationCount").innerText = total;
-        document.getElementById("pendingApplicationCount").innerText = pending;
-        document.getElementById("donutTotalCount").innerText = total;
-
-        document.getElementById("pendingLegend").innerHTML =
-            `<span class="dot pending-dot"></span> Pending - ${pending}`;
-
-        document.getElementById("forwardedLegend").innerHTML =
-            `<span class="dot approved-dot"></span> Forwarded - ${forwarded}`;
-
-        document.getElementById("rejectedLegend").innerHTML =
-            `<span class="dot rejected-dot"></span> Rejected - ${rejected}`;
-
-        const health =
-            total === 0 ? 0 : Math.round((forwarded / total) * 100);
-
-        document.getElementById("workflowHealth").innerText = `${health}%`;
-
-        document.getElementById("teamUpdateText").innerText =
-            pending > 0
-                ? `${pending} applications need employee verification.`
-                : "No pending employee verification items.";
-
+        await Promise.all([
+            loadDashboard(),
+            loadAvailableApplications(),
+            loadAssignedApplications()
+        ]);
     } catch (error) {
-        console.error("Dashboard API Error:", error);
-
-        document.getElementById("teamUpdateText").innerText =
-            "Unable to load dashboard data. Start Spring Boot server.";
+        showMessage(
+            "Unable to load employee data. Check the backend."
+        );
+        console.error(error);
     }
 }
 
-async function quickSearch() {
-    const workItemNumber =
-        document.getElementById("workItemSearch").value.trim();
+async function loadDashboard() {
+    const response = await fetch(
+        `${API_URL}/dashboard?email=${encodeURIComponent(employeeEmail)}`
+    );
 
-    const loanType =
-        document.getElementById("loanTypeSearch").value;
+    if (!response.ok) {
+        throw new Error("Dashboard request failed");
+    }
 
-    const message =
-        document.getElementById("searchMessage");
+    const data = await response.json();
 
-    const savedEmail =
-        sessionStorage.getItem("secureFlowUserEmail") ||
-        "employee@secureflow.com";
+    document.getElementById("availableCount").textContent =
+        data.available;
 
-    message.innerText = "";
+    document.getElementById("assignedCount").textContent =
+        data.assigned;
 
-    if (workItemNumber === "" && loanType === "") {
-        message.innerText = "Enter application ID, work item number, or select loan type.";
+    document.getElementById("reviewCount").textContent =
+        data.underReview;
+
+    document.getElementById("forwardedCount").textContent =
+        data.forwarded;
+
+    document.getElementById("rejectedCount").textContent =
+        data.rejected;
+}
+
+async function loadAvailableApplications() {
+    const response = await fetch(
+        `${API_URL}/applications/available?email=${
+            encodeURIComponent(employeeEmail)
+        }`
+    );
+
+    if (!response.ok) {
+        throw new Error("Available applications request failed");
+    }
+
+    const applications = await response.json();
+
+    renderAvailableApplications(applications);
+}
+
+async function loadAssignedApplications() {
+    const response = await fetch(
+        `${API_URL}/applications?email=${
+            encodeURIComponent(employeeEmail)
+        }`
+    );
+
+    if (!response.ok) {
+        throw new Error("Assigned applications request failed");
+    }
+
+    const applications = await response.json();
+
+    renderAssignedApplications(applications);
+}
+
+function renderAvailableApplications(applications) {
+    const table = document.getElementById("availableTable");
+
+    if (applications.length === 0) {
+        table.innerHTML = `
+            <tr>
+                <td colspan="6" class="empty">
+                    No new applications are waiting for review.
+                </td>
+            </tr>
+        `;
         return;
     }
 
+    table.innerHTML = applications
+        .map(application => `
+            <tr>
+                <td>${escapeHtml(application.workItemNumber)}</td>
+                <td>${escapeHtml(application.applicantName)}</td>
+                <td>${escapeHtml(application.loanType)}</td>
+                <td>${formatAmount(application.loanAmount)}</td>
+                <td>${escapeHtml(application.priority || "-")}</td>
+                <td>
+                    <button
+                        class="action-button review-button"
+                        onclick="startReview(${application.workflowId})"
+                    >
+                        Start Review
+                    </button>
+                </td>
+            </tr>
+        `)
+        .join("");
+}
+
+function renderAssignedApplications(applications) {
+    const table = document.getElementById("assignedTable");
+
+    if (applications.length === 0) {
+        table.innerHTML = `
+            <tr>
+                <td colspan="6" class="empty">
+                    You do not have any assigned applications.
+                </td>
+            </tr>
+        `;
+        return;
+    }
+
+    table.innerHTML = applications
+        .map(application => `
+            <tr>
+                <td>${escapeHtml(application.workItemNumber)}</td>
+                <td>${escapeHtml(application.applicantName)}</td>
+                <td>${escapeHtml(application.loanType)}</td>
+                <td>${formatAmount(application.loanAmount)}</td>
+                <td>
+                    <span class="status">
+                        ${formatStatus(application.status)}
+                    </span>
+                </td>
+                <td>
+                    ${renderActions(application)}
+                </td>
+            </tr>
+        `)
+        .join("");
+}
+
+function renderActions(application) {
+    if (application.status !== "UNDER_REVIEW") {
+        return "-";
+    }
+
+    return `
+        <div class="action-group">
+            <button
+                class="action-button forward-button"
+                onclick="forwardApplication(${application.workflowId})"
+            >
+                Forward
+            </button>
+
+            <button
+                class="action-button reject-button"
+                onclick="rejectApplication(${application.workflowId})"
+            >
+                Reject
+            </button>
+        </div>
+    `;
+}
+
+async function startReview(workflowId) {
+    await performAction(
+        workflowId,
+        "review",
+        "Application assigned to you."
+    );
+}
+
+async function forwardApplication(workflowId) {
+    const confirmed = window.confirm(
+        "Forward this application to the manager?"
+    );
+
+    if (!confirmed) {
+        return;
+    }
+
+    await performAction(
+        workflowId,
+        "forward",
+        "Application forwarded to the manager."
+    );
+}
+
+async function rejectApplication(workflowId) {
+    const confirmed = window.confirm(
+        "Reject this application?"
+    );
+
+    if (!confirmed) {
+        return;
+    }
+
+    await performAction(
+        workflowId,
+        "reject",
+        "Application rejected."
+    );
+}
+
+async function performAction(workflowId, action, successMessage) {
+    clearMessage();
+
     try {
-        const params = new URLSearchParams();
-
-        params.append("email", savedEmail);
-
-        if (workItemNumber !== "") {
-            params.append("query", workItemNumber);
-        }
-
-        if (loanType !== "") {
-            params.append("loanType", loanType);
-        }
-
         const response = await fetch(
-            `http://localhost:8080/api/workflows/search?${params.toString()}`
+            `${API_URL}/applications/${workflowId}/${action}?email=${
+                encodeURIComponent(employeeEmail)
+            }`,
+            {
+                method: "PUT"
+            }
         );
 
         if (!response.ok) {
-            message.innerText = "No application found for your search.";
-            return;
+            const text = await response.text();
+            throw new Error(text || "Action failed");
         }
 
-        const workflow = await response.json();
+        showSuccess(successMessage);
 
-        openWorkflowModal(workflow);
-
+        await loadPage();
     } catch (error) {
-        console.error("Quick Search Error:", error);
-        message.innerText = "Unable to search. Please start Spring Boot server.";
+        showMessage("Unable to update application.");
+        console.error(error);
     }
 }
 
-function openWorkflowModal(workflow) {
-    document.getElementById("modalWorkItem").innerText =
-        workflow.workItemNumber || workflow.applicationId || "-";
-
-    document.getElementById("modalLoanType").innerText =
-        workflow.loanType || "-";
-
-    document.getElementById("modalStatus").innerText =
-        workflow.status || "-";
-
-    document.getElementById("modalApplicant").innerText =
-        workflow.applicantName || workflow.customerName || "-";
-
-    document.getElementById("modalEmail").innerText =
-        workflow.applicantEmail || workflow.customerEmail || "-";
-
-    document.getElementById("modalPhone").innerText =
-        workflow.applicantPhone || workflow.customerPhone || "-";
-
-    document.getElementById("modalAmount").innerText =
-        workflow.loanAmount
-            ? "$" + Number(workflow.loanAmount).toLocaleString()
-            : "-";
-
-    document.getElementById("modalEligibility").innerText =
-        workflow.eligibilityScore || "Not checked";
-
-    document.getElementById("modalRisk").innerText =
-        workflow.eligibilityRisk || "Not checked";
-
-    document.getElementById("modalCreatedDate").innerText =
-        workflow.createdDate
-            ? formatDate(workflow.createdDate)
-            : "-";
-
-    document.getElementById("modalPurpose").innerText =
-        workflow.loanPurpose || "-";
-
-    document.getElementById("workflowModal").classList.add("show");
-}
-
-function closeWorkflowModal() {
-    document.getElementById("workflowModal").classList.remove("show");
-}
-
-function formatDate(dateString) {
-    const date = new Date(dateString);
-
-    return date.toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "short",
-        day: "numeric"
+function formatAmount(amount) {
+    return Number(amount).toLocaleString("en-US", {
+        style: "currency",
+        currency: "USD",
+        maximumFractionDigits: 0
     });
 }
+
+function formatStatus(status) {
+    if (!status) {
+        return "-";
+    }
+
+    return status
+        .replaceAll("_", " ")
+        .toLowerCase()
+        .replace(/\b\w/g, letter => letter.toUpperCase());
+}
+
+function escapeHtml(value) {
+    const element = document.createElement("div");
+    element.textContent = value || "-";
+    return element.innerHTML;
+}
+
+function clearMessage() {
+    const message = document.getElementById("message");
+    message.textContent = "";
+    message.style.color = "#ff8888";
+}
+
+function showMessage(text) {
+    const message = document.getElementById("message");
+    message.textContent = text;
+    message.style.color = "#ff8888";
+}
+
+function showSuccess(text) {
+    const message = document.getElementById("message");
+    message.textContent = text;
+    message.style.color = "#45dfbb";
+}
+
+function logout() {
+    localStorage.removeItem("secureFlowUserEmail");
+    localStorage.removeItem("secureFlowUserRole");
+
+    window.location.href = "../../auth/login/login.html";
+}
+
+loadPage();

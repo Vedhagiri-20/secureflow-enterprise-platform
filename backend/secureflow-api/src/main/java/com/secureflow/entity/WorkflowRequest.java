@@ -1,6 +1,15 @@
 package com.secureflow.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
+import jakarta.persistence.Table;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
@@ -23,6 +32,10 @@ public class WorkflowRequest {
     @ManyToOne
     @JoinColumn(name = "created_by_user_id")
     private User createdByUser;
+
+    @ManyToOne
+    @JoinColumn(name = "assigned_employee_id")
+    private User assignedEmployee;
 
     @ManyToOne
     @JoinColumn(name = "assigned_manager_id")
@@ -55,6 +68,7 @@ public class WorkflowRequest {
     @Column(name = "residential_address")
     private String residentialAddress;
 
+    @Column(name = "priority")
     private String priority;
 
     @Column(name = "current_status")
@@ -65,6 +79,24 @@ public class WorkflowRequest {
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    @PrePersist
+    private void initializeTimestamps() {
+        LocalDateTime now = LocalDateTime.now();
+
+        if (submittedAt == null) {
+            submittedAt = now;
+        }
+
+        if (updatedAt == null) {
+            updatedAt = now;
+        }
+    }
+
+    @PreUpdate
+    private void updateTimestamp() {
+        updatedAt = LocalDateTime.now();
+    }
 
     public Long getWorkflowId() {
         return workflowId;
@@ -82,124 +114,136 @@ public class WorkflowRequest {
         return loanType;
     }
 
-    public User getCreatedByUser() {
-        return createdByUser;
-    }
-
-    public User getAssignedManager() {
-        return assignedManager;
-    }
-
-    public String getApplicantName() {
-        return applicantName;
-    }
-
-    public String getApplicantEmail() {
-        return applicantEmail;
-    }
-
-    public String getApplicantPhone() {
-        return applicantPhone;
-    }
-
-    public BigDecimal getLoanAmount() {
-        return loanAmount;
-    }
-
-    public String getLoanPurpose() {
-        return loanPurpose;
-    }
-
-    public String getEmploymentType() {
-        return employmentType;
-    }
-
-    public String getGovernmentIdType() {
-        return governmentIdType;
-    }
-
-    public String getGovernmentIdNumber() {
-        return governmentIdNumber;
-    }
-
-    public String getResidentialAddress() {
-        return residentialAddress;
-    }
-
-    public String getPriority() {
-        return priority;
-    }
-
-    public String getCurrentStatus() {
-        return currentStatus;
-    }
-
-    public LocalDateTime getSubmittedAt() {
-        return submittedAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
     public void setLoanType(LoanType loanType) {
         this.loanType = loanType;
+    }
+
+    public User getCreatedByUser() {
+        return createdByUser;
     }
 
     public void setCreatedByUser(User createdByUser) {
         this.createdByUser = createdByUser;
     }
 
+    public User getAssignedEmployee() {
+        return assignedEmployee;
+    }
+
+    public void setAssignedEmployee(User assignedEmployee) {
+        this.assignedEmployee = assignedEmployee;
+    }
+
+    public User getAssignedManager() {
+        return assignedManager;
+    }
+
     public void setAssignedManager(User assignedManager) {
         this.assignedManager = assignedManager;
+    }
+
+    public String getApplicantName() {
+        return applicantName;
     }
 
     public void setApplicantName(String applicantName) {
         this.applicantName = applicantName;
     }
 
+    public String getApplicantEmail() {
+        return applicantEmail;
+    }
+
     public void setApplicantEmail(String applicantEmail) {
         this.applicantEmail = applicantEmail;
+    }
+
+    public String getApplicantPhone() {
+        return applicantPhone;
     }
 
     public void setApplicantPhone(String applicantPhone) {
         this.applicantPhone = applicantPhone;
     }
 
+    public BigDecimal getLoanAmount() {
+        return loanAmount;
+    }
+
     public void setLoanAmount(BigDecimal loanAmount) {
         this.loanAmount = loanAmount;
+    }
+
+    public String getLoanPurpose() {
+        return loanPurpose;
     }
 
     public void setLoanPurpose(String loanPurpose) {
         this.loanPurpose = loanPurpose;
     }
 
+    public String getEmploymentType() {
+        return employmentType;
+    }
+
     public void setEmploymentType(String employmentType) {
         this.employmentType = employmentType;
+    }
+
+    public String getGovernmentIdType() {
+        return governmentIdType;
     }
 
     public void setGovernmentIdType(String governmentIdType) {
         this.governmentIdType = governmentIdType;
     }
 
+    public String getGovernmentIdNumber() {
+        return governmentIdNumber;
+    }
+
     public void setGovernmentIdNumber(String governmentIdNumber) {
         this.governmentIdNumber = governmentIdNumber;
+    }
+
+    public String getResidentialAddress() {
+        return residentialAddress;
     }
 
     public void setResidentialAddress(String residentialAddress) {
         this.residentialAddress = residentialAddress;
     }
 
+    public String getPriority() {
+        return priority;
+    }
+
     public void setPriority(String priority) {
         this.priority = priority;
+    }
+
+    public String getCurrentStatus() {
+        return currentStatus;
     }
 
     public void setCurrentStatus(String currentStatus) {
         this.currentStatus = currentStatus;
     }
 
+    public void setCurrentStatus(WorkflowStatus currentStatus) {
+        this.currentStatus = currentStatus == null ? null : currentStatus.name();
+    }
+
+    public LocalDateTime getSubmittedAt() {
+        return submittedAt;
+    }
+
     public void setSubmittedAt(LocalDateTime submittedAt) {
         this.submittedAt = submittedAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
     }
 
     public void setUpdatedAt(LocalDateTime updatedAt) {

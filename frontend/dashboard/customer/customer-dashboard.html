@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Dashboard | SecureFlow</title>
+    <link rel="stylesheet" href="customer-dashboard.css">
+</head>
+<body>
+
+<div class="page">
+
+    <header class="topbar">
+        <div>
+            <h2>SecureFlow Enterprise</h2>
+            <p>Customer Loan Portal</p>
+        </div>
+
+        <div class="topbar-actions">
+            <span id="customerEmail"></span>
+            <button type="button" onclick="logout()">Logout</button>
+        </div>
+    </header>
+
+    <main class="content">
+
+        <section class="welcome">
+
+            <div>
+                <span class="badge">Customer Dashboard</span>
+
+                <h1>My Loan Applications</h1>
+
+                <p>
+                    Check your eligibility, apply for a loan, and track
+                    your submitted applications.
+                </p>
+            </div>
+
+            <a
+                class="apply-button"
+                href="../../customer/eligibility/eligibility.html"
+            >
+                Check Eligibility
+            </a>
+
+            <a
+                class="apply-button"
+                href="../../workflow/create/create-workflow.html"
+            >
+                Apply for Loan
+            </a>
+
+        </section>
+
+        <section class="stats">
+
+            <div class="stat-card">
+                <span>Total</span>
+                <strong id="totalCount">0</strong>
+            </div>
+
+            <div class="stat-card">
+                <span>Submitted</span>
+                <strong id="submittedCount">0</strong>
+            </div>
+
+            <div class="stat-card">
+                <span>Under Review</span>
+                <strong id="reviewCount">0</strong>
+            </div>
+
+            <div class="stat-card">
+                <span>Approved</span>
+                <strong id="approvedCount">0</strong>
+            </div>
+
+            <div class="stat-card">
+                <span>Rejected</span>
+                <strong id="rejectedCount">0</strong>
+            </div>
+
+        </section>
+
+        <section class="applications-card">
+
+            <div class="section-header">
+
+                <div>
+                    <h2>Applications</h2>
+                    <p>Your most recent loan applications.</p>
+                </div>
+
+                <button
+                    type="button"
+                    class="refresh-button"
+                    onclick="loadPage()"
+                >
+                    Refresh
+                </button>
+
+            </div>
+
+            <p id="message"></p>
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+                    <tr>
+                        <th>Application</th>
+                        <th>Loan Type</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                        <th>Submitted</th>
+                        <th>Action</th>
+                    </tr>
+                    </thead>
+
+                    <tbody id="applicationTable">
+
+                    <tr>
+                        <td colspan="6" class="empty">
+                            Loading applications...
+                        </td>
+                    </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+<script src="customer-dashboard.js"></script>
+
+</body>
+</html>

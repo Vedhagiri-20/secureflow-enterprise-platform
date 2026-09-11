@@ -1,33 +1,36 @@
 package com.secureflow.dto;
 
-public class EmployeeDashboardResponse {
+public class CustomerDashboardResponse {
 
-    private final long available;
-    private final long assigned;
+    private final long total;
+    private final long submitted;
     private final long underReview;
     private final long forwarded;
+    private final long approved;
     private final long rejected;
 
-    public EmployeeDashboardResponse(
-            long available,
-            long assigned,
+    public CustomerDashboardResponse(
+            long total,
+            long submitted,
             long underReview,
             long forwarded,
+            long approved,
             long rejected
     ) {
-        this.available = available;
-        this.assigned = assigned;
+        this.total = total;
+        this.submitted = submitted;
         this.underReview = underReview;
         this.forwarded = forwarded;
+        this.approved = approved;
         this.rejected = rejected;
     }
 
-    public long getAvailable() {
-        return available;
+    public long getTotal() {
+        return total;
     }
 
-    public long getAssigned() {
-        return assigned;
+    public long getSubmitted() {
+        return submitted;
     }
 
     public long getUnderReview() {
@@ -36,6 +39,10 @@ public class EmployeeDashboardResponse {
 
     public long getForwarded() {
         return forwarded;
+    }
+
+    public long getApproved() {
+        return approved;
     }
 
     public long getRejected() {

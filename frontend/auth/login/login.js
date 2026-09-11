@@ -1,105 +1,98 @@
 async function login(event) {
-
     event.preventDefault();
 
     const email = document.getElementById("email").value.trim();
     const password = document.getElementById("password").value.trim();
-    const error = document.getElementById("error-message");
+    const errorMessage = document.getElementById("error-message");
 
-    error.innerText = "";
+    errorMessage.textContent = "";
 
-    if (email === "") {
-        error.innerText = "Email address is mandatory.";
+    if (!email) {
+        errorMessage.textContent = "Email address is mandatory.";
         return;
     }
 
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
     if (!emailPattern.test(email)) {
-        error.innerText = "Please enter a valid email address.";
+        errorMessage.textContent =
+            "Please enter a valid email address.";
         return;
     }
 
-    if (password === "") {
-        error.innerText = "Password is mandatory.";
+    if (!password) {
+        errorMessage.textContent = "Password is mandatory.";
         return;
     }
 
     try {
-
-        const response = await fetch("http://localhost:8080/api/auth/login", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                email,
-                password
-            })
-        });
+        const response = await fetch(
+            "http://localhost:8080/api/auth/login",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    email: email,
+                    password: password
+                })
+            }
+        );
 
         const data = await response.json();
 
         if (data.message !== "Login Successful") {
-            error.innerText = data.message;
+            errorMessage.textContent =
+                data.message || "Login failed.";
             return;
         }
 
-        sessionStorage.setItem("secureFlowUserEmail", email);
-        sessionStorage.setItem("secureFlowUserRole", data.role);
-        sessionStorage.setItem("isLoggedIn", "true");
+        localStorage.setItem("secureFlowUserEmail", email);
+        localStorage.setItem("secureFlowUserRole", data.role);
 
-if (data.name) {
-    sessionStorage.setItem("secureFlowUserName", data.name);
-}
-
-        switch (data.role) {
-
-            case "CUSTOMER":
-                window.location.href =
-                    "../../customer/customer-dashboard.html";
-                break;
-
-            case "EMPLOYEE":
-                window.location.href =
-                    "../../dashboard/employee/employee-dashboard.html";
-                break;
-
-            case "MANAGER":
-                window.location.href =
-                    "../../dashboard/manager/manager-dashboard.html";
-                break;
-
-            case "ADMIN":
-                window.location.href =
-                    "../../dashboard/admin/admin-dashboard.html";
-                break;
-
-            default:
-                error.innerText = "Unknown user role.";
+        if (data.role === "CUSTOMER") {
+            window.location.href =
+                "../../dashboard/customer/customer-dashboard.html";
+            return;
         }
 
-    }
-    catch (errorObj) {
+        if (data.role === "EMPLOYEE") {
+            window.location.href =
+                "../../dashboard/employee/employee-dashboard.html";
+            return;
+        }
 
-        error.innerText =
+        if (data.role === "MANAGER") {
+            window.location.href =
+                "../../dashboard/manager/manager-dashboard.html";
+            return;
+        }
+
+        if (data.role === "ADMIN") {
+            window.location.href =
+                "../../dashboard/admin/admin-dashboard.html";
+            return;
+        }
+
+        errorMessage.textContent = "Unknown user role.";
+    } catch (error) {
+        errorMessage.textContent =
             "Backend server is not running. Please start Spring Boot.";
 
-        console.error(errorObj);
+        console.error(error);
     }
 }
 
 function togglePassword() {
-
     const password = document.getElementById("password");
-    const toggleBtn = document.querySelector(".toggle-btn");
+    const toggleButton = document.querySelector(".toggle-btn");
 
     if (password.type === "password") {
         password.type = "text";
-        toggleBtn.innerText = "Hide";
-    }
-    else {
+        toggleButton.textContent = "Hide";
+    } else {
         password.type = "password";
-        toggleBtn.innerText = "Show";
+        toggleButton.textContent = "Show";
     }
 }

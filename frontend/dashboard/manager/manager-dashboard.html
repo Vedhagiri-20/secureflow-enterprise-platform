@@ -3,129 +3,120 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manager Dashboard</title>
-
+    <title>Manager Dashboard | SecureFlow</title>
     <link rel="stylesheet" href="manager-dashboard.css">
-
 </head>
 <body>
 
-<div class="sidebar">
+<div class="page">
 
-    <h2>Manager Panel</h2>
+    <header class="topbar">
 
-    <ul>
+        <div>
+            <h2>SecureFlow Enterprise</h2>
+            <p>Manager Approval Workspace</p>
+        </div>
 
-        <li>
-            <a href="manager-dashboard.html">
-                Dashboard
-            </a>
-        </li>
+        <div class="user-area">
+            <span id="managerEmail"></span>
 
-        <li>
-            <a href="../../workflow/pending/pending-approvals.html">
-                Pending Approvals
-            </a>
-        </li>
-
-        <li>
-            <a href="../../workflow/details/workflow-details.html">
-                Workflow Details
-            </a>
-        </li>
-
-        <li>
-            <a href="../../audit/audit-log.html">
-                Audit Logs
-            </a>
-        </li>
-
-        <li>
-            <a href="../../notifications/notifications.html">
-                Notifications
-            </a>
-        </li>
-
-        <li>
-            <a href="../../index.html">
+            <button type="button" onclick="logout()">
                 Logout
-            </a>
-        </li>
-
-    </ul>
-
-</div>
-
-<div class="main-content">
-
-    <div class="topbar">
-
-        <h1>Manager Dashboard</h1>
-
-    </div>
-
-    <div class="cards">
-
-        <div class="card">
-            <h3>Total Requests</h3>
-            <p>24</p>
+            </button>
         </div>
 
-        <div class="card pending">
-            <h3>Pending</h3>
-            <p>8</p>
-        </div>
+    </header>
 
-        <div class="card approved">
-            <h3>Approved</h3>
-            <p>12</p>
-        </div>
+    <main>
 
-        <div class="card rejected">
-            <h3>Rejected</h3>
-            <p>4</p>
-        </div>
+        <section class="intro">
 
-    </div>
+            <div>
+                <span class="badge">Manager</span>
 
-    <div class="table-section">
+                <h1>Loan Approvals</h1>
 
-        <h2>Pending Approval Requests</h2>
+                <p>
+                    Review applications forwarded by employees and make
+                    the final decision.
+                </p>
+            </div>
 
-        <table>
+            <button
+                type="button"
+                class="refresh-button"
+                onclick="loadPage()"
+            >
+                Refresh
+            </button>
 
-            <thead>
+        </section>
 
-            <tr>
-                <th>ID</th>
-                <th>Employee</th>
-                <th>Workflow</th>
-                <th>Status</th>
-            </tr>
 
-            </thead>
+        <section class="stats">
 
-            <tbody>
+            <div class="stat-card">
+                <span>Awaiting Approval</span>
+                <strong id="awaitingCount">0</strong>
+            </div>
 
-            <tr>
-                <td>#WF101</td>
-                <td>Ved</td>
-                <td>Bank Verification</td>
-                <td>Pending</td>
-            </tr>
+            <div class="stat-card">
+                <span>Approved</span>
+                <strong id="approvedCount">0</strong>
+            </div>
 
-            <tr>
-                <td>#WF102</td>
-                <td>Rahul</td>
-                <td>Insurance Approval</td>
-                <td>Approved</td>
-            </tr>
+            <div class="stat-card">
+                <span>Rejected</span>
+                <strong id="rejectedCount">0</strong>
+            </div>
 
-            </tbody>
+        </section>
 
-        </table>
 
-    </div>
+        <p id="message"></p>
+
+
+        <section class="applications-card">
+
+            <div class="section-header">
+
+                <div>
+                    <h2>Pending Applications</h2>
+
+                    <p>
+                        Applications forwarded by employees for final
+                        approval.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+                    <tr>
+                        <th>Application</th>
+                        <th>Applicant</th>
+                        <th>Loan Type</th>
+                        <th>Amount</th>
+                        <th>Employee</th>
+                        <th>Priority</th>
+                        <th>Action</th>
+                    </tr>
+                    </thead>
+
+                    <tbody id="applicationTable"></tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+    </main>
 
 </div>
 
