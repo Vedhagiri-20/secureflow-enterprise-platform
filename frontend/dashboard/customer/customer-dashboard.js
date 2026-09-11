@@ -1,17 +1,36 @@
-const API_URL = "http://localhost:8080/api/customer";
+const API_URL =
+    "http://localhost:8080/api/customer";
 
-const customerEmail = localStorage.getItem("secureFlowUserEmail");
-const customerRole = localStorage.getItem("secureFlowUserRole");
+const customerEmail =
+    localStorage.getItem(
+        "secureFlowUserEmail"
+    );
 
-if (!customerEmail || customerRole !== "CUSTOMER") {
-    window.location.href = "../../auth/login/login.html";
+const customerRole =
+    localStorage.getItem(
+        "secureFlowUserRole"
+    );
+
+const token =
+    localStorage.getItem(
+        "secureFlowToken"
+    );
+
+if (!customerEmail
+        || customerRole !== "CUSTOMER"
+        || !token) {
+
+    goToLogin();
 }
 
-document.getElementById("customerEmail").textContent =
-    customerEmail || "";
+document.getElementById(
+    "customerEmail"
+).textContent = customerEmail || "";
 
 async function loadPage() {
-    document.getElementById("message").textContent = "";
+    document.getElementById(
+        "message"
+    ).textContent = "";
 
     try {
         await Promise.all([
@@ -19,7 +38,9 @@ async function loadPage() {
             loadApplications()
         ]);
     } catch (error) {
-        document.getElementById("message").textContent =
+        document.getElementById(
+            "message"
+        ).textContent =
             "Unable to load customer data.";
 
         console.error(error);
@@ -28,47 +49,72 @@ async function loadPage() {
 
 async function loadDashboard() {
     const response = await fetch(
-        `${API_URL}/dashboard?email=${encodeURIComponent(customerEmail)}`
+        `${API_URL}/dashboard`,
+        {
+            headers: authHeaders()
+        }
     );
 
+    checkAuthorization(response);
+
     if (!response.ok) {
-        throw new Error("Dashboard request failed");
+        throw new Error(
+            "Dashboard request failed"
+        );
     }
 
-    const data = await response.json();
+    const data =
+        await response.json();
 
-    document.getElementById("totalCount").textContent =
-        data.total;
+    document.getElementById(
+        "totalCount"
+    ).textContent = data.total;
 
-    document.getElementById("submittedCount").textContent =
-        data.submitted;
+    document.getElementById(
+        "submittedCount"
+    ).textContent = data.submitted;
 
-    document.getElementById("reviewCount").textContent =
+    document.getElementById(
+        "reviewCount"
+    ).textContent =
         data.underReview + data.forwarded;
 
-    document.getElementById("approvedCount").textContent =
-        data.approved;
+    document.getElementById(
+        "approvedCount"
+    ).textContent = data.approved;
 
-    document.getElementById("rejectedCount").textContent =
-        data.rejected;
+    document.getElementById(
+        "rejectedCount"
+    ).textContent = data.rejected;
 }
 
 async function loadApplications() {
     const response = await fetch(
-        `${API_URL}/applications?email=${encodeURIComponent(customerEmail)}`
+        `${API_URL}/applications`,
+        {
+            headers: authHeaders()
+        }
     );
 
+    checkAuthorization(response);
+
     if (!response.ok) {
-        throw new Error("Applications request failed");
+        throw new Error(
+            "Applications request failed"
+        );
     }
 
-    const applications = await response.json();
+    const applications =
+        await response.json();
 
     renderApplications(applications);
 }
 
 function renderApplications(applications) {
-    const table = document.getElementById("applicationTable");
+    const table =
+        document.getElementById(
+            "applicationTable"
+        );
 
     if (applications.length === 0) {
         table.innerHTML = `
@@ -78,49 +124,80 @@ function renderApplications(applications) {
                 </td>
             </tr>
         `;
-
         return;
     }
 
     table.innerHTML = applications
         .map(application => `
             <tr>
-
                 <td>
-                    ${escapeHtml(application.workItemNumber || "-")}
+                    ${escapeHtml(
+                        application.workItemNumber || "-"
+                    )}
                 </td>
 
                 <td>
-                    ${escapeHtml(application.loanType || "-")}
+                    ${escapeHtml(
+                        application.loanType || "-"
+                    )}
                 </td>
 
                 <td>
-                    ${formatAmount(application.loanAmount)}
+                    ${formatAmount(
+                        application.loanAmount
+                    )}
                 </td>
 
                 <td>
-                    <span class="status ${statusClass(application.status)}">
-                        ${formatStatus(application.status)}
+                    <span class="status ${
+                        statusClass(
+                            application.status
+                        )
+                    }">
+                        ${formatStatus(
+                            application.status
+                        )}
                     </span>
                 </td>
 
                 <td>
-                    ${formatDate(application.submittedAt)}
+                    ${formatDate(
+                        application.submittedAt
+                    )}
                 </td>
 
                 <td>
                     <button
                         type="button"
                         class="refresh-button"
-                        onclick="viewApplication(${application.workflowId})"
+                        onclick="viewApplication(
+                            ${application.workflowId}
+                        )"
                     >
                         View
                     </button>
                 </td>
-
             </tr>
         `)
         .join("");
+}
+
+function authHeaders() {
+    return {
+        "Authorization":
+            `Bearer ${token}`
+    };
+}
+
+function checkAuthorization(response) {
+    if (response.status === 401
+            || response.status === 403) {
+
+        logout();
+        throw new Error(
+            "Session expired"
+        );
+    }
 }
 
 function viewApplication(workflowId) {
@@ -129,15 +206,20 @@ function viewApplication(workflowId) {
 }
 
 function formatAmount(amount) {
-    if (amount === null || amount === undefined) {
+    if (amount === null
+            || amount === undefined) {
         return "-";
     }
 
-    return Number(amount).toLocaleString("en-US", {
-        style: "currency",
-        currency: "USD",
-        maximumFractionDigits: 0
-    });
+    return Number(amount)
+        .toLocaleString(
+            "en-US",
+            {
+                style: "currency",
+                currency: "USD",
+                maximumFractionDigits: 0
+            }
+        );
 }
 
 function formatStatus(status) {
@@ -148,7 +230,10 @@ function formatStatus(status) {
     return status
         .replaceAll("_", " ")
         .toLowerCase()
-        .replace(/\b\w/g, letter => letter.toUpperCase());
+        .replace(
+            /\b\w/g,
+            letter => letter.toUpperCase()
+        );
 }
 
 function statusClass(status) {
@@ -160,10 +245,8 @@ function statusClass(status) {
         return "rejected";
     }
 
-    if (
-        status === "UNDER_REVIEW" ||
-        status === "FORWARDED_TO_MANAGER"
-    ) {
+    if (status === "UNDER_REVIEW"
+            || status === "FORWARDED_TO_MANAGER") {
         return "review";
     }
 
@@ -175,19 +258,37 @@ function formatDate(value) {
         return "-";
     }
 
-    return new Date(value).toLocaleString();
+    return new Date(value)
+        .toLocaleString();
 }
 
 function escapeHtml(value) {
-    const element = document.createElement("div");
-    element.textContent = value;
+    const element =
+        document.createElement("div");
+
+    element.textContent =
+        value || "-";
+
     return element.innerHTML;
 }
 
 function logout() {
-    localStorage.removeItem("secureFlowUserEmail");
-    localStorage.removeItem("secureFlowUserRole");
+    localStorage.removeItem(
+        "secureFlowUserEmail"
+    );
 
+    localStorage.removeItem(
+        "secureFlowUserRole"
+    );
+
+    localStorage.removeItem(
+        "secureFlowToken"
+    );
+
+    goToLogin();
+}
+
+function goToLogin() {
     window.location.href =
         "../../auth/login/login.html";
 }

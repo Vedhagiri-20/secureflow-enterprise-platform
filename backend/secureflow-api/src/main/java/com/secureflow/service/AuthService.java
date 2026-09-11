@@ -4,19 +4,27 @@ import com.secureflow.dto.LoginRequest;
 import com.secureflow.dto.LoginResponse;
 import com.secureflow.entity.User;
 import com.secureflow.repository.UserRepository;
+import com.secureflow.security.JwtService;
 import java.util.Optional;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 public class AuthService {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
-    private final BCryptPasswordEncoder passwordEncoder =
-            new BCryptPasswordEncoder();
+    public AuthService(
+            UserRepository userRepository,
+            PasswordEncoder passwordEncoder,
+            JwtService jwtService
+    ) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.jwtService = jwtService;
+    }
 
     public LoginResponse login(LoginRequest request) {
         if (request.getEmail() == null
@@ -30,7 +38,8 @@ public class AuthService {
             );
         }
 
-        String email = request.getEmail().trim();
+        String email =
+                request.getEmail().trim();
 
         Optional<User> userOptional =
                 userRepository.findByEmail(email);
@@ -42,9 +51,12 @@ public class AuthService {
             );
         }
 
-        User user = userOptional.get();
+        User user =
+                userOptional.get();
 
-        if (Boolean.FALSE.equals(user.getIsActive())) {
+        if (Boolean.FALSE.equals(
+                user.getIsActive()
+        )) {
             return new LoginResponse(
                     "User is inactive",
                     null
@@ -66,9 +78,14 @@ public class AuthService {
                 request.getPassword()
         );
 
+        String token =
+                jwtService.generateToken(user);
+
         return new LoginResponse(
                 "Login Successful",
-                user.getRole().getRoleName()
+                user.getRole().getRoleName(),
+                token,
+                user.getEmail()
         );
     }
 
@@ -94,7 +111,9 @@ public class AuthService {
             User user,
             String password
     ) {
-        if (isBcryptPassword(user.getPasswordHash())) {
+        if (isBcryptPassword(
+                user.getPasswordHash()
+        )) {
             return;
         }
 
@@ -105,7 +124,9 @@ public class AuthService {
         userRepository.save(user);
     }
 
-    private boolean isBcryptPassword(String password) {
+    private boolean isBcryptPassword(
+            String password
+    ) {
         if (password == null) {
             return false;
         }

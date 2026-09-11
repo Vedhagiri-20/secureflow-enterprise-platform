@@ -4,56 +4,67 @@ import com.secureflow.dto.ManagerApplicationResponse;
 import com.secureflow.dto.ManagerDashboardResponse;
 import com.secureflow.service.ManagerService;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/manager")
-@CrossOrigin(origins = "*")
 public class ManagerController {
 
-    @Autowired
-    private ManagerService managerService;
+    private final ManagerService managerService;
+
+    public ManagerController(
+            ManagerService managerService
+    ) {
+        this.managerService =
+                managerService;
+    }
 
     @GetMapping("/dashboard")
     public ManagerDashboardResponse getDashboard(
-            @RequestParam String email
+            Authentication authentication
     ) {
-        return managerService.getDashboard(email);
+        return managerService
+                .getDashboard(
+                        authentication.getName()
+                );
     }
 
     @GetMapping("/applications")
     public List<ManagerApplicationResponse> getApplications(
-            @RequestParam String email
+            Authentication authentication
     ) {
-        return managerService.getPendingApplications(email);
+        return managerService
+                .getPendingApplications(
+                        authentication.getName()
+                );
     }
 
     @PutMapping("/applications/{workflowId}/approve")
     public ManagerApplicationResponse approveApplication(
             @PathVariable Long workflowId,
-            @RequestParam String email
+            Authentication authentication
     ) {
-        return managerService.approveApplication(
-                workflowId,
-                email
-        );
+        return managerService
+                .approveApplication(
+                        workflowId,
+                        authentication.getName()
+                );
     }
 
     @PutMapping("/applications/{workflowId}/reject")
     public ManagerApplicationResponse rejectApplication(
             @PathVariable Long workflowId,
-            @RequestParam String email
+            Authentication authentication
     ) {
-        return managerService.rejectApplication(
-                workflowId,
-                email
-        );
+        return managerService
+                .rejectApplication(
+                        workflowId,
+                        authentication.getName()
+                );
     }
 }

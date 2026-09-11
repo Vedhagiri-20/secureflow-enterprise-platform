@@ -1,18 +1,29 @@
 async function login(event) {
     event.preventDefault();
 
-    const email = document.getElementById("email").value.trim();
-    const password = document.getElementById("password").value.trim();
-    const errorMessage = document.getElementById("error-message");
+    const email =
+        document.getElementById("email")
+            .value
+            .trim();
+
+    const password =
+        document.getElementById("password")
+            .value
+            .trim();
+
+    const errorMessage =
+        document.getElementById("error-message");
 
     errorMessage.textContent = "";
 
     if (!email) {
-        errorMessage.textContent = "Email address is mandatory.";
+        errorMessage.textContent =
+            "Email address is mandatory.";
         return;
     }
 
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+    const emailPattern =
+        /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
     if (!emailPattern.test(email)) {
         errorMessage.textContent =
@@ -21,7 +32,8 @@ async function login(event) {
     }
 
     if (!password) {
-        errorMessage.textContent = "Password is mandatory.";
+        errorMessage.textContent =
+            "Password is mandatory.";
         return;
     }
 
@@ -31,7 +43,8 @@ async function login(event) {
             {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type":
+                        "application/json"
                 },
                 body: JSON.stringify({
                     email: email,
@@ -40,16 +53,31 @@ async function login(event) {
             }
         );
 
-        const data = await response.json();
+        const data =
+            await response.json();
 
-        if (data.message !== "Login Successful") {
+        if (data.message !== "Login Successful"
+                || !data.token) {
+
             errorMessage.textContent =
                 data.message || "Login failed.";
             return;
         }
 
-        localStorage.setItem("secureFlowUserEmail", email);
-        localStorage.setItem("secureFlowUserRole", data.role);
+        localStorage.setItem(
+            "secureFlowUserEmail",
+            data.email || email
+        );
+
+        localStorage.setItem(
+            "secureFlowUserRole",
+            data.role
+        );
+
+        localStorage.setItem(
+            "secureFlowToken",
+            data.token
+        );
 
         if (data.role === "CUSTOMER") {
             window.location.href =
@@ -75,18 +103,23 @@ async function login(event) {
             return;
         }
 
-        errorMessage.textContent = "Unknown user role.";
+        errorMessage.textContent =
+            "Unknown user role.";
+
     } catch (error) {
         errorMessage.textContent =
-            "Backend server is not running. Please start Spring Boot.";
+            "Backend server is not running.";
 
         console.error(error);
     }
 }
 
 function togglePassword() {
-    const password = document.getElementById("password");
-    const toggleButton = document.querySelector(".toggle-btn");
+    const password =
+        document.getElementById("password");
+
+    const toggleButton =
+        document.querySelector(".toggle-btn");
 
     if (password.type === "password") {
         password.type = "text";

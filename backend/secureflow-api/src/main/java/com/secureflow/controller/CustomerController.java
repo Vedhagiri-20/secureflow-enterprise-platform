@@ -7,70 +7,81 @@ import com.secureflow.dto.CustomerDashboardResponse;
 import com.secureflow.dto.WorkflowHistoryResponse;
 import com.secureflow.service.WorkflowService;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/customer")
-@CrossOrigin(origins = "*")
 public class CustomerController {
 
-    @Autowired
-    private WorkflowService workflowService;
+    private final WorkflowService workflowService;
+
+    public CustomerController(
+            WorkflowService workflowService
+    ) {
+        this.workflowService =
+                workflowService;
+    }
 
     @PostMapping("/applications")
     public ApplicationDetailResponse createApplication(
-            @RequestBody CreateApplicationRequest request
+            @RequestBody CreateApplicationRequest request,
+            Authentication authentication
     ) {
-        return workflowService.createApplication(request);
+        request.setCustomerEmail(
+                authentication.getName()
+        );
+
+        return workflowService
+                .createApplication(request);
     }
 
     @GetMapping("/applications")
     public List<ApplicationSummaryResponse> getApplications(
-            @RequestParam String email
+            Authentication authentication
     ) {
         return workflowService
-                .getCustomerApplications(email);
+                .getCustomerApplications(
+                        authentication.getName()
+                );
     }
 
     @GetMapping("/applications/{workflowId}")
     public ApplicationDetailResponse getApplication(
             @PathVariable Long workflowId,
-            @RequestParam String email
+            Authentication authentication
     ) {
         return workflowService
                 .getCustomerApplication(
                         workflowId,
-                        email
+                        authentication.getName()
                 );
     }
 
-    @GetMapping(
-            "/applications/{workflowId}/history"
-    )
+    @GetMapping("/applications/{workflowId}/history")
     public List<WorkflowHistoryResponse> getHistory(
             @PathVariable Long workflowId,
-            @RequestParam String email
+            Authentication authentication
     ) {
         return workflowService
                 .getCustomerApplicationHistory(
                         workflowId,
-                        email
+                        authentication.getName()
                 );
     }
 
     @GetMapping("/dashboard")
     public CustomerDashboardResponse getDashboard(
-            @RequestParam String email
+            Authentication authentication
     ) {
         return workflowService
-                .getCustomerDashboard(email);
+                .getCustomerDashboard(
+                        authentication.getName()
+                );
     }
 }

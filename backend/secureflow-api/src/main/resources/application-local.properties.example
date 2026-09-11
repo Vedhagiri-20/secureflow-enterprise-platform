@@ -1,1 +1,3 @@
 spring.datasource.password=your_postgresql_password
+secureflow.jwt.secret=replace_with_a_base64_256_bit_secret
+secureflow.jwt.expiration-ms=28800000

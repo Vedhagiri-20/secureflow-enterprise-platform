@@ -12,51 +12,83 @@ import com.secureflow.dto.LoginResponse;
 import com.secureflow.entity.Role;
 import com.secureflow.entity.User;
 import com.secureflow.repository.UserRepository;
+import com.secureflow.security.JwtService;
 import com.secureflow.service.AuthService;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 class AuthServiceTest {
 
-    @Mock
     private UserRepository userRepository;
-
-    @InjectMocks
+    private JwtService jwtService;
     private AuthService authService;
-
     private User user;
     private Role role;
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
+        userRepository =
+                mock(UserRepository.class);
 
-        user = mock(User.class);
-        role = mock(Role.class);
+        jwtService =
+                mock(JwtService.class);
 
-        when(user.getIsActive()).thenReturn(true);
-        when(user.getRole()).thenReturn(role);
-        when(role.getRoleName()).thenReturn("CUSTOMER");
+        PasswordEncoder passwordEncoder =
+                new BCryptPasswordEncoder();
+
+        authService =
+                new AuthService(
+                        userRepository,
+                        passwordEncoder,
+                        jwtService
+                );
+
+        user =
+                mock(User.class);
+
+        role =
+                mock(Role.class);
+
+        when(user.getIsActive())
+                .thenReturn(true);
+
+        when(user.getRole())
+                .thenReturn(role);
+
+        when(user.getEmail())
+                .thenReturn(
+                        "customer@test.com"
+                );
+
+        when(role.getRoleName())
+                .thenReturn("CUSTOMER");
+
+        when(jwtService.generateToken(user))
+                .thenReturn("test-token");
     }
 
     @Test
-    void loginAcceptsExistingPlainTextPasswordAndUpgradesIt() {
-        when(user.getPasswordHash()).thenReturn("password123");
+    void loginAcceptsPlainTextPasswordAndReturnsToken() {
+        when(user.getPasswordHash())
+                .thenReturn("password123");
 
-        when(userRepository.findByEmail("customer@test.com"))
-                .thenReturn(Optional.of(user));
+        when(userRepository.findByEmail(
+                "customer@test.com"
+        ))
+                .thenReturn(
+                        Optional.of(user)
+                );
 
-        LoginResponse response = authService.login(
-                request(
-                        "customer@test.com",
-                        "password123"
-                )
-        );
+        LoginResponse response =
+                authService.login(
+                        request(
+                                "customer@test.com",
+                                "password123"
+                        )
+                );
 
         assertEquals(
                 "Login Successful",
@@ -68,8 +100,18 @@ class AuthServiceTest {
                 response.getRole()
         );
 
-        verify(user).setPasswordHash(anyString());
-        verify(userRepository).save(user);
+        assertEquals(
+                "test-token",
+                response.getToken()
+        );
+
+        verify(user)
+                .setPasswordHash(
+                        anyString()
+                );
+
+        verify(userRepository)
+                .save(user);
     }
 
     @Test
@@ -78,42 +120,63 @@ class AuthServiceTest {
                 new BCryptPasswordEncoder();
 
         String hash =
-                encoder.encode("password123");
-
-        when(user.getPasswordHash()).thenReturn(hash);
-
-        when(userRepository.findByEmail("customer@test.com"))
-                .thenReturn(Optional.of(user));
-
-        LoginResponse response = authService.login(
-                request(
-                        "customer@test.com",
+                encoder.encode(
                         "password123"
-                )
-        );
+                );
+
+        when(user.getPasswordHash())
+                .thenReturn(hash);
+
+        when(userRepository.findByEmail(
+                "customer@test.com"
+        ))
+                .thenReturn(
+                        Optional.of(user)
+                );
+
+        LoginResponse response =
+                authService.login(
+                        request(
+                                "customer@test.com",
+                                "password123"
+                        )
+                );
 
         assertEquals(
                 "Login Successful",
                 response.getMessage()
         );
 
-        verify(userRepository, never()).save(user);
+        assertEquals(
+                "test-token",
+                response.getToken()
+        );
+
+        verify(userRepository, never())
+                .save(user);
     }
 
     @Test
     void loginRejectsInvalidPassword() {
         when(user.getPasswordHash())
-                .thenReturn("password123");
+                .thenReturn(
+                        "password123"
+                );
 
-        when(userRepository.findByEmail("customer@test.com"))
-                .thenReturn(Optional.of(user));
+        when(userRepository.findByEmail(
+                "customer@test.com"
+        ))
+                .thenReturn(
+                        Optional.of(user)
+                );
 
-        LoginResponse response = authService.login(
-                request(
-                        "customer@test.com",
-                        "wrong-password"
-                )
-        );
+        LoginResponse response =
+                authService.login(
+                        request(
+                                "customer@test.com",
+                                "wrong-password"
+                        )
+                );
 
         assertEquals(
                 "Invalid Password",
@@ -123,17 +186,23 @@ class AuthServiceTest {
 
     @Test
     void loginRejectsInactiveUser() {
-        when(user.getIsActive()).thenReturn(false);
+        when(user.getIsActive())
+                .thenReturn(false);
 
-        when(userRepository.findByEmail("customer@test.com"))
-                .thenReturn(Optional.of(user));
+        when(userRepository.findByEmail(
+                "customer@test.com"
+        ))
+                .thenReturn(
+                        Optional.of(user)
+                );
 
-        LoginResponse response = authService.login(
-                request(
-                        "customer@test.com",
-                        "password123"
-                )
-        );
+        LoginResponse response =
+                authService.login(
+                        request(
+                                "customer@test.com",
+                                "password123"
+                        )
+                );
 
         assertEquals(
                 "User is inactive",

@@ -2,14 +2,25 @@ const API_URL =
     "http://localhost:8080/api/customer";
 
 const email =
-    localStorage.getItem("secureFlowUserEmail");
+    localStorage.getItem(
+        "secureFlowUserEmail"
+    );
 
 const role =
-    localStorage.getItem("secureFlowUserRole");
+    localStorage.getItem(
+        "secureFlowUserRole"
+    );
 
-if (!email || role !== "CUSTOMER") {
-    window.location.href =
-        "../../auth/login/login.html";
+const token =
+    localStorage.getItem(
+        "secureFlowToken"
+    );
+
+if (!email
+        || role !== "CUSTOMER"
+        || !token) {
+
+    goToLogin();
 }
 
 const parameters =
@@ -45,10 +56,13 @@ async function loadPage() {
 
 async function loadApplication() {
     const response = await fetch(
-        `${API_URL}/applications/${workflowId}?email=${
-            encodeURIComponent(email)
-        }`
+        `${API_URL}/applications/${workflowId}`,
+        {
+            headers: authHeaders()
+        }
     );
+
+    checkAuthorization(response);
 
     if (!response.ok) {
         throw new Error(
@@ -64,10 +78,13 @@ async function loadApplication() {
 
 async function loadHistory() {
     const response = await fetch(
-        `${API_URL}/applications/${workflowId}/history?email=${
-            encodeURIComponent(email)
-        }`
+        `${API_URL}/applications/${workflowId}/history`,
+        {
+            headers: authHeaders()
+        }
     );
+
+    checkAuthorization(response);
 
     if (!response.ok) {
         throw new Error(
@@ -81,6 +98,26 @@ async function loadHistory() {
     renderHistory(history);
 }
 
+function authHeaders() {
+    return {
+        "Authorization":
+            `Bearer ${token}`
+    };
+}
+
+function checkAuthorization(response) {
+    if (response.status === 401
+            || response.status === 403) {
+
+        localStorage.clear();
+        goToLogin();
+
+        throw new Error(
+            "Session expired"
+        );
+    }
+}
+
 function renderApplication(application) {
     setText(
         "workItemNumber",
@@ -89,7 +126,9 @@ function renderApplication(application) {
 
     setText(
         "status",
-        formatStatus(application.status)
+        formatStatus(
+            application.status
+        )
     );
 
     setText(
@@ -170,7 +209,6 @@ function renderHistory(history) {
     if (history.length === 0) {
         container.innerHTML =
             '<p class="history-empty">No history available.</p>';
-
         return;
     }
 
@@ -180,17 +218,25 @@ function renderHistory(history) {
                 <div class="history-item">
 
                     <div class="history-status">
-                        ${formatStatus(event.status)}
+                        ${formatStatus(
+                            event.status
+                        )}
                     </div>
 
                     <div class="history-actor">
-                        ${escapeHtml(event.actorRole)}
+                        ${escapeHtml(
+                            event.actorRole
+                        )}
                         ·
-                        ${escapeHtml(event.actorEmail)}
+                        ${escapeHtml(
+                            event.actorEmail
+                        )}
                     </div>
 
                     <div class="history-date">
-                        ${formatDate(event.changedAt)}
+                        ${formatDate(
+                            event.changedAt
+                        )}
                     </div>
 
                 </div>
@@ -223,21 +269,19 @@ function updateTracker(status) {
         "active"
     );
 
-    if (
-        status === "UNDER_REVIEW"
-        || status === "FORWARDED_TO_MANAGER"
-        || status === "APPROVED"
-        || status === "REJECTED"
-    ) {
+    if (status === "UNDER_REVIEW"
+            || status === "FORWARDED_TO_MANAGER"
+            || status === "APPROVED"
+            || status === "REJECTED") {
+
         review.classList.add(
             "active"
         );
     }
 
-    if (
-        status === "FORWARDED_TO_MANAGER"
-        || status === "APPROVED"
-    ) {
+    if (status === "FORWARDED_TO_MANAGER"
+            || status === "APPROVED") {
+
         manager.classList.add(
             "active"
         );
@@ -261,9 +305,9 @@ function updateTracker(status) {
 }
 
 function setText(id, value) {
-    document.getElementById(id)
-        .textContent =
-            value || "-";
+    document.getElementById(
+        id
+    ).textContent = value || "-";
 }
 
 function formatStatus(status) {
@@ -281,10 +325,8 @@ function formatStatus(status) {
 }
 
 function formatAmount(amount) {
-    if (
-        amount === null
-        || amount === undefined
-    ) {
+    if (amount === null
+            || amount === undefined) {
         return "-";
     }
 
@@ -322,4 +364,9 @@ function showError(message) {
     document.getElementById(
         "message"
     ).textContent = message;
+}
+
+function goToLogin() {
+    window.location.href =
+        "../../auth/login/login.html";
 }
