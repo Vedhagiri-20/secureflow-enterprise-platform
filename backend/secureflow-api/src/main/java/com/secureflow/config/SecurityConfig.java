@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -13,8 +14,14 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 
+/**
+ * Configures JWT-backed role-based access for Secure Flow APIs.
+ *
+ * Static frontend pages remain accessible because browser navigation does
+ * not attach an Authorization header. Protected application data continues
+ * to be enforced by the role-restricted API endpoints.
+ */
 @Configuration
 public class SecurityConfig {
 
@@ -38,21 +45,27 @@ public class SecurityConfig {
     ) throws Exception {
 
         http
-                .csrf(csrf -> csrf.disable())
-                .cors(cors -> cors.configurationSource(
-                        corsConfigurationSource()
-                ))
+                .csrf(csrf ->
+                        csrf.disable()
+                )
+                .cors(cors ->
+                        cors.configurationSource(
+                                corsConfigurationSource()
+                        )
+                )
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(
                                 SessionCreationPolicy.STATELESS
                         )
                 )
                 .authorizeHttpRequests(auth -> auth
+
                         .requestMatchers(
                                 HttpMethod.OPTIONS,
                                 "/**"
                         )
                         .permitAll()
+
                         .requestMatchers(
                                 HttpMethod.GET,
                                 "/",
@@ -63,17 +76,34 @@ public class SecurityConfig {
                                 "/auth/**",
                                 "/customer/**",
                                 "/dashboard/**",
-                                "/workflow/**"
+                                "/workflow/**",
+                                "/report/**",
+                                "/notification/**",
+                                "/login",
+                                "/register",
+                                "/client",
+                                "/employee",
+                                "/manager",
+                                "/admin",
+                                "/eligibility",
+                                "/apply",
+                                "/application",
+                                "/reports",
+                                "/notifications"
                         )
                         .permitAll()
 
                         .requestMatchers(
                                 HttpMethod.POST,
-                                "/api/auth/login"
-                        , "/api/auth/register/customer")
+                                "/api/auth/login",
+                                "/api/auth/register/customer",
+                                "/api/logs/frontend"
+                        )
                         .permitAll()
 
-                        .requestMatchers("/error")
+                        .requestMatchers(
+                                "/error"
+                        )
                         .permitAll()
 
                         .requestMatchers(
@@ -103,31 +133,48 @@ public class SecurityConfig {
                         .anyRequest()
                         .authenticated()
                 )
-                .exceptionHandling(exceptions -> exceptions
+                .exceptionHandling(exceptions ->
+                        exceptions
+                                .authenticationEntryPoint(
+                                        (
+                                                request,
+                                                response,
+                                                exception
+                                        ) -> {
+                                            response.setStatus(
+                                                    401
+                                            );
 
-                        .authenticationEntryPoint(
-                                (request, response, exception) -> {
-                                    response.setStatus(401);
-                                    response.setContentType(
-                                            "application/json"
-                                    );
-                                    response.getWriter().write(
-                                            "{\"message\":\"Unauthorized\"}"
-                                    );
-                                }
-                        )
+                                            response.setContentType(
+                                                    "application/json"
+                                            );
 
-                        .accessDeniedHandler(
-                                (request, response, exception) -> {
-                                    response.setStatus(403);
-                                    response.setContentType(
-                                            "application/json"
-                                    );
-                                    response.getWriter().write(
-                                            "{\"message\":\"Forbidden\"}"
-                                    );
-                                }
-                        )
+                                            response.getWriter()
+                                                    .write(
+                                                            "{\"message\":\"Unauthorized\"}"
+                                                    );
+                                        }
+                                )
+                                .accessDeniedHandler(
+                                        (
+                                                request,
+                                                response,
+                                                exception
+                                        ) -> {
+                                            response.setStatus(
+                                                    403
+                                            );
+
+                                            response.setContentType(
+                                                    "application/json"
+                                            );
+
+                                            response.getWriter()
+                                                    .write(
+                                                            "{\"message\":\"Forbidden\"}"
+                                                    );
+                                        }
+                                )
                 )
                 .addFilterBefore(
                         jwtAuthenticationFilter,

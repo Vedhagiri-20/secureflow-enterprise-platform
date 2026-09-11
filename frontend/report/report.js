@@ -1,300 +1,465 @@
-const API_URL =
-    window.secureFlowApiUrl('/api/reports/employee');
-
-const email =
-    localStorage.getItem(
-        "secureFlowUserEmail"
-    );
-
-const role =
-    localStorage.getItem(
-        "secureFlowUserRole"
-    );
-
-const token =
+const reportToken =
     localStorage.getItem(
         "secureFlowToken"
     );
 
-let allWorkflows = [];
+const reportRole =
+    localStorage.getItem(
+        "secureFlowUserRole"
+    );
 
-if (!email
-        || role !== "EMPLOYEE"
-        || !token) {
+const reportName =
+    localStorage.getItem(
+        "secureFlowUserName"
+    ) || "Employee";
 
+const REPORT_API =
+    window.secureFlowApiUrl(
+        "/api/reports/employee"
+    );
+
+let reportData = null;
+
+
+if (
+    !reportToken
+    || reportRole !== "EMPLOYEE"
+) {
     goToLogin();
 }
 
-document.getElementById(
-    "employeeEmail"
-).textContent = email || "";
 
-document.getElementById(
-    "searchInput"
-).addEventListener(
-    "input",
-    filterWorkflows
+document.addEventListener(
+    "DOMContentLoaded",
+    async () => {
+        initializeProfile();
+        initializeSearch();
+
+        await loadReport();
+    }
 );
 
-loadReport();
 
-async function loadReport() {
-    try {
-        const response = await fetch(
-            API_URL,
-            {
-                headers: {
-                    "Authorization":
-                        `Bearer ${token}`
-                }
-            }
+function initializeProfile() {
+    const welcome =
+        document.getElementById(
+            "welcomeText"
         );
 
-        if (response.status === 401
-                || response.status === 403) {
-
-            localStorage.clear();
-            goToLogin();
-            return;
-        }
-
-        if (!response.ok) {
-            throw new Error(
-                "Report request failed"
-            );
-        }
-
-        const data =
-            await response.json();
-
-        document.getElementById(
-            "totalWorkflows"
-        ).textContent = data.total;
-
-        document.getElementById(
-            "pendingCount"
-        ).textContent = data.pending;
-
-        document.getElementById(
-            "approvedCount"
-        ).textContent = data.approved;
-
-        document.getElementById(
-            "rejectedCount"
-        ).textContent = data.rejected;
-
-        allWorkflows =
-            data.workflows || [];
-
-        renderLoanBreakdown(
-            data.loanBreakdown || {}
+    const avatar =
+        document.querySelector(
+            ".avatar"
         );
 
-        renderWorkflows(
-            allWorkflows
-        );
+    if (welcome) {
+        welcome.textContent =
+            `Hi ${reportName}!`;
+    }
 
-    } catch (error) {
-        document.getElementById(
-            "message"
-        ).textContent =
-            "Unable to load report.";
-
-        console.error(error);
+    if (avatar) {
+        avatar.textContent =
+            reportName
+                .charAt(0)
+                .toUpperCase();
     }
 }
 
-function renderLoanBreakdown(
-    breakdown
-) {
-    const container =
+
+function initializeSearch() {
+    const searchInput =
+        document.getElementById(
+            "searchInput"
+        );
+
+    if (!searchInput) {
+        return;
+    }
+
+    searchInput.addEventListener(
+        "input",
+        renderWorkflowTable
+    );
+}
+
+
+async function loadReport() {
+    try {
+        const response =
+            await fetch(
+                REPORT_API,
+                {
+                    headers: {
+                        "Authorization":
+                            `Bearer ${reportToken}`
+                    }
+                }
+            );
+
+        if (
+            response.status === 401
+            || response.status === 403
+        ) {
+            logout();
+
+            return;
+        }
+
+        const data =
+            await response.json()
+                .catch(
+                    () => ({})
+                );
+
+        if (!response.ok) {
+            throw new Error(
+                data.message
+                || "Unable to load report data."
+            );
+        }
+
+        reportData =
+            data;
+
+        loadSummary(
+            data
+        );
+
+        loadLoanBreakdown(
+            data
+        );
+
+        renderWorkflowTable();
+
+    } catch (error) {
+        console.error(
+            "Report error:",
+            error
+        );
+
+        if (window.SecureFlowLog) {
+            window.SecureFlowLog.error(
+                "Unable to load employee report",
+                error
+            );
+        }
+
+        showReportError(
+            error.message
+            || "Unable to load report data."
+        );
+    }
+}
+
+
+function loadSummary(data) {
+    setText(
+        "totalWorkflows",
+        data.total
+    );
+
+    setText(
+        "pendingCount",
+        data.pending
+    );
+
+    setText(
+        "approvedCount",
+        data.approved
+    );
+
+    setText(
+        "rejectedCount",
+        data.rejected
+    );
+
+    setText(
+        "pendingCircle",
+        data.pending
+    );
+
+    setText(
+        "approvedCircle",
+        data.approved
+    );
+
+    setText(
+        "rejectedCircle",
+        data.rejected
+    );
+
+    setText(
+        "donutTotal",
+        data.total
+    );
+}
+
+
+function loadLoanBreakdown(data) {
+    const legend =
+        document.getElementById(
+            "loanLegend"
+        );
+
+    const breakdown =
         document.getElementById(
             "loanBreakdown"
         );
 
-    const entries =
-        Object.entries(breakdown);
-
-    if (entries.length === 0) {
-        container.innerHTML = `
-            <div class="loan-card">
-                <span>
-                    No application data available.
-                </span>
-            </div>
-        `;
+    if (
+        !legend
+        || !breakdown
+    ) {
         return;
     }
 
-    container.innerHTML =
-        entries
-            .map(([loanType, count]) => `
-                <div class="loan-card">
-                    <span>
-                        ${escapeHtml(loanType)}
-                    </span>
+    const entries =
+        Object.entries(
+            data.loanBreakdown
+            || {}
+        );
 
-                    <strong>
-                        ${count}
-                    </strong>
-                </div>
-            `)
+    if (!entries.length) {
+        legend.innerHTML =
+            "<li>No assigned applications yet.</li>";
+
+        breakdown.innerHTML =
+            '<div class="loan-card"><p>No loan activity available.</p></div>';
+
+        return;
+    }
+
+    legend.innerHTML =
+        entries
+            .map(
+                ([loan, count]) =>
+                    `<li>${escapeHtml(loan)} - ${count}</li>`
+            )
+            .join("");
+
+    breakdown.innerHTML =
+        entries
+            .map(
+                ([loan, count]) => `
+                    <div class="loan-card">
+                        <h4>${escapeHtml(loan)}</h4>
+                        <h2>${count}</h2>
+                        <p>Assigned Applications</p>
+                    </div>
+                `
+            )
             .join("");
 }
 
-function renderWorkflows(workflows) {
-    const table =
+
+function renderWorkflowTable() {
+    if (!reportData) {
+        return;
+    }
+
+    const tbody =
         document.getElementById(
             "reportTableBody"
         );
 
-    if (workflows.length === 0) {
-        table.innerHTML = `
+    if (!tbody) {
+        return;
+    }
+
+    const searchInput =
+        document.getElementById(
+            "searchInput"
+        );
+
+    const query =
+        searchInput
+            ? searchInput.value
+                    .trim()
+                    .toLowerCase()
+            : "";
+
+    const workflows =
+        (
+            reportData.workflows
+            || []
+        ).filter(
+            workflow =>
+                matchesSearch(
+                    workflow,
+                    query
+                )
+        );
+
+    if (!workflows.length) {
+        tbody.innerHTML = `
             <tr>
-                <td colspan="7" class="empty">
-                    No matching applications.
+                <td colspan="7">
+                    No matching workflow records.
                 </td>
             </tr>
         `;
+
         return;
     }
 
-    table.innerHTML =
+    tbody.innerHTML =
         workflows
-            .map(workflow => `
-                <tr>
-                    <td>
-                        ${escapeHtml(
-                            workflow.workItemNumber
-                        )}
-                    </td>
-
-                    <td>
-                        ${escapeHtml(
-                            workflow.loanType
-                        )}
-                    </td>
-
-                    <td>
-                        ${escapeHtml(
-                            workflow.applicantName
-                        )}
-                    </td>
-
-                    <td>
-                        ${formatAmount(
-                            workflow.loanAmount
-                        )}
-                    </td>
-
-                    <td>
-                        <span class="status">
-                            ${formatStatus(
-                                workflow.status
-                            )}
-                        </span>
-                    </td>
-
-                    <td>
-                        ${escapeHtml(
-                            workflow.managerName
-                        )}
-                    </td>
-
-                    <td>
-                        ${formatDate(
-                            workflow.createdDate
-                        )}
-                    </td>
-                </tr>
-            `)
+            .map(
+                workflow => `
+                    <tr>
+                        <td>${escapeHtml(workflow.workItemNumber)}</td>
+                        <td>${escapeHtml(workflow.loanType)}</td>
+                        <td>${escapeHtml(workflow.applicantName)}</td>
+                        <td>${formatAmount(workflow.loanAmount)}</td>
+                        <td>${escapeHtml(formatStatus(workflow.status))}</td>
+                        <td>${escapeHtml(workflow.managerName)}</td>
+                        <td>${formatDate(workflow.createdDate)}</td>
+                    </tr>
+                `
+            )
             .join("");
 }
 
-function filterWorkflows() {
-    const query =
-        document.getElementById(
-            "searchInput"
-        ).value
-            .trim()
-            .toLowerCase();
 
+function matchesSearch(
+    workflow,
+    query
+) {
     if (!query) {
-        renderWorkflows(
-            allWorkflows
-        );
-        return;
+        return true;
     }
 
-    const filtered =
-        allWorkflows.filter(
-            workflow =>
-                workflow.workItemNumber
-                    .toLowerCase()
-                    .includes(query)
-
-                || workflow.loanType
-                    .toLowerCase()
-                    .includes(query)
-
-                || workflow.applicantName
-                    .toLowerCase()
-                    .includes(query)
-
-                || workflow.status
+    return [
+        workflow.workItemNumber,
+        workflow.loanType,
+        workflow.applicantName,
+        workflow.status,
+        workflow.managerName
+    ]
+        .filter(Boolean)
+        .some(
+            value =>
+                String(value)
                     .toLowerCase()
                     .includes(query)
         );
-
-    renderWorkflows(filtered);
 }
 
-function formatAmount(amount) {
-    return Number(amount)
-        .toLocaleString(
-            "en-US",
-            {
-                style: "currency",
-                currency: "USD",
-                maximumFractionDigits: 0
-            }
-        );
+
+function formatAmount(value) {
+    return Number(
+        value || 0
+    ).toLocaleString(
+        "en-US",
+        {
+            style: "currency",
+            currency: "USD",
+            maximumFractionDigits: 0
+        }
+    );
 }
 
-function formatStatus(status) {
-    if (!status) {
-        return "-";
-    }
-
-    return status
-        .replaceAll("_", " ")
-        .toLowerCase()
-        .replace(
-            /\b\w/g,
-            letter => letter.toUpperCase()
-        );
-}
 
 function formatDate(value) {
     if (!value) {
         return "-";
     }
 
-    return new Date(value)
-        .toLocaleDateString();
+    return new Date(
+        value
+    ).toLocaleDateString(
+        "en-US",
+        {
+            year: "numeric",
+            month: "short",
+            day: "numeric"
+        }
+    );
 }
+
+
+function formatStatus(value) {
+    return String(
+        value || "-"
+    )
+        .replaceAll(
+            "_",
+            " "
+        )
+        .toLowerCase()
+        .replace(
+            /\b\w/g,
+            character =>
+                character.toUpperCase()
+        );
+}
+
+
+function setText(
+    id,
+    value
+) {
+    const element =
+        document.getElementById(
+            id
+        );
+
+    if (element) {
+        element.textContent =
+            value ?? "-";
+    }
+}
+
+
+function showReportError(message) {
+    const tbody =
+        document.getElementById(
+            "reportTableBody"
+        );
+
+    if (tbody) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="7">
+                    ${escapeHtml(message)}
+                </td>
+            </tr>
+        `;
+    }
+}
+
 
 function escapeHtml(value) {
     const element =
-        document.createElement("div");
+        document.createElement(
+            "div"
+        );
 
     element.textContent =
-        value || "-";
+        value == null
+            ? "-"
+            : String(value);
 
     return element.innerHTML;
 }
 
+
+function logout() {
+    localStorage.clear();
+    goToLogin();
+}
+
+
 function goToLogin() {
+    if (
+        window.location.hostname === "localhost"
+        && window.location.port === "5500"
+    ) {
+        window.location.href =
+            "../auth/login/login.html";
+
+        return;
+    }
+
     window.location.href =
-        "../auth/login/login.html";
+        "/login";
 }

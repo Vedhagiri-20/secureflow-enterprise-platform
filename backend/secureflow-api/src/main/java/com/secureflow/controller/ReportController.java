@@ -7,6 +7,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * Provides authenticated employee reporting.
+ */
 @RestController
 @RequestMapping("/api/reports")
 public class ReportController {
@@ -24,9 +27,8 @@ public class ReportController {
     public ReportResponse getEmployeeReport(
             Authentication authentication
     ) {
-        return reportService
-                .getEmployeeReport(
-                        authentication.getName()
-                );
+        return reportService.getEmployeeReport(
+                authentication.getName()
+        );
     }
 }

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <property
+        name="LOG_DIR"
+        value="${SECUREFLOW_LOG_PATH:-logs}"
+    />
+
+    <property
+        name="BACKEND_PATTERN"
+        value="%d{yyyy-MM-dd HH:mm:ss.SSS} [BACKEND] %-5level %logger{36} - %msg%n"
+    />
+
+    <property
+        name="FRONTEND_PATTERN"
+        value="%d{yyyy-MM-dd HH:mm:ss.SSS} [FRONTEND] %-5level - %msg%n"
+    />
+
+    <appender
+        name="BACKEND_CONSOLE"
+        class="ch.qos.logback.core.ConsoleAppender"
+    >
+        <encoder>
+            <pattern>${BACKEND_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <appender
+        name="FRONTEND_CONSOLE"
+        class="ch.qos.logback.core.ConsoleAppender"
+    >
+        <encoder>
+            <pattern>${FRONTEND_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <appender
+        name="BACKEND_FILE"
+        class="ch.qos.logback.core.rolling.RollingFileAppender"
+    >
+        <file>${LOG_DIR}/backend.log</file>
+
+        <rollingPolicy
+            class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy"
+        >
+            <fileNamePattern>
+                ${LOG_DIR}/backend.%d{yyyy-MM-dd}.log.gz
+            </fileNamePattern>
+
+            <maxHistory>1</maxHistory>
+            <cleanHistoryOnStart>true</cleanHistoryOnStart>
+            <totalSizeCap>50MB</totalSizeCap>
+        </rollingPolicy>
+
+        <encoder>
+            <pattern>${BACKEND_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <appender
+        name="FRONTEND_FILE"
+        class="ch.qos.logback.core.rolling.RollingFileAppender"
+    >
+        <file>${LOG_DIR}/frontend.log</file>
+
+        <rollingPolicy
+            class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy"
+        >
+            <fileNamePattern>
+                ${LOG_DIR}/frontend.%d{yyyy-MM-dd}.log.gz
+            </fileNamePattern>
+
+            <maxHistory>1</maxHistory>
+            <cleanHistoryOnStart>true</cleanHistoryOnStart>
+            <totalSizeCap>50MB</totalSizeCap>
+        </rollingPolicy>
+
+        <encoder>
+            <pattern>${FRONTEND_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <logger
+        name="FRONTEND"
+        level="INFO"
+        additivity="false"
+    >
+        <appender-ref ref="FRONTEND_CONSOLE"/>
+        <appender-ref ref="FRONTEND_FILE"/>
+    </logger>
+
+    <root level="INFO">
+        <appender-ref ref="BACKEND_CONSOLE"/>
+        <appender-ref ref="BACKEND_FILE"/>
+    </root>
+
+</configuration>
