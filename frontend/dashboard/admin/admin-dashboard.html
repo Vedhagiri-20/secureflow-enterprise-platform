@@ -1,124 +1,887 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport"
-    content="width=device-width, initial-scale=1.0">
 
-    <title>Admin Dashboard</title>
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
-    <link rel="stylesheet"
-    href="admin-dashboard.css">
+    <title>
+        Administration | SecureFlow International Bank
+    </title>
 
+    <link
+        rel="stylesheet"
+        href="../../assets/secureflow-premium.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="../../assets/secureflow-contrast.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="admin-dashboard.css"
+    >
+    <link rel="stylesheet" href="../../assets/secureflow-unified.css">
 </head>
+
+
 <body>
 
-<div class="sidebar">
+<div class="admin-shell">
 
-    <h2>Admin Panel</h2>
+    <aside class="sidebar">
 
-    <ul>
+        <div class="bank-brand">
 
-        <li>
-            <a href="admin-dashboard.html">
+            <div class="bank-mark">
+                SF
+            </div>
+
+            <div>
+                <strong>
+                    SECUREFLOW
+                </strong>
+
+                <span>
+                    INTERNATIONAL BANK
+                </span>
+            </div>
+
+        </div>
+
+
+        <p class="sidebar-label">
+            ADMINISTRATION
+        </p>
+
+
+        <nav>
+
+            <button
+                class="nav-button active"
+                data-page="dashboard"
+            >
                 Dashboard
-            </a>
-        </li>
+            </button>
 
-        <li>
-            <a href="../../users/user-management.html">
+            <button
+                class="nav-button"
+                data-page="users"
+            >
                 User Management
-            </a>
-        </li>
+            </button>
 
-        <li>
-            <a href="../../reports/reports.html">
-                Reports
-            </a>
-        </li>
+            <button
+                class="nav-button"
+                data-page="audit"
+            >
+                Audit Log
+            </button>
 
-        <li>
-            <a href="../../audit/audit-log.html">
-                Audit Logs
-            </a>
-        </li>
-
-        <li>
-            <a href="../../settings/settings.html">
+            <button
+                class="nav-button"
+                data-page="settings"
+            >
                 Settings
-            </a>
-        </li>
+            </button>
 
-        <li>
-            <a href="../../index.html">
-                Logout
-            </a>
-        </li>
+        </nav>
 
-    </ul>
+
+        <div class="sidebar-account">
+
+            <small>
+                SIGNED IN AS
+            </small>
+
+            <strong id="adminEmail">
+                Administrator
+            </strong>
+
+            <button
+                class="logout-button"
+                onclick="logout()"
+            >
+                Secure Logout
+            </button>
+
+        </div>
+
+    </aside>
+
+
+    <main class="admin-content">
+
+        <header class="page-header">
+
+            <div>
+
+                <span class="eyebrow">
+                    SECUREFLOW ADMINISTRATION
+                </span>
+
+                <h1 id="pageTitle">
+                    Executive Dashboard
+                </h1>
+
+                <p id="pageDescription">
+                    Monitor users, application workflows and security activity.
+                </p>
+
+            </div>
+
+
+            <div class="secure-session">
+
+                <span class="secure-dot"></span>
+
+                <div>
+                    <strong>
+                        Secure Session
+                    </strong>
+
+                    <small>
+                        JWT · ADMIN
+                    </small>
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <p
+            id="adminMessage"
+            class="admin-message"
+        ></p>
+
+
+        <!-- DASHBOARD -->
+
+        <section
+            id="dashboardPage"
+            class="admin-page active"
+        >
+
+            <div class="metric-grid">
+
+                <article class="metric">
+
+                    <span>
+                        Total Users
+                    </span>
+
+                    <strong id="totalUsers">
+                        0
+                    </strong>
+
+                    <small>
+                        Registered identities
+                    </small>
+
+                </article>
+
+
+                <article class="metric">
+
+                    <span>
+                        Active Users
+                    </span>
+
+                    <strong id="activeUsers">
+                        0
+                    </strong>
+
+                    <small>
+                        Enabled accounts
+                    </small>
+
+                </article>
+
+
+                <article class="metric">
+
+                    <span>
+                        Applications
+                    </span>
+
+                    <strong id="totalApplications">
+                        0
+                    </strong>
+
+                    <small>
+                        Loan workflows
+                    </small>
+
+                </article>
+
+
+                <article class="metric">
+
+                    <span>
+                        Audit Events
+                    </span>
+
+                    <strong id="totalAuditEvents">
+                        0
+                    </strong>
+
+                    <small>
+                        Recorded activities
+                    </small>
+
+                </article>
+
+            </div>
+
+
+            <div class="role-strip">
+
+                <div>
+                    <span>Customers</span>
+                    <strong id="customerCount">0</strong>
+                </div>
+
+                <div>
+                    <span>Employees</span>
+                    <strong id="employeeCount">0</strong>
+                </div>
+
+                <div>
+                    <span>Managers</span>
+                    <strong id="managerCount">0</strong>
+                </div>
+
+            </div>
+
+
+            <section class="bank-card">
+
+                <div class="card-header">
+
+                    <div>
+                        <span class="section-label">
+                            LIVE ACTIVITY
+                        </span>
+
+                        <h2>
+                            Recent User Activity
+                        </h2>
+
+                        <p>
+                            Latest authentication and workflow activity.
+                        </p>
+                    </div>
+
+
+                    <button
+                        class="outline-button"
+                        onclick="loadDashboard()"
+                    >
+                        Refresh
+                    </button>
+
+                </div>
+
+
+                <div class="table-scroll">
+
+                    <table>
+
+                        <thead>
+
+                        <tr>
+                            <th>User</th>
+                            <th>Role</th>
+                            <th>Activity</th>
+                            <th>Details</th>
+                            <th>Time</th>
+                        </tr>
+
+                        </thead>
+
+                        <tbody id="recentActivityBody">
+
+                        <tr>
+                            <td colspan="5" class="empty">
+                                Loading activity...
+                            </td>
+                        </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </section>
+
+        </section>
+
+
+        <!-- USERS -->
+
+        <section
+            id="usersPage"
+            class="admin-page"
+        >
+
+            <section class="bank-card">
+
+                <div class="card-header">
+
+                    <div>
+
+                        <span class="section-label">
+                            IDENTITY & ACCESS
+                        </span>
+
+                        <h2>
+                            User Management
+                        </h2>
+
+                        <p>
+                            Review user profiles, roles and portal access.
+                        </p>
+
+                    </div>
+
+
+                    <button
+                        class="gold-button"
+                        onclick="openCreateUser()"
+                    >
+                        + Create User
+                    </button>
+
+                </div>
+
+
+                <div class="search-row">
+
+                    <input
+                        id="userSearch"
+                        type="search"
+                        placeholder="Search name, email, role or department"
+                    >
+
+                    <button
+                        class="dark-button-admin"
+                        onclick="loadUsers()"
+                    >
+                        Search
+                    </button>
+
+                </div>
+
+
+                <div class="table-scroll">
+
+                    <table>
+
+                        <thead>
+
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Department</th>
+                            <th>Last Login</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+
+                        </thead>
+
+                        <tbody id="usersBody">
+
+                        <tr>
+                            <td colspan="7" class="empty">
+                                Loading users...
+                            </td>
+                        </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </section>
+
+        </section>
+
+
+        <!-- AUDIT -->
+
+        <section
+            id="auditPage"
+            class="admin-page"
+        >
+
+            <section class="bank-card">
+
+                <div class="card-header">
+
+                    <div>
+
+                        <span class="section-label">
+                            SECURITY & COMPLIANCE
+                        </span>
+
+                        <h2>
+                            Audit Log
+                        </h2>
+
+                        <p>
+                            Search login and application workflow activity.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="search-row">
+
+                    <input
+                        id="auditSearch"
+                        type="search"
+                        placeholder="Search email, role, action or application"
+                    >
+
+                    <button
+                        class="dark-button-admin"
+                        onclick="loadAudit()"
+                    >
+                        Search Audit
+                    </button>
+
+                </div>
+
+
+                <div class="table-scroll">
+
+                    <table>
+
+                        <thead>
+
+                        <tr>
+                            <th>Event</th>
+                            <th>User</th>
+                            <th>Role</th>
+                            <th>Action</th>
+                            <th>Details</th>
+                            <th>Time</th>
+                        </tr>
+
+                        </thead>
+
+                        <tbody id="auditBody">
+
+                        <tr>
+                            <td colspan="6" class="empty">
+                                Loading audit events...
+                            </td>
+                        </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </section>
+
+        </section>
+
+
+        <!-- SETTINGS -->
+
+        <section
+            id="settingsPage"
+            class="admin-page"
+        >
+
+            <div class="settings-grid">
+
+                <article class="setting-card">
+
+                    <span>
+                        AUTHENTICATION
+                    </span>
+
+                    <h3>
+                        JWT Security
+                    </h3>
+
+                    <strong>
+                        ACTIVE
+                    </strong>
+
+                    <p>
+                        Signed tokens protect authenticated API requests.
+                    </p>
+
+                </article>
+
+
+                <article class="setting-card">
+
+                    <span>
+                        PASSWORD SECURITY
+                    </span>
+
+                    <h3>
+                        BCrypt
+                    </h3>
+
+                    <strong>
+                        ACTIVE
+                    </strong>
+
+                    <p>
+                        User passwords are stored as irreversible hashes.
+                    </p>
+
+                </article>
+
+
+                <article class="setting-card">
+
+                    <span>
+                        DATABASE
+                    </span>
+
+                    <h3>
+                        PostgreSQL
+                    </h3>
+
+                    <strong>
+                        CONNECTED
+                    </strong>
+
+                    <p>
+                        User, loan and workflow information is persisted.
+                    </p>
+
+                </article>
+
+
+                <article class="setting-card">
+
+                    <span>
+                        COMPLIANCE
+                    </span>
+
+                    <h3>
+                        Audit Tracking
+                    </h3>
+
+                    <strong>
+                        ENABLED
+                    </strong>
+
+                    <p>
+                        Authentication and workflow events are recorded.
+                    </p>
+
+                </article>
+
+            </div>
+
+
+            <section class="bank-card password-policy">
+
+                <span class="section-label">
+                    SECURITY POLICY
+                </span>
+
+                <h2>
+                    Password Protection
+                </h2>
+
+                <p>
+                    Administrators cannot view original user passwords.
+                    SecureFlow stores passwords using BCrypt one-way hashing.
+                    Administrators can create users and manage account access,
+                    but original passwords and password hashes are never exposed
+                    through the administration portal.
+                </p>
+
+            </section>
+
+        </section>
+
+    </main>
 
 </div>
 
-<div class="main-content">
 
-    <h1>Admin Dashboard</h1>
+<!-- USER DETAIL MODAL -->
 
-    <div class="cards">
+<div
+    id="userModal"
+    class="admin-modal"
+>
 
-        <div class="card">
-            <h3>Total Users</h3>
-            <p>120</p>
+    <div class="modal-box">
+
+        <div class="modal-heading">
+
+            <div>
+
+                <span class="section-label">
+                    USER PROFILE
+                </span>
+
+                <h2>
+                    Identity Details
+                </h2>
+
+            </div>
+
+
+            <button
+                class="modal-close"
+                onclick="closeUserModal()"
+            >
+                ×
+            </button>
+
         </div>
 
-        <div class="card">
-            <h3>Total Workflows</h3>
-            <p>520</p>
-        </div>
 
-        <div class="card">
-            <h3>Audit Events</h3>
-            <p>1200</p>
+        <div class="detail-grid">
+
+            <div>
+                <span>User ID</span>
+                <strong id="viewUserId">-</strong>
+            </div>
+
+            <div>
+                <span>Name</span>
+                <strong id="viewName">-</strong>
+            </div>
+
+            <div>
+                <span>Email</span>
+                <strong id="viewEmail">-</strong>
+            </div>
+
+            <div>
+                <span>Role</span>
+                <strong id="viewRole">-</strong>
+            </div>
+
+            <div>
+                <span>Phone</span>
+                <strong id="viewPhone">-</strong>
+            </div>
+
+            <div>
+                <span>Department</span>
+                <strong id="viewDepartment">-</strong>
+            </div>
+
+            <div>
+                <span>Status</span>
+                <strong id="viewStatus">-</strong>
+            </div>
+
+            <div>
+                <span>Last Login</span>
+                <strong id="viewLastLogin">-</strong>
+            </div>
+
+            <div>
+                <span>Created</span>
+                <strong id="viewCreated">-</strong>
+            </div>
+
+            <div class="wide-detail">
+                <span>Password Security</span>
+                <strong id="viewPassword">-</strong>
+            </div>
+
         </div>
 
     </div>
 
-    <div class="table-section">
+</div>
 
-        <h2>Recent User Activities</h2>
 
-        <table>
+<!-- CREATE USER MODAL -->
 
-            <thead>
+<div
+    id="createModal"
+    class="admin-modal"
+>
 
-            <tr>
-                <th>User</th>
-                <th>Action</th>
-                <th>Date</th>
-            </tr>
+    <div class="modal-box">
 
-            </thead>
+        <div class="modal-heading">
 
-            <tbody>
+            <div>
 
-            <tr>
-                <td>Ved</td>
-                <td>Created Workflow</td>
-                <td>22 May 2026</td>
-            </tr>
+                <span class="section-label">
+                    IDENTITY PROVISIONING
+                </span>
 
-            <tr>
-                <td>Rahul</td>
-                <td>Approved Request</td>
-                <td>22 May 2026</td>
-            </tr>
+                <h2>
+                    Create Secure User
+                </h2>
 
-            </tbody>
+            </div>
 
-        </table>
+
+            <button
+                class="modal-close"
+                onclick="closeCreateUser()"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <form id="createUserForm">
+
+            <div class="form-grid">
+
+                <div>
+
+                    <label for="newName">
+                        Full Name
+                    </label>
+
+                    <input
+                        id="newName"
+                        required
+                    >
+
+                </div>
+
+
+                <div>
+
+                    <label for="newEmail">
+                        Email Address
+                    </label>
+
+                    <input
+                        id="newEmail"
+                        type="email"
+                        required
+                    >
+
+                </div>
+
+
+                <div>
+
+                    <label for="newPassword">
+                        Initial Password
+                    </label>
+
+                    <input
+                        id="newPassword"
+                        type="password"
+                        minlength="8"
+                        required
+                    >
+
+                </div>
+
+
+                <div>
+
+                    <label for="newRole">
+                        Role
+                    </label>
+
+                    <select
+                        id="newRole"
+                        required
+                    >
+
+                        <option value="">
+                            Select role
+                        </option>
+
+                        <option value="CUSTOMER">
+                            Customer
+                        </option>
+
+                        <option value="EMPLOYEE">
+                            Employee
+                        </option>
+
+                        <option value="MANAGER">
+                            Manager
+                        </option>
+
+                        <option value="ADMIN">
+                            Administrator
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div>
+
+                    <label for="newPhone">
+                        Phone Number
+                    </label>
+
+                    <input id="newPhone">
+
+                </div>
+
+
+                <div>
+
+                    <label for="newDepartment">
+                        Department
+                    </label>
+
+                    <input
+                        id="newDepartment"
+                        placeholder="e.g. Lending Operations"
+                    >
+
+                </div>
+
+            </div>
+
+
+            <p
+                id="createError"
+                class="form-error"
+            ></p>
+
+
+            <button
+                type="submit"
+                class="gold-button full-button"
+            >
+                Create Secure Account
+            </button>
+
+        </form>
 
     </div>
 
 </div>
+
 
 <script src="admin-dashboard.js"></script>
 

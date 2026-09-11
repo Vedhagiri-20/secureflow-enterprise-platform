@@ -1,105 +1,371 @@
-async function login(event) {
+const LOGIN_API =
+    "http://localhost:8080/api/auth/login";
 
+const emailInput =
+    document.getElementById(
+        "email"
+    );
+
+const passwordInput =
+    document.getElementById(
+        "password"
+    );
+
+const errorMessage =
+    document.getElementById(
+        "error-message"
+    );
+
+const successMessage =
+    document.getElementById(
+        "success-message"
+    );
+
+const loginButton =
+    document.getElementById(
+        "loginButton"
+    );
+
+const loginButtonText =
+    document.getElementById(
+        "loginButtonText"
+    );
+
+const rememberMe =
+    document.getElementById(
+        "rememberMe"
+    );
+
+
+restoreRememberedEmail();
+showRegistrationSuccess();
+
+
+async function login(event) {
     event.preventDefault();
 
-    const email = document.getElementById("email").value.trim();
-    const password = document.getElementById("password").value.trim();
-    const error = document.getElementById("error-message");
+    clearError();
 
-    error.innerText = "";
+    const email =
+        emailInput.value.trim();
 
-    if (email === "") {
-        error.innerText = "Email address is mandatory.";
+    const password =
+        passwordInput.value;
+
+    if (!email) {
+        showError(
+            "Enter your registered email address."
+        );
+
+        emailInput.focus();
+
         return;
     }
 
-    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+    if (!isValidEmail(email)) {
+        showError(
+            "Enter a valid email address."
+        );
 
-    if (!emailPattern.test(email)) {
-        error.innerText = "Please enter a valid email address.";
+        emailInput.focus();
+
         return;
     }
 
-    if (password === "") {
-        error.innerText = "Password is mandatory.";
+    if (!password) {
+        showError(
+            "Enter your Secure Flow password."
+        );
+
+        passwordInput.focus();
+
         return;
     }
+
+    setLoading(true);
 
     try {
+        const response =
+            await fetch(
+                LOGIN_API,
+                {
+                    method: "POST",
 
-        const response = await fetch("http://localhost:8080/api/auth/login", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:
+                        JSON.stringify({
+                            email,
+                            password
+                        })
+                }
+            );
+
+        const data =
+            await response
+                .json()
+                .catch(() => ({}));
+
+        if (!response.ok
+                || data.message
+                    !== "Login Successful"
+                || !data.token) {
+
+            throw new Error(
+                data.message
+                || "Secure authentication failed."
+            );
+        }
+
+        handleRememberedEmail(
+            email
+        );
+
+        localStorage.setItem(
+            "secureFlowUserEmail",
+            data.email || email
+        );
+
+        localStorage.setItem(
+            "secureFlowUserName",
+            data.fullName
+                || data.email
+                || email
+        );
+
+        localStorage.setItem(
+            "secureFlowUserRole",
+            data.role
+        );
+
+        localStorage.setItem(
+            "secureFlowToken",
+            data.token
+        );
+
+        const destination =
+            getDestination(
+                data.role
+            );
+
+        if (!destination) {
+            throw new Error(
+                "Your Secure Flow role is not configured for portal access."
+            );
+        }
+
+        loginButtonText.textContent =
+            "Access granted";
+
+        window.setTimeout(
+            () => {
+                window.location.href =
+                    destination;
             },
-            body: JSON.stringify({
-                email,
-                password
-            })
-        });
+            220
+        );
 
-        const data = await response.json();
+    } catch (error) {
+        showError(
+            normalizeError(
+                error.message
+            )
+        );
 
-        if (data.message !== "Login Successful") {
-            error.innerText = data.message;
-            return;
-        }
-
-        sessionStorage.setItem("secureFlowUserEmail", email);
-        sessionStorage.setItem("secureFlowUserRole", data.role);
-        sessionStorage.setItem("isLoggedIn", "true");
-
-if (data.name) {
-    sessionStorage.setItem("secureFlowUserName", data.name);
-}
-
-        switch (data.role) {
-
-            case "CUSTOMER":
-                window.location.href =
-                    "../../customer/customer-dashboard.html";
-                break;
-
-            case "EMPLOYEE":
-                window.location.href =
-                    "../../dashboard/employee/employee-dashboard.html";
-                break;
-
-            case "MANAGER":
-                window.location.href =
-                    "../../dashboard/manager/manager-dashboard.html";
-                break;
-
-            case "ADMIN":
-                window.location.href =
-                    "../../dashboard/admin/admin-dashboard.html";
-                break;
-
-            default:
-                error.innerText = "Unknown user role.";
-        }
-
-    }
-    catch (errorObj) {
-
-        error.innerText =
-            "Backend server is not running. Please start Spring Boot.";
-
-        console.error(errorObj);
+        setLoading(false);
     }
 }
+
 
 function togglePassword() {
+    const showPassword =
+        passwordInput.type
+        === "password";
 
-    const password = document.getElementById("password");
-    const toggleBtn = document.querySelector(".toggle-btn");
+    passwordInput.type =
+        showPassword
+            ? "text"
+            : "password";
 
-    if (password.type === "password") {
-        password.type = "text";
-        toggleBtn.innerText = "Hide";
+    const toggle =
+        document.querySelector(
+            ".toggle-btn"
+        );
+
+    toggle.textContent =
+        showPassword
+            ? "Hide"
+            : "Show";
+
+    toggle.setAttribute(
+        "aria-label",
+        showPassword
+            ? "Hide password"
+            : "Show password"
+    );
+}
+
+
+function setLoading(loading) {
+    loginButton.disabled =
+        loading;
+
+    emailInput.disabled =
+        loading;
+
+    passwordInput.disabled =
+        loading;
+
+    loginButtonText.textContent =
+        loading
+            ? "Verifying secure access..."
+            : "Sign in securely";
+}
+
+
+function getDestination(role) {
+    const destinations = {
+        CUSTOMER:
+            "../../dashboard/customer/customer-dashboard.html",
+
+        EMPLOYEE:
+            "../../dashboard/employee/employee-dashboard.html",
+
+        MANAGER:
+            "../../dashboard/manager/manager-dashboard.html",
+
+        ADMIN:
+            "../../dashboard/admin/admin-dashboard.html"
+    };
+
+    return destinations[role];
+}
+
+
+function handleRememberedEmail(email) {
+    if (rememberMe.checked) {
+        localStorage.setItem(
+            "secureFlowRememberedEmail",
+            email
+        );
+
+        return;
     }
-    else {
-        password.type = "password";
-        toggleBtn.innerText = "Show";
+
+    localStorage.removeItem(
+        "secureFlowRememberedEmail"
+    );
+}
+
+
+function restoreRememberedEmail() {
+    const remembered =
+        localStorage.getItem(
+            "secureFlowRememberedEmail"
+        );
+
+    if (!remembered) {
+        return;
     }
+
+    emailInput.value =
+        remembered;
+
+    rememberMe.checked =
+        true;
+}
+
+
+function showRegistrationSuccess() {
+    const message =
+        sessionStorage.getItem(
+            "secureFlowRegistrationSuccess"
+        );
+
+    const registeredEmail =
+        sessionStorage.getItem(
+            "secureFlowRegisteredEmail"
+        );
+
+    if (!message) {
+        return;
+    }
+
+    successMessage.textContent =
+        message;
+
+    successMessage.classList.add(
+        "show"
+    );
+
+    if (registeredEmail) {
+        emailInput.value =
+            registeredEmail;
+
+        passwordInput.focus();
+    }
+
+    sessionStorage.removeItem(
+        "secureFlowRegistrationSuccess"
+    );
+
+    sessionStorage.removeItem(
+        "secureFlowRegisteredEmail"
+    );
+}
+
+
+function isValidEmail(value) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+        .test(value);
+}
+
+
+function normalizeError(message) {
+    const lowerMessage =
+        String(
+            message || ""
+        ).toLowerCase();
+
+    if (lowerMessage.includes(
+        "invalid email"
+    )) {
+        return "We could not verify this email address.";
+    }
+
+    if (lowerMessage.includes(
+        "invalid password"
+    )) {
+        return "The password entered is incorrect.";
+    }
+
+    if (lowerMessage.includes(
+        "inactive"
+    )) {
+        return "This account is currently disabled.";
+    }
+
+    if (lowerMessage.includes(
+        "failed to fetch"
+    )) {
+        return "Secure Flow authentication services are currently unavailable.";
+    }
+
+    return message
+        || "Secure authentication failed.";
+}
+
+
+function showError(message) {
+    errorMessage.textContent =
+        message;
+}
+
+
+function clearError() {
+    errorMessage.textContent =
+        "";
 }

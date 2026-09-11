@@ -1,129 +1,527 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SecureFlow Login</title>
-    <link rel="stylesheet" href="login.css">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="Secure client access for Secure Flow International Banking."
+    >
+
+    <title>
+        Secure Client Access | Secure Flow
+    </title>
+
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+    <link
+        rel="stylesheet"
+        href="login.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="../../assets/secureflow-unified.css"
+    >
 </head>
+
+
 <body>
 
-<div class="page-wrapper">
+<div class="page-shell">
 
-    <div class="login-shell">
+    <header class="utility-header">
 
-        <div class="login-panel">
+        <a
+            class="utility-brand"
+            href="../../index.html"
+        >
+            Secure Flow International Banking
+        </a>
 
-            <div class="brand">
-                <div class="brand-logo">S</div>
-                <div>
-                    <h2>SecureFlow</h2>
-                    <p>Enterprise Platform</p>
-                </div>
-            </div>
 
-            <div class="login-content">
-                <span class="welcome-badge">Secure Access</span>
-                <h1>Welcome Back</h1>
-                
+        <div class="utility-links">
 
-                <form onsubmit="login(event)">
+            <span>
+                Global
+            </span>
 
-                    <!-- <label>User Role</label> 
-                    <select id="role">
-                        <option value="">Select Role</option>
-                        <option value="employee">Employee</option>
-                        <option value="manager">Manager</option>
-                        <option value="admin">Admin</option>
-                    </select>-->
+            <span>
+                English
+            </span>
 
-                    <label>Email Address</label>
-                    <input type="email" id="email" placeholder="Enter your email">
+            <a href="#support">
+                Client Support
+            </a>
 
-                    <label>Password</label>
-                    <div class="password-box">
-                        <input type="password" id="password" placeholder="Enter your password">
-                        <button type="button" class="toggle-btn" onclick="togglePassword()">Show</button>
+        </div>
+
+    </header>
+
+
+    <main class="login-stage">
+
+        <section class="login-container">
+
+            <div class="login-panel">
+
+                <div class="bank-brand">
+
+                    <div class="bank-mark">
+                        SF
                     </div>
 
-                    <div class="options-row">
-                        <label class="remember">
-                            <input type="checkbox">
-                            Remember me
+
+                    <div class="bank-name">
+
+                        <strong>
+                            SECURE FLOW
+                        </strong>
+
+                        <span>
+                            INTERNATIONAL BANKING
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="login-heading">
+
+                    <span class="section-label">
+                        SECURE CLIENT ACCESS
+                    </span>
+
+
+                    <h1>
+                        Welcome to
+                        <br>
+                        Secure Flow
+                    </h1>
+
+
+                    <p>
+                        Access your secure private banking workspace.
+                    </p>
+
+                </div>
+
+
+                <div
+                    id="success-message"
+                    class="success-message"
+                    role="status"
+                ></div>
+
+
+                <form
+                    id="loginForm"
+                    onsubmit="login(event)"
+                    novalidate
+                >
+
+                    <div class="field-group">
+
+                        <label for="email">
+                            Email address
                         </label>
 
-                        <a href="../forgot-password/forgot-password.html">Forgot Password?</a>
+
+                        <div class="input-shell">
+
+                            <span class="field-icon">
+
+                                <svg
+                                    viewBox="0 0 24 24"
+                                    aria-hidden="true"
+                                >
+                                    <path d="M3 6.5h18v11H3z"></path>
+                                    <path d="m4 7 8 6 8-6"></path>
+                                </svg>
+
+                            </span>
+
+
+                            <input
+                                id="email"
+                                name="email"
+                                type="email"
+                                autocomplete="email"
+                                placeholder="name@secureflow.com"
+                                required
+                            >
+
+                        </div>
+
                     </div>
 
-                    <p id="error-message"></p>
 
-                    <button type="submit" class="login-btn">Login</button>
+                    <div class="field-group">
+
+                        <div class="field-heading">
+
+                            <label for="password">
+                                Password
+                            </label>
+
+
+                            <a
+                                href="#support"
+                                class="forgot-link"
+                            >
+                                Need access help?
+                            </a>
+
+                        </div>
+
+
+                        <div class="input-shell">
+
+                            <span class="field-icon">
+
+                                <svg
+                                    viewBox="0 0 24 24"
+                                    aria-hidden="true"
+                                >
+                                    <rect
+                                        x="5"
+                                        y="10"
+                                        width="14"
+                                        height="10"
+                                        rx="1"
+                                    ></rect>
+
+                                    <path
+                                        d="M8 10V7a4 4 0 0 1 8 0v3"
+                                    ></path>
+                                </svg>
+
+                            </span>
+
+
+                            <input
+                                id="password"
+                                name="password"
+                                type="password"
+                                autocomplete="current-password"
+                                placeholder="Enter your password"
+                                required
+                            >
+
+
+                            <button
+                                type="button"
+                                class="toggle-btn"
+                                onclick="togglePassword()"
+                            >
+                                Show
+                            </button>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="login-options">
+
+                        <label class="remember-option">
+
+                            <input
+                                id="rememberMe"
+                                type="checkbox"
+                            >
+
+                            <span>
+                                Keep email on this device
+                            </span>
+
+                        </label>
+
+
+                        <span class="session-label">
+                            Protected session
+                        </span>
+
+                    </div>
+
+
+                    <div
+                        id="error-message"
+                        class="error-message"
+                        role="alert"
+                        aria-live="polite"
+                    ></div>
+
+
+                    <button
+                        id="loginButton"
+                        type="submit"
+                        class="login-button"
+                    >
+
+                        <span class="button-lock">
+
+                            <svg
+                                viewBox="0 0 24 24"
+                                aria-hidden="true"
+                            >
+                                <rect
+                                    x="6"
+                                    y="10"
+                                    width="12"
+                                    height="10"
+                                    rx="1"
+                                ></rect>
+
+                                <path
+                                    d="M9 10V7a3 3 0 0 1 6 0v3"
+                                ></path>
+                            </svg>
+
+                        </span>
+
+
+                        <span id="loginButtonText">
+                            Sign in securely
+                        </span>
+
+                    </button>
 
                 </form>
-            </div>
 
-        </div>
 
-<div class="visual-panel">
+                <div class="auth-divider">
 
-    <div class="secureflow-diagram">
+                    <span>
+                        OR
+                    </span>
 
-        <div class="diagram-badge">
-            Smart workflow routing for banking approvals
-        </div>
-
-        <h2>SecureFlow approval engine</h2>
-     
-
-        <div class="flow-area">
-
-            <div class="flow-node left-node employee-node">
-                Employee
-            </div>
-
-            <div class="flow-node left-node manager-node">
-                Manager
-            </div>
-
-            <div class="flow-node left-node senior-node">
-                Senior Manager
-            </div>
-
-            <div class="center-engine">
-                <div class="engine-ring">
-                    <span>Secure<br>Flow</span>
                 </div>
+
+
+                <div class="signup-area">
+
+                    <p>
+                        New to Secure Flow?
+                    </p>
+
+
+                    <a
+                        class="signup-button"
+                        href="../register/register.html"
+                    >
+                        Create Customer Account
+                    </a>
+
+
+                    <small>
+                        Customer registration only
+                    </small>
+
+                </div>
+
+
+                <div class="return-link">
+
+                    <a href="../../index.html">
+                        ← Return to Secure Flow International Banking
+                    </a>
+
+                </div>
+
             </div>
 
-            <div class="flow-node right-node home-loan">
-                Home Loan
-            </div>
 
-            <div class="flow-node right-node car-loan">
-                Car Loan
-            </div>
+            <aside class="visual-panel">
 
-            <div class="flow-node right-node personal-loan">
-                Personal Loan
-            </div>
+                <div class="visual-shade"></div>
 
-            <div class="decision-card approve-card">
-                Approved
-            </div>
 
-            <div class="decision-card reject-card">
-                Rejected
-            </div>
+                <div class="visual-top">
+
+                    <span>
+                        PRIVATE CLIENT BANKING
+                    </span>
+
+
+                    <div class="availability">
+
+                        <span class="availability-dot"></span>
+
+                        Secure access online
+
+                    </div>
+
+                </div>
+
+
+                <div class="visual-content">
+
+                    <span class="visual-label">
+                        INTERNATIONAL PRIVATE BANKING
+                    </span>
+
+
+                    <h2>
+                        Secure access.
+                        <br>
+                        Wherever business
+                        <br>
+                        takes you.
+                    </h2>
+
+
+                    <p>
+                        One secure gateway for clients,
+                        lending specialists and banking decisions.
+                    </p>
+
+                </div>
+
+
+                <div class="visual-footer">
+
+                    <div class="trust-stat">
+
+                        <strong>
+                            24/7
+                        </strong>
+
+                        <span>
+                            Client access
+                        </span>
+
+                    </div>
+
+
+                    <div class="trust-stat">
+
+                        <strong>
+                            JWT
+                        </strong>
+
+                        <span>
+                            Signed sessions
+                        </span>
+
+                    </div>
+
+
+                    <div class="trust-stat">
+
+                        <strong>
+                            BCrypt
+                        </strong>
+
+                        <span>
+                            Password security
+                        </span>
+
+                    </div>
+
+
+                    <div class="security-card">
+
+                        <span class="security-card-icon">
+
+                            <svg
+                                viewBox="0 0 24 24"
+                                aria-hidden="true"
+                            >
+                                <path
+                                    d="M12 3 5 6v5c0 4.5 2.8 8.3 7 10 4.2-1.7 7-5.5 7-10V6z"
+                                ></path>
+
+                                <path
+                                    d="m9 12 2 2 4-5"
+                                ></path>
+                            </svg>
+
+                        </span>
+
+
+                        <div>
+
+                            <strong>
+                                Protected banking environment
+                            </strong>
+
+                            <p>
+                                Keep your credentials private.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </aside>
+
+        </section>
+
+    </main>
+
+
+    <footer
+        id="support"
+        class="login-footer"
+    >
+
+        <div>
+
+            <strong>
+                Secure Flow International Banking
+            </strong>
+
+            <span>
+                Secure digital banking
+            </span>
 
         </div>
 
-    </div>
+
+        <div class="footer-links">
+
+            <span>
+                Client Support
+            </span>
+
+            <span>
+                Security Centre
+            </span>
+
+            <span>
+                Privacy
+            </span>
+
+        </div>
+
+    </footer>
 
 </div>
 
-    </div>
-
-</div>
 
 <script src="login.js"></script>
 

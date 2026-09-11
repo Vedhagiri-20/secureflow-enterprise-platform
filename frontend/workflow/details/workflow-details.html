@@ -1,51 +1,203 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-
-    <title>Workflow Details</title>
-
-    <link rel="stylesheet"
-    href="workflow-details.css">
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Application Details | SecureFlow</title>
+    <link rel="stylesheet" href="workflow-details.css">
+    <link rel="stylesheet" href="../../assets/secureflow-premium.css">
+    <link rel="stylesheet" href="../../assets/secureflow-contrast.css">
+    <link rel="stylesheet" href="../../assets/secureflow-unified.css">
 </head>
 <body>
 
-<div class="container">
+<div class="page">
 
-    <div class="details-card">
+    <header class="topbar">
 
-        <h1>Workflow Details</h1>
-
-        <div class="detail-row">
-            <strong>Workflow ID:</strong>
-            <span>#WF101</span>
+        <div>
+            <h2>SecureFlow International Bank</h2>
+            <p>Application Details</p>
         </div>
 
-        <div class="detail-row">
-            <strong>Employee:</strong>
-            <span>Ved</span>
-        </div>
+        <a
+            href="../../dashboard/customer/customer-dashboard.html"
+            class="back-button"
+        >
+            Back to Dashboard
+        </a>
 
-        <div class="detail-row">
-            <strong>Status:</strong>
-            <span class="pending">Pending</span>
-        </div>
+    </header>
 
-        <div class="detail-row">
-            <strong>Description:</strong>
-            <span>
-                Bank verification documents uploaded.
+    <main>
+
+        <section class="summary-card">
+
+            <span class="badge">
+                Loan Application
             </span>
-        </div>
 
-        <button>
-            Download Document
-        </button>
+            <h1 id="workItemNumber">
+                Loading...
+            </h1>
 
-    </div>
+            <div class="summary-row">
+
+                <div>
+                    <span>Status</span>
+                    <strong id="status">-</strong>
+                </div>
+
+                <div>
+                    <span>Loan Type</span>
+                    <strong id="loanType">-</strong>
+                </div>
+
+                <div>
+                    <span>Amount</span>
+                    <strong id="loanAmount">-</strong>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <section class="card">
+
+            <h2>Application Progress</h2>
+
+            <div class="tracker">
+
+                <div
+                    class="step"
+                    id="stepSubmitted"
+                >
+                    <span>1</span>
+                    <p>Submitted</p>
+                </div>
+
+                <div class="line"></div>
+
+                <div
+                    class="step"
+                    id="stepReview"
+                >
+                    <span>2</span>
+                    <p>Employee Review</p>
+                </div>
+
+                <div class="line"></div>
+
+                <div
+                    class="step"
+                    id="stepManager"
+                >
+                    <span>3</span>
+                    <p>Manager Review</p>
+                </div>
+
+                <div class="line"></div>
+
+                <div
+                    class="step"
+                    id="stepDecision"
+                >
+                    <span>4</span>
+                    <p>Final Decision</p>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <section class="details-grid">
+
+            <div class="card">
+
+                <h2>Applicant Details</h2>
+
+                <div class="detail">
+                    <span>Name</span>
+                    <strong id="applicantName">-</strong>
+                </div>
+
+                <div class="detail">
+                    <span>Email</span>
+                    <strong id="applicantEmail">-</strong>
+                </div>
+
+                <div class="detail">
+                    <span>Phone</span>
+                    <strong id="applicantPhone">-</strong>
+                </div>
+
+                <div class="detail">
+                    <span>Employment</span>
+                    <strong id="employmentType">-</strong>
+                </div>
+
+                <div class="detail">
+                    <span>Address</span>
+                    <strong id="residentialAddress">-</strong>
+                </div>
+
+            </div>
+
+
+            <div class="card">
+
+                <h2>Loan Details</h2>
+
+                <div class="detail">
+                    <span>Purpose</span>
+                    <strong id="loanPurpose">-</strong>
+                </div>
+
+                <div class="detail">
+                    <span>Priority</span>
+                    <strong id="priority">-</strong>
+                </div>
+
+                <div class="detail">
+                    <span>Assigned Employee</span>
+                    <strong id="employeeName">-</strong>
+                </div>
+
+                <div class="detail">
+                    <span>Assigned Manager</span>
+                    <strong id="managerName">-</strong>
+                </div>
+
+                <div class="detail">
+                    <span>Submitted</span>
+                    <strong id="submittedAt">-</strong>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <section class="card">
+
+            <h2>Status History</h2>
+
+            <div id="historyList">
+                Loading history...
+            </div>
+
+        </section>
+
+
+        <p id="message"></p>
+
+    </main>
 
 </div>
 
+    <script src="../../assets/api-config.js"></script>
 <script src="workflow-details.js"></script>
 
 </body>

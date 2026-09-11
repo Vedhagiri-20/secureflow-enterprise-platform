@@ -1,90 +1,204 @@
-body{
-    margin:0;
-    display:flex;
-    font-family:Arial;
-    background:#f4f7fb;
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
-.sidebar{
-    width:250px;
-    height:100vh;
-    background:#111827;
-    color:white;
-    padding:30px;
+body {
+    min-height: 100vh;
+    font-family: Arial, sans-serif;
+    color: #ffffff;
+    background: #101817;
 }
 
-.sidebar h2{
-    margin-bottom:40px;
+button {
+    font: inherit;
+    cursor: pointer;
 }
 
-.sidebar ul{
-    list-style:none;
-    padding:0;
+.page {
+    width: min(1250px, 94%);
+    margin: 0 auto;
+    padding: 30px 0 60px;
 }
 
-.sidebar ul li{
-    margin:20px 0;
+.topbar,
+.intro,
+.stat-card,
+.applications-card {
+    border: 1px solid #28403a;
+    background: #172421;
 }
 
-.sidebar ul li a{
-    color:white;
-    text-decoration:none;
-    display:block;
-    padding:12px;
-    border-radius:8px;
-    transition:0.3s;
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    padding: 20px 24px;
+    margin-bottom: 24px;
+    border-radius: 18px;
 }
 
-.sidebar ul li a:hover{
-    background:rgba(255,255,255,0.2);
+.topbar p,
+.user-area span,
+.intro p,
+.section-header p {
+    color: #9eb2ad;
 }
 
-.main-content{
-    flex:1;
-    padding:30px;
+.user-area {
+    display: flex;
+    align-items: center;
+    gap: 16px;
 }
 
-.cards{
-    display:grid;
-    grid-template-columns:repeat(4,1fr);
-    gap:20px;
-    margin-top:30px;
+.user-area button,
+.refresh-button {
+    padding: 10px 16px;
+    border: 1px solid #3b5f56;
+    border-radius: 10px;
+    color: #ffffff;
+    background: transparent;
 }
 
-.card{
-    background:white;
-    padding:25px;
-    border-radius:12px;
-    box-shadow:0 0 10px rgba(0,0,0,0.05);
+.intro {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    padding: 30px;
+    border-radius: 20px;
 }
 
-.pending{
-    border-left:5px solid orange;
+.badge {
+    display: inline-block;
+    margin-bottom: 10px;
+    padding: 7px 12px;
+    border-radius: 20px;
+    color: #45dfbb;
+    background: #173a32;
+    font-size: 13px;
+    font-weight: bold;
 }
 
-.approved{
-    border-left:5px solid green;
+.intro h1 {
+    margin-bottom: 8px;
+    font-size: 34px;
 }
 
-.rejected{
-    border-left:5px solid red;
+.stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin: 22px 0;
 }
 
-.table-section{
-    background:white;
-    margin-top:40px;
-    padding:25px;
-    border-radius:12px;
+.stat-card {
+    padding: 24px;
+    border-radius: 16px;
 }
 
-table{
-    width:100%;
-    border-collapse:collapse;
-    margin-top:20px;
+.stat-card span {
+    display: block;
+    margin-bottom: 10px;
+    color: #9eb2ad;
+    font-size: 14px;
 }
 
-th,td{
-    padding:15px;
-    border-bottom:1px solid #ddd;
-    text-align:left;
+.stat-card strong {
+    font-size: 32px;
+}
+
+#message {
+    min-height: 20px;
+    margin-bottom: 14px;
+    color: #ff8585;
+}
+
+.applications-card {
+    padding: 26px;
+    border-radius: 20px;
+}
+
+.section-header {
+    margin-bottom: 20px;
+}
+
+.section-header h2 {
+    margin-bottom: 6px;
+}
+
+.table-wrapper {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th,
+td {
+    padding: 14px 12px;
+    border-bottom: 1px solid #28403a;
+    text-align: left;
+    font-size: 14px;
+}
+
+th {
+    color: #9eb2ad;
+    font-size: 13px;
+}
+
+.action-group {
+    display: flex;
+    gap: 8px;
+}
+
+.action-button {
+    padding: 8px 12px;
+    border: 0;
+    border-radius: 8px;
+    font-weight: bold;
+}
+
+.approve-button {
+    color: #08201a;
+    background: #45dfbb;
+}
+
+.reject-button {
+    color: #ffffff;
+    background: #a24848;
+}
+
+.empty {
+    padding: 30px;
+    color: #9eb2ad;
+    text-align: center;
+}
+
+@media (max-width: 800px) {
+    .stats {
+        grid-template-columns: 1fr;
+    }
+
+    .topbar,
+    .intro,
+    .user-area {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .user-area,
+    .user-area button,
+    .refresh-button {
+        width: 100%;
+    }
+}
+
+.view-button {
+    color: #ffffff;
+    background: #2b4b44;
 }

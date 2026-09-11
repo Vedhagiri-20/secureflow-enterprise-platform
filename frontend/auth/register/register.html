@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="Create a Secure Flow private client account."
+    >
+
+    <title>
+        Create Client Account | Secure Flow
+    </title>
+
+    <link
+        rel="preconnect"
+        href="https://fonts.googleapis.com"
+    >
+
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet"
+    >
+
+    <link
+        rel="stylesheet"
+        href="register.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="../../assets/secureflow-unified.css"
+    >
+</head>
+
+
+<body>
+
+<div class="registration-shell">
+
+    <header class="registration-header">
+
+        <a
+            href="../../index.html"
+            class="header-brand"
+        >
+
+            <span class="brand-mark">
+                SF
+            </span>
+
+
+            <span class="brand-copy">
+
+                <strong>
+                    SECURE FLOW
+                </strong>
+
+                <small>
+                    INTERNATIONAL BANKING
+                </small>
+
+            </span>
+
+        </a>
+
+
+        <a
+            href="../login/login.html"
+            class="header-login"
+        >
+            Client Login
+        </a>
+
+    </header>
+
+
+    <main class="registration-stage">
+
+        <section class="registration-card">
+
+            <div class="registration-form-panel">
+
+                <div class="registration-heading">
+
+                    <span class="section-label">
+                        PRIVATE CLIENT REGISTRATION
+                    </span>
+
+
+                    <h1>
+                        Create your
+                        <br>
+                        Secure Flow account
+                    </h1>
+
+
+                    <p>
+                        Create your customer profile to access Secure Flow banking services.
+                    </p>
+
+                </div>
+
+
+                <form
+                    id="registrationForm"
+                    novalidate
+                >
+
+                    <div class="name-grid">
+
+                        <div class="field-group">
+
+                            <label for="firstName">
+                                First Name
+                            </label>
+
+                            <input
+                                id="firstName"
+                                type="text"
+                                autocomplete="given-name"
+                                placeholder="First name"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="field-group">
+
+                            <label for="middleName">
+                                Middle Name
+                            </label>
+
+                            <input
+                                id="middleName"
+                                type="text"
+                                autocomplete="additional-name"
+                                placeholder="Optional"
+                            >
+
+                        </div>
+
+
+                        <div class="field-group">
+
+                            <label for="lastName">
+                                Last Name
+                            </label>
+
+                            <input
+                                id="lastName"
+                                type="text"
+                                autocomplete="family-name"
+                                placeholder="Last name"
+                                required
+                            >
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="two-column">
+
+                        <div class="field-group">
+
+                            <label for="email">
+                                Email Address
+                            </label>
+
+                            <input
+                                id="email"
+                                type="email"
+                                autocomplete="email"
+                                placeholder="name@example.com"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="field-group">
+
+                            <label for="phoneNumber">
+                                Mobile Number
+                            </label>
+
+                            <input
+                                id="phoneNumber"
+                                type="tel"
+                                autocomplete="tel"
+                                placeholder="+1 555 000 0000"
+                                required
+                            >
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="two-column">
+
+                        <div class="field-group">
+
+                            <label for="password">
+                                Password
+                            </label>
+
+                            <div class="password-shell">
+
+                                <input
+                                    id="password"
+                                    type="password"
+                                    autocomplete="new-password"
+                                    placeholder="Minimum 8 characters"
+                                    minlength="8"
+                                    required
+                                >
+
+                                <button
+                                    type="button"
+                                    onclick="togglePassword('password', this)"
+                                >
+                                    Show
+                                </button>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="field-group">
+
+                            <label for="confirmPassword">
+                                Confirm Password
+                            </label>
+
+                            <div class="password-shell">
+
+                                <input
+                                    id="confirmPassword"
+                                    type="password"
+                                    autocomplete="new-password"
+                                    placeholder="Re-enter password"
+                                    minlength="8"
+                                    required
+                                >
+
+                                <button
+                                    type="button"
+                                    onclick="togglePassword('confirmPassword', this)"
+                                >
+                                    Show
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="customer-note">
+
+                        <strong>
+                            Customer account
+                        </strong>
+
+                        <span>
+                            Public registration creates CUSTOMER access only.
+                        </span>
+
+                    </div>
+
+
+                    <div
+                        id="registrationError"
+                        class="form-error"
+                        role="alert"
+                    ></div>
+
+
+                    <button
+                        id="createAccountButton"
+                        class="create-account-button"
+                        type="submit"
+                    >
+                        <span id="createAccountText">
+                            Create Customer Account
+                        </span>
+                    </button>
+
+                </form>
+
+
+                <div class="existing-account">
+
+                    <span>
+                        Already registered?
+                    </span>
+
+                    <a href="../login/login.html">
+                        Sign in securely
+                    </a>
+
+                </div>
+
+            </div>
+
+
+            <aside class="registration-visual">
+
+                <div class="visual-overlay"></div>
+
+
+                <div class="visual-topline">
+
+                    <span>
+                        SECURE FLOW
+                    </span>
+
+                    <span>
+                        PRIVATE CLIENT BANKING
+                    </span>
+
+                </div>
+
+
+                <div class="visual-copy">
+
+                    <span class="visual-label">
+                        CLIENT ONBOARDING
+                    </span>
+
+
+                    <h2>
+                        Your banking
+                        <br>
+                        relationship
+                        <br>
+                        starts here.
+                    </h2>
+
+
+                    <p>
+                        Create one protected identity for applications,
+                        status tracking and secure client access.
+                    </p>
+
+                </div>
+
+
+                <div class="visual-security">
+
+                    <div>
+                        <strong>
+                            CUSTOMER
+                        </strong>
+
+                        <span>
+                            Client access only
+                        </span>
+                    </div>
+
+
+                    <div>
+                        <strong>
+                            BCrypt
+                        </strong>
+
+                        <span>
+                            Protected password
+                        </span>
+                    </div>
+
+
+                    <div>
+                        <strong>
+                            JWT
+                        </strong>
+
+                        <span>
+                            Secure login session
+                        </span>
+                    </div>
+
+                </div>
+
+            </aside>
+
+        </section>
+
+    </main>
+
+</div>
+
+
+<script src="register.js"></script>
+
+</body>
+</html>

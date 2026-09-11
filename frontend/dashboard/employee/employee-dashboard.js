@@ -1,201 +1,805 @@
+const API =
+    "http://localhost:8080/api/employee";
 
-checkAuthentication("EMPLOYEE");
-console.log("Employee Verification Dashboard Loaded");
+const token =
+    localStorage.getItem(
+        "secureFlowToken"
+    );
 
-document.addEventListener("DOMContentLoaded", async function () {
+const role =
+    localStorage.getItem(
+        "secureFlowUserRole"
+    );
 
-    const savedEmail =
-        sessionStorage.getItem("secureFlowUserEmail") ||
-        "employee@secureflow.com";
+const email =
+    localStorage.getItem(
+        "secureFlowUserEmail"
+    );
 
-    const savedName =
-        sessionStorage.getItem("secureFlowUserName") ||
-        getNameFromEmail(savedEmail);
+const fullName =
+    localStorage.getItem(
+        "secureFlowUserName"
+    ) || email || "SecureFlow Employee";
 
-    setUserProfile(savedName);
+let availableApplications = [];
+let assignedApplications = [];
 
-    await loadEmployeeDashboard(savedEmail);
-});
 
-function getNameFromEmail(email) {
-    if (!email || !email.includes("@")) return "User";
-
-    return email
-        .split("@")[0]
-        .replace(/[0-9._-]/g, " ")
-        .trim()
-        .split(" ")[0] || "User";
+if (!token || role !== "EMPLOYEE") {
+    goToLogin();
 }
 
-function formatShortName(name) {
-    if (!name) return "User";
-    return name.trim().length <= 5 ? name.trim() : name.trim().substring(0, 5);
+
+initializeProfile();
+initializeNavigation();
+initializeSearch();
+loadPage();
+
+
+function initializeProfile() {
+    setText(
+        "sidebarName",
+        fullName
+    );
+
+    setText(
+        "sidebarEmail",
+        email || "-"
+    );
+
+    setText(
+        "profileName",
+        fullName
+    );
+
+    setText(
+        "profileEmail",
+        email || "-"
+    );
+
+    setText(
+        "profileInitials",
+        getInitials(fullName)
+    );
 }
 
-function setUserProfile(name) {
-    const displayName = formatShortName(name);
 
-    document.getElementById("welcomeText").innerText = `Hi ${displayName}!`;
-    document.getElementById("userAvatar").innerText =
-        displayName.charAt(0).toUpperCase();
-}
+function initializeNavigation() {
+    document.querySelectorAll(
+        ".portal-nav-button"
+    ).forEach(button => {
 
-async function loadEmployeeDashboard(email) {
-    try {
-        const response = await fetch(
-            `http://localhost:8080/api/dashboard/employee?email=${encodeURIComponent(email)}`
+        button.addEventListener(
+            "click",
+            () => showPage(
+                button.dataset.page
+            )
         );
 
-        if (!response.ok) {
-            throw new Error("Failed to fetch dashboard data");
-        }
+    });
+}
 
-        const data = await response.json();
 
-        const pending = data.pending || 0;
-        const forwarded = data.approved || 0;
-        const rejected = data.rejected || 0;
-        const total = data.total || 0;
+function initializeSearch() {
+    document.getElementById(
+        "availableSearch"
+    ).addEventListener(
+        "input",
+        renderAvailable
+    );
 
-        document.getElementById("pendingCount").innerText = pending;
-        document.getElementById("forwardedCount").innerText = forwarded;
-        document.getElementById("rejectedCount").innerText = rejected;
+    document.getElementById(
+        "reviewSearch"
+    ).addEventListener(
+        "input",
+        renderAssigned
+    );
+}
 
-        document.getElementById("totalApplicationCount").innerText = total;
-        document.getElementById("pendingApplicationCount").innerText = pending;
-        document.getElementById("donutTotalCount").innerText = total;
 
-        document.getElementById("pendingLegend").innerHTML =
-            `<span class="dot pending-dot"></span> Pending - ${pending}`;
+function showPage(name) {
+    document.querySelectorAll(
+        ".portal-view"
+    ).forEach(view => {
+        view.classList.remove(
+            "active"
+        );
+    });
 
-        document.getElementById("forwardedLegend").innerHTML =
-            `<span class="dot approved-dot"></span> Forwarded - ${forwarded}`;
+    document.querySelectorAll(
+        ".portal-nav-button"
+    ).forEach(button => {
+        button.classList.remove(
+            "active"
+        );
+    });
 
-        document.getElementById("rejectedLegend").innerHTML =
-            `<span class="dot rejected-dot"></span> Rejected - ${rejected}`;
+    document.getElementById(
+        `${name}Page`
+    ).classList.add(
+        "active"
+    );
 
-        const health =
-            total === 0 ? 0 : Math.round((forwarded / total) * 100);
+    const button =
+        document.querySelector(
+            `[data-page="${name}"]`
+        );
 
-        document.getElementById("workflowHealth").innerText = `${health}%`;
+    if (button) {
+        button.classList.add(
+            "active"
+        );
+    }
 
-        document.getElementById("teamUpdateText").innerText =
-            pending > 0
-                ? `${pending} applications need employee verification.`
-                : "No pending employee verification items.";
+    const meta = {
+        dashboard: [
+            "Lending Dashboard",
+            "Review and process SecureFlow customer applications."
+        ],
+
+        available: [
+            "Available Applications",
+            "Search new applications waiting for an employee."
+        ],
+
+        reviews: [
+            "My Reviews",
+            "Search applications currently or previously handled by you."
+        ],
+
+        profile: [
+            "Employee Profile",
+            "Review your authenticated employee identity."
+        ]
+    };
+
+    const selected =
+        meta[name];
+
+    setText(
+        "pageTitle",
+        selected[0]
+    );
+
+    setText(
+        "pageDescription",
+        selected[1]
+    );
+}
+
+
+async function loadPage() {
+    try {
+        const [
+            dashboard,
+            available,
+            assigned
+        ] = await Promise.all([
+            api("/dashboard"),
+            api("/applications/available"),
+            api("/applications")
+        ]);
+
+        availableApplications =
+            available;
+
+        assignedApplications =
+            assigned;
+
+        setText(
+            "availableCount",
+            dashboard.available
+        );
+
+        setText(
+            "assignedCount",
+            dashboard.assigned
+        );
+
+        setText(
+            "reviewCount",
+            dashboard.underReview
+        );
+
+        setText(
+            "forwardedCount",
+            dashboard.forwarded
+        );
+
+        setText(
+            "rejectedCount",
+            dashboard.rejected
+        );
+
+        renderAvailable();
+        renderAssigned();
+        renderRecent();
 
     } catch (error) {
-        console.error("Dashboard API Error:", error);
-
-        document.getElementById("teamUpdateText").innerText =
-            "Unable to load dashboard data. Start Spring Boot server.";
+        showError(
+            error.message
+        );
     }
 }
 
-async function quickSearch() {
-    const workItemNumber =
-        document.getElementById("workItemSearch").value.trim();
 
-    const loanType =
-        document.getElementById("loanTypeSearch").value;
+async function api(
+    path,
+    options = {}
+) {
+    const response =
+        await fetch(
+            `${API}${path}`,
+            {
+                ...options,
 
-    const message =
-        document.getElementById("searchMessage");
+                headers: {
+                    "Authorization":
+                        `Bearer ${token}`,
+                    ...(options.headers || {})
+                }
+            }
+        );
 
-    const savedEmail =
-        sessionStorage.getItem("secureFlowUserEmail") ||
-        "employee@secureflow.com";
+    if (
+        response.status === 401
+        || response.status === 403
+    ) {
+        logout();
 
-    message.innerText = "";
+        throw new Error(
+            "Session expired"
+        );
+    }
 
-    if (workItemNumber === "" && loanType === "") {
-        message.innerText = "Enter application ID, work item number, or select loan type.";
+    const data =
+        await response.json()
+            .catch(() => ({}));
+
+    if (!response.ok) {
+        throw new Error(
+            data.message
+            || "Request failed"
+        );
+    }
+
+    return data;
+}
+
+
+function renderRecent() {
+    renderApplications(
+        document.getElementById(
+            "recentAssignedTable"
+        ),
+        assignedApplications.slice(
+            0,
+            5
+        ),
+        true
+    );
+}
+
+
+function renderAvailable() {
+    const query =
+        document.getElementById(
+            "availableSearch"
+        ).value.trim()
+            .toLowerCase();
+
+    const filtered =
+        availableApplications
+            .filter(application =>
+                matchesSearch(
+                    application,
+                    query
+                )
+            );
+
+    const target =
+        document.getElementById(
+            "availableTable"
+        );
+
+    if (!filtered.length) {
+        target.innerHTML = `
+            <tr>
+                <td
+                    colspan="6"
+                    class="portal-empty"
+                >
+                    No matching available applications.
+                </td>
+            </tr>
+        `;
+
         return;
     }
 
+    target.innerHTML =
+        filtered.map(
+            application => `
+                <tr>
+
+                    <td>
+                        ${escapeHtml(
+                            application.workItemNumber
+                        )}
+                    </td>
+
+                    <td>
+                        ${escapeHtml(
+                            application.applicantName
+                        )}
+                    </td>
+
+                    <td>
+                        ${escapeHtml(
+                            application.loanType
+                        )}
+                    </td>
+
+                    <td>
+                        ${formatAmount(
+                            application.loanAmount
+                        )}
+                    </td>
+
+                    <td>
+                        ${escapeHtml(
+                            application.priority || "-"
+                        )}
+                    </td>
+
+                    <td>
+
+                        <div class="portal-actions">
+
+                            <button
+                                class="
+                                    portal-action
+                                    view
+                                "
+                                onclick="
+                                    viewApplication(
+                                        ${application.workflowId}
+                                    )
+                                "
+                            >
+                                View
+                            </button>
+
+                            <button
+                                class="
+                                    portal-action
+                                    gold
+                                "
+                                onclick="
+                                    startReview(
+                                        ${application.workflowId}
+                                    )
+                                "
+                            >
+                                Start Review
+                            </button>
+
+                        </div>
+
+                    </td>
+
+                </tr>
+            `
+        ).join("");
+}
+
+
+function renderAssigned() {
+    const query =
+        document.getElementById(
+            "reviewSearch"
+        ).value.trim()
+            .toLowerCase();
+
+    const filtered =
+        assignedApplications
+            .filter(application =>
+                matchesSearch(
+                    application,
+                    query
+                )
+            );
+
+    renderApplications(
+        document.getElementById(
+            "assignedTable"
+        ),
+        filtered,
+        true
+    );
+}
+
+
+function renderApplications(
+    target,
+    items,
+    includeActions
+) {
+    if (!items.length) {
+        target.innerHTML = `
+            <tr>
+                <td
+                    colspan="6"
+                    class="portal-empty"
+                >
+                    No matching applications.
+                </td>
+            </tr>
+        `;
+
+        return;
+    }
+
+    target.innerHTML =
+        items.map(
+            application => `
+                <tr>
+
+                    <td>
+                        ${escapeHtml(
+                            application.workItemNumber
+                        )}
+                    </td>
+
+                    <td>
+                        ${escapeHtml(
+                            application.applicantName
+                        )}
+                    </td>
+
+                    <td>
+                        ${escapeHtml(
+                            application.loanType
+                        )}
+                    </td>
+
+                    <td>
+                        ${formatAmount(
+                            application.loanAmount
+                        )}
+                    </td>
+
+                    <td>
+                        <span
+                            class="
+                                portal-status
+                                ${
+                                    statusClass(
+                                        application.status
+                                    )
+                                }
+                            "
+                        >
+                            ${formatStatus(
+                                application.status
+                            )}
+                        </span>
+                    </td>
+
+                    <td>
+                        ${
+                            includeActions
+                                ? renderActions(
+                                    application
+                                )
+                                : "-"
+                        }
+                    </td>
+
+                </tr>
+            `
+        ).join("");
+}
+
+
+function renderActions(
+    application
+) {
+    let html = `
+        <div class="portal-actions">
+
+            <button
+                class="
+                    portal-action
+                    view
+                "
+                onclick="
+                    viewApplication(
+                        ${application.workflowId}
+                    )
+                "
+            >
+                View
+            </button>
+    `;
+
+    if (
+        application.status
+        === "UNDER_REVIEW"
+    ) {
+        html += `
+            <button
+                class="
+                    portal-action
+                    gold
+                "
+                onclick="
+                    forwardApplication(
+                        ${application.workflowId}
+                    )
+                "
+            >
+                Forward
+            </button>
+
+            <button
+                class="
+                    portal-action
+                    reject
+                "
+                onclick="
+                    rejectApplication(
+                        ${application.workflowId}
+                    )
+                "
+            >
+                Reject
+            </button>
+        `;
+    }
+
+    html += "</div>";
+
+    return html;
+}
+
+
+function matchesSearch(
+    application,
+    query
+) {
+    if (!query) {
+        return true;
+    }
+
+    return [
+        application.workItemNumber,
+        application.applicantName,
+        application.applicantEmail,
+        application.loanType,
+        application.status,
+        application.priority
+    ]
+        .filter(Boolean)
+        .some(value =>
+            String(value)
+                .toLowerCase()
+                .includes(query)
+        );
+}
+
+
+function viewApplication(
+    workflowId
+) {
+    window.location.href =
+        `../../workflow/details/workflow-details.html?id=${workflowId}`;
+}
+
+
+async function startReview(
+    workflowId
+) {
+    await performAction(
+        workflowId,
+        "review",
+        "Application assigned to you."
+    );
+
+    showPage(
+        "reviews"
+    );
+}
+
+
+async function forwardApplication(
+    workflowId
+) {
+    if (
+        !window.confirm(
+            "Forward this application to the manager?"
+        )
+    ) {
+        return;
+    }
+
+    await performAction(
+        workflowId,
+        "forward",
+        "Application forwarded to manager."
+    );
+}
+
+
+async function rejectApplication(
+    workflowId
+) {
+    if (
+        !window.confirm(
+            "Reject this application?"
+        )
+    ) {
+        return;
+    }
+
+    await performAction(
+        workflowId,
+        "reject",
+        "Application rejected."
+    );
+}
+
+
+async function performAction(
+    workflowId,
+    action,
+    successMessage
+) {
     try {
-        const params = new URLSearchParams();
-
-        params.append("email", savedEmail);
-
-        if (workItemNumber !== "") {
-            params.append("query", workItemNumber);
-        }
-
-        if (loanType !== "") {
-            params.append("loanType", loanType);
-        }
-
-        const response = await fetch(
-            `http://localhost:8080/api/workflows/search?${params.toString()}`
+        await api(
+            `/applications/${workflowId}/${action}`,
+            {
+                method: "PUT"
+            }
         );
 
-        if (!response.ok) {
-            message.innerText = "No application found for your search.";
-            return;
-        }
+        await loadPage();
 
-        const workflow = await response.json();
-
-        openWorkflowModal(workflow);
+        showSuccess(
+            successMessage
+        );
 
     } catch (error) {
-        console.error("Quick Search Error:", error);
-        message.innerText = "Unable to search. Please start Spring Boot server.";
+        showError(
+            error.message
+        );
     }
 }
 
-function openWorkflowModal(workflow) {
-    document.getElementById("modalWorkItem").innerText =
-        workflow.workItemNumber || workflow.applicationId || "-";
 
-    document.getElementById("modalLoanType").innerText =
-        workflow.loanType || "-";
+function statusClass(status) {
+    if (status === "APPROVED") {
+        return "approved";
+    }
 
-    document.getElementById("modalStatus").innerText =
-        workflow.status || "-";
+    if (status === "REJECTED") {
+        return "rejected";
+    }
 
-    document.getElementById("modalApplicant").innerText =
-        workflow.applicantName || workflow.customerName || "-";
+    if (
+        status === "UNDER_REVIEW"
+        || status === "FORWARDED_TO_MANAGER"
+    ) {
+        return "review";
+    }
 
-    document.getElementById("modalEmail").innerText =
-        workflow.applicantEmail || workflow.customerEmail || "-";
-
-    document.getElementById("modalPhone").innerText =
-        workflow.applicantPhone || workflow.customerPhone || "-";
-
-    document.getElementById("modalAmount").innerText =
-        workflow.loanAmount
-            ? "$" + Number(workflow.loanAmount).toLocaleString()
-            : "-";
-
-    document.getElementById("modalEligibility").innerText =
-        workflow.eligibilityScore || "Not checked";
-
-    document.getElementById("modalRisk").innerText =
-        workflow.eligibilityRisk || "Not checked";
-
-    document.getElementById("modalCreatedDate").innerText =
-        workflow.createdDate
-            ? formatDate(workflow.createdDate)
-            : "-";
-
-    document.getElementById("modalPurpose").innerText =
-        workflow.loanPurpose || "-";
-
-    document.getElementById("workflowModal").classList.add("show");
+    return "";
 }
 
-function closeWorkflowModal() {
-    document.getElementById("workflowModal").classList.remove("show");
+
+function formatStatus(value) {
+    return String(
+        value || "-"
+    )
+        .replaceAll("_", " ")
+        .toLowerCase()
+        .replace(
+            /\b\w/g,
+            character =>
+                character.toUpperCase()
+        );
 }
 
-function formatDate(dateString) {
-    const date = new Date(dateString);
 
-    return date.toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "short",
-        day: "numeric"
-    });
+function formatAmount(value) {
+    return Number(
+        value || 0
+    ).toLocaleString(
+        "en-US",
+        {
+            style: "currency",
+            currency: "USD",
+            maximumFractionDigits: 0
+        }
+    );
+}
+
+
+function getInitials(value) {
+    return String(
+        value || "SF"
+    )
+        .trim()
+        .split(/\s+/)
+        .slice(0, 2)
+        .map(part =>
+            part.charAt(0)
+                .toUpperCase()
+        )
+        .join("")
+        || "SF";
+}
+
+
+function setText(
+    id,
+    value
+) {
+    document.getElementById(
+        id
+    ).textContent =
+        value ?? "-";
+}
+
+
+function escapeHtml(value) {
+    const element =
+        document.createElement(
+            "div"
+        );
+
+    element.textContent =
+        value || "-";
+
+    return element.innerHTML;
+}
+
+
+function showSuccess(message) {
+    const element =
+        document.getElementById(
+            "message"
+        );
+
+    element.textContent =
+        message;
+
+    element.style.color =
+        "#236b53";
+}
+
+
+function showError(message) {
+    const element =
+        document.getElementById(
+            "message"
+        );
+
+    element.textContent =
+        message;
+
+    element.style.color =
+        "#974646";
+}
+
+
+function logout() {
+    localStorage.clear();
+    goToLogin();
+}
+
+
+function goToLogin() {
+    window.location.href =
+        "../../auth/login/login.html";
 }

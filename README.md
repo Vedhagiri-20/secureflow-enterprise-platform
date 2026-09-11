@@ -1,236 +1,173 @@
 # SecureFlow Enterprise Platform
 
-## AI-Assisted Enterprise Workflow & Decision Management System
+### Enterprise Workflow & Document Management System
 
-SecureFlow Enterprise Platform is a full-stack enterprise workflow automation system designed to simulate real-world loan processing and approval operations within modern financial institutions.
+SecureFlow Enterprise Platform is a secure workflow automation and document management system designed for enterprise environments such as banking, healthcare, insurance, and business operations.
 
-The platform enables customers to evaluate loan eligibility, submit applications, track workflow status, and receive notifications while employees and managers collaborate through structured approval workflows. SecureFlow combines workflow automation, role-based access control, AI-assisted decision support, reporting, audit tracking, and cloud-ready architecture into a single enterprise-grade solution.
+The platform enables employees to create workflow requests, upload supporting documents, and submit them for approval. Managers can review, approve, or reject requests, while administrators oversee user management, audit logs, reporting, and system governance.
 
-This project is being developed as a portfolio-focused application to demonstrate software engineering, enterprise architecture, workflow automation, secure system design, cloud deployment, and AI integration using modern technologies.
+This project is being developed as a portfolio-focused enterprise application to demonstrate full-stack development, secure system design, workflow automation, cloud deployment, and modern software architecture.
 
 ---
 
 # Project Vision
 
-Financial organizations process thousands of customer requests every day. These requests move through multiple business stages including application submission, document verification, approval workflows, notifications, compliance tracking, and reporting.
+Modern organizations rely heavily on approval workflows, document processing, compliance tracking, and secure access control.
 
-SecureFlow is designed to simulate this complete enterprise lifecycle.
+SecureFlow aims to simulate a real-world enterprise workflow platform by combining:
 
-The goal is to showcase how modern organizations build scalable systems that combine:
-
-* Workflow Automation
-* AI-Assisted Decision Support
-* Role-Based Access Control (RBAC)
 * Secure Authentication
-* Reporting & Analytics
-* Audit & Compliance Tracking
+* Role-Based Access Control (RBAC)
+* Workflow Automation
+* Document Management
+* Audit Logging
 * Cloud Deployment
-* Enterprise Software Architecture
+* Enterprise Security Practices
 
----
-
-# Business Scenario
-
-A customer wants to apply for a loan.
-
-Before submitting the application, the customer can use SecureFlow's Eligibility Engine to estimate:
-
-* Approval Probability
-* Risk Level
-* Suggested Loan Amount
-* Estimated Interest Range
-
-Once submitted, the application moves through the organization's approval process.
-
-Customer
-↓
-Loan Application
-↓
-Employee Verification
-↓
-Manager Review
-↓
-Approved / Rejected
-↓
-Customer Notification
-↓
-Audit Logging
-↓
-Reporting & Analytics
-
----
-
-# Core Modules
-
-## Customer Portal
-
-Customers can:
-
-* Register and Login
-* View Available Loan Products
-* Use AI Eligibility Checker
-* Submit Loan Applications
-* Upload Supporting Information
-* Track Application Status
-* View Application History
-* Receive Notifications
-
----
-
-## AI Eligibility Engine
-
-SecureFlow includes a rule-based AI-assisted eligibility engine.
-
-The engine evaluates:
-
-* Age
-* Income
-* Employment Type
-* Credit Score
-* Loan Amount
-* Loan Type
-
-Outputs include:
-
-* Eligibility Score
-* Approval Probability
-* Risk Classification
-* Suggested Loan Capacity
-* Estimated Interest Range
-
-This feature demonstrates practical AI-inspired decision support within enterprise workflows.
-
----
-
-## Employee Portal
-
-Employees can:
-
-* Review Submitted Applications
-* Verify Customer Information
-* Validate Documents
-* Add Review Notes
-* Forward Applications to Managers
-* Monitor Workflow Progress
-
----
-
-## Manager Portal
-
-Managers can:
-
-* Review Verified Applications
-* Approve Requests
-* Reject Requests
-* Request Additional Information
-* Monitor Approval Statistics
-* Access Workflow Reports
-
----
-
-## Administrator Portal
-
-Administrators can:
-
-* Manage Users
-* Manage Roles
-* Monitor System Activity
-* Access Audit Logs
-* Generate Reports
-* Configure System Settings
+The goal is to build a scalable, secure, and cloud-ready platform that reflects how enterprise systems are designed and deployed in production environments.
 
 ---
 
 # System Architecture
 
+![System Architecture](docs/architecture/secureflow-system-architecture.png)
+
+### High-Level Architecture
+
+```text
 Users
-│
-├── Customer Portal
-├── Employee Portal
-├── Manager Portal
-└── Administrator Portal
-│
-▼
-Frontend Layer
-(HTML • CSS • JavaScript)
-│
-▼
+   │
+   ▼
+Frontend Application
+   │
+   ▼
 Spring Boot REST APIs
-│
-▼
-Business Services
-│
-├── Authentication Service
-├── Eligibility Engine
-├── Workflow Service
-├── Reporting Service
-├── Notification Service
-└── Audit Service
-│
-▼
+   │
+   ▼
 PostgreSQL Database
-│
-├── Users
-├── Customers
-├── Loan Applications
-├── Workflow Actions
-├── Notifications
-└── Audit Logs
+   │
+   ├── Workflow Data
+   ├── User Management
+   ├── Audit Logs
+   └── Reports
+   │
+   ▼
+AWS S3 Storage
+```
+
+Future enhancements include Redis caching, Neo4j relationship modeling, Docker containerization, and AWS-based deployment pipelines.
 
 ---
 
-# Workflow Lifecycle
+# Core Business Modules
 
-Customer Registration
-↓
-Customer Login
-↓
-Eligibility Assessment
-↓
-Loan Application Submission
-↓
-Employee Verification
-↓
-Manager Approval Review
-↓
-Approve / Reject
-↓
-Customer Notification
-↓
-Audit Logging
-↓
-Reporting & Analytics
+### User Management
+
+* Employee Management
+* Manager Management
+* Administrator Management
+* Role Assignment
+* Access Control
+
+### Workflow Management
+
+* Create Workflow Requests
+* Submit Requests
+* Approve Requests
+* Reject Requests
+* Workflow Tracking
+* Workflow History
+
+### Document Management
+
+* Document Upload
+* Secure Storage
+* Attachment Management
+* Download & Retrieval
+
+### Reporting & Analytics
+
+* Workflow Metrics
+* Approval Statistics
+* Activity Reports
+* User Reports
+
+### Audit & Compliance
+
+* Activity Logging
+* Approval Tracking
+* Security Monitoring
+* Audit History
 
 ---
 
 # User Roles
 
-## Customer
-
-* Submit Applications
-* Check Eligibility
-* Track Status
-* View Notifications
-
 ## Employee
 
-* Review Applications
-* Verify Information
-* Validate Documents
-* Forward Requests
+Employees can:
+
+* Login securely
+* Create workflow requests
+* Upload supporting documents
+* Submit workflows
+* View request status
+* Receive notifications
+* Access workflow history
 
 ## Manager
 
-* Approve Applications
-* Reject Applications
-* Monitor Workflow Progress
+Managers can:
+
+* Review pending requests
+* Approve workflows
+* Reject workflows
+* Add comments
+* Track assigned requests
+* Monitor workflow activity
 
 ## Administrator
 
-* User Management
-* Security Monitoring
-* Audit Tracking
-* System Configuration
+Administrators can:
+
+* Manage users
+* Manage roles
+* Monitor system activity
+* Access audit logs
+* Generate reports
+* Configure system settings
+
+---
+
+# Workflow Lifecycle
+
+```text
+Employee Login
+      │
+      ▼
+Create Workflow Request
+      │
+      ▼
+Upload Documents
+      │
+      ▼
+Submit Workflow
+      │
+      ▼
+Manager Review
+      │
+ ┌────┴────┐
+ ▼         ▼
+Approve   Reject
+ ▼         ▼
+Status Updated
+      │
+      ▼
+Audit Logged
+      │
+      ▼
+Reports Generated
+```
 
 ---
 
@@ -241,49 +178,40 @@ Reporting & Analytics
 * HTML5
 * CSS3
 * JavaScript
-* Responsive Design
+* Bootstrap
 
 ## Backend
 
 * Java
 * Spring Boot
 * REST APIs
-* Maven
 
 ## Database
 
 * PostgreSQL
-* pgAdmin
 
 ## Security
 
 * Spring Security
 * JWT Authentication
-* BCrypt Password Encryption
+* BCrypt Password Hashing
 * Role-Based Access Control (RBAC)
 
-## Testing
-
-* Postman
-* JUnit
-* Mockito
-
-## Documentation
-
-* Swagger / OpenAPI
-
-## DevOps
-
-* GitHub
-* Docker
-* GitHub Actions
-
-## Cloud
+## Cloud & DevOps
 
 * AWS EC2
 * AWS RDS
 * AWS S3
+* Docker
+* GitHub
+
+## Future Enhancements
+
+* Redis
+* Neo4j
 * AWS CloudWatch
+* CI/CD Pipelines
+* Infrastructure Automation
 
 ---
 
@@ -291,118 +219,32 @@ Reporting & Analytics
 
 ## Completed
 
-### Project Foundation
-
-* Repository Setup
-* Enterprise Architecture Design
-* Development Roadmap
-* Folder Structure
-
-### Authentication
-
-* Login Module
-* Role-Based Navigation
-* Session Handling Foundation
-
-### Employee Module
-
-* Employee Dashboard
-* Dashboard Analytics
-* Workflow Creation
-* Workflow Tracking
-* Report Dashboard
-* Quick Search Functionality
-
-### Backend Foundation
-
-* Spring Boot Setup
-* Entity Models
-* Repository Layer
-* Service Layer
-* Controller Layer
-* PostgreSQL Integration
-
-### Reporting
-
-* Workflow Analytics
-* Loan Statistics
-* Report Dashboard
-
----
+* Project Vision & Scope Defined
+* Enterprise Architecture Designed
+* Development Roadmap Created
+* Frontend Structure Planned
+* Login Page Developed
+* Employee Dashboard Developed
+* Workflow Design Finalized
 
 ## In Progress
 
-### Customer Portal
-
-* Customer Dashboard
-* Customer Registration
-* Customer Login
-* Loan Application Module
-* Application Tracking
-
-### Manager Module
-
+* Frontend Development
+* Navigation & Routing
 * Manager Dashboard
-* Approval Workflow
-* Rejection Workflow
-
-### AI Eligibility Engine
-
-* Scoring Logic
-* Risk Assessment
-* Approval Probability Calculation
-
----
+* Admin Dashboard
+* Workflow Screens
 
 ## Upcoming
 
-### Security
-
+* Spring Boot Backend
+* PostgreSQL Integration
 * JWT Authentication
-* Spring Security Integration
-* Endpoint Authorization
-
-### Compliance
-
-* Audit Logs
-* Activity Monitoring
-* Security Reports
-
-### DevOps
-
-* Docker Containerization
-* GitHub Actions
-* CI/CD Pipeline
-
-### Cloud Deployment
-
-* AWS EC2 Deployment
-* AWS RDS PostgreSQL
-* AWS S3 Document Storage
-
----
-
-# Database Design (Planned)
-
-roles
-
-users
-
-customers
-
-loan_products
-
-loan_applications
-
-workflow_actions
-
-notifications
-
-documents
-
-audit_logs
-
-eligibility_assessments
+* Workflow APIs
+* File Upload APIs
+* Audit Logging
+* Dockerization
+* AWS Deployment
 
 ---
 
@@ -410,94 +252,126 @@ eligibility_assessments
 
 ## Phase 1 — Frontend Foundation
 
-* Authentication UI
-* Employee Portal
-* Reports Dashboard
+* Static UI Development
+* Responsive Design
+* Navigation Structure
 
-## Phase 2 — Backend Foundation
+## Phase 2 — Backend Development
 
-* Spring Boot APIs
-* PostgreSQL Integration
-* Business Services
+* Spring Boot Setup
+* REST API Development
+* Service Layer Implementation
 
-## Phase 3 — Customer Portal
-
-* Registration
-* Login
-* Dashboard
-* Application Submission
-
-## Phase 4 — AI Eligibility Engine
-
-* Eligibility Scoring
-* Risk Assessment
-* Loan Capacity Estimation
-
-## Phase 5 — Workflow Automation
-
-* Employee Verification
-* Manager Approval
-* Notifications
-
-## Phase 6 — Security & Compliance
+## Phase 3 — Authentication & Security
 
 * JWT Authentication
-* Audit Logging
-* RBAC Enforcement
+* Spring Security
+* Role-Based Access Control
 
-## Phase 7 — DevOps & Cloud
+## Phase 4 — Workflow Engine
 
-* Docker
-* GitHub Actions
-* AWS Deployment
+* Workflow Creation
+* Approval System
+* Rejection Handling
+* Workflow Tracking
+
+## Phase 5 — Document Management
+
+* File Upload APIs
+* AWS S3 Integration
+* Document Storage
+
+## Phase 6 — Audit & Notifications
+
+* Activity Tracking
+* Audit Logs
+* User Notifications
+
+## Phase 7 — Cloud Deployment
+
+* Docker Containers
+* AWS EC2 Deployment
+* AWS RDS Integration
+* AWS S3 Storage
+
+## Phase 8 — Enterprise Enhancements
+
+* Redis Caching
+* Neo4j Integration
+* Monitoring & Logging
+* Performance Optimization
+
+---
+
+# Project Objectives
+
+This project is designed to demonstrate:
+
+* Enterprise Software Development
+* Full-Stack Engineering
+* Secure Authentication
+* Workflow Automation
+* Database Design
+* Cloud Computing
+* Software Architecture
+* Security Best Practices
+* DevOps Fundamentals
 
 ---
 
 # Repository Structure
 
+```text
 secureflow-enterprise-platform
-
-├── frontend
-
-├── backend
-
-├── database
-
-├── deployment
-
-├── security
-
+│
 ├── docs
-
+├── frontend
+├── backend
+├── database
+├── security
+├── deployment
 └── project-management
-
----
-
-# Learning Objectives
-
-This project demonstrates:
-
-* Enterprise Software Engineering
-* Full-Stack Development
-* Workflow Automation
-* AI-Assisted Decision Systems
-* Secure Authentication
-* Database Design
-* REST API Development
-* Cloud Computing
-* Enterprise Architecture
-* DevOps Practices
-* Security Engineering
+```
 
 ---
 
 # Author
 
-**Vedhagiri Sabanayagam**
+### Vedhagiri Sabanayagam
 
 MS Information Systems
 Virginia Commonwealth University
 
 Full-Stack Developer | Software Engineer | Cloud & Security Enthusiast
 
-Building scalable enterprise applications through workflow automation, AI-assisted decision systems, cloud technologies, secure software engineering, and modern enterprise architecture.
+---
+
+> Building secure enterprise applications through modern software engineering, cloud technologies, workflow automation, and information systems.
+
+
+## Final MVP Summary
+
+SecureFlow Enterprise demonstrates a complete loan workflow:
+
+```text
+Customer
+   |
+   v
+SUBMITTED
+   |
+   v
+Employee Review
+   |
+   v
+UNDER_REVIEW
+   |
+   v
+FORWARDED_TO_MANAGER
+   |
+   v
+Manager Decision
+   |
+   +----------+
+   |          |
+   v          v
+APPROVED   REJECTED

@@ -1,0 +1,437 @@
+:root {
+    --sf-final-navy: #061827;
+    --sf-final-navy-soft: #0d2b3d;
+    --sf-final-gold: #c9a86a;
+    --sf-final-gold-light: #dfc792;
+    --sf-final-white: #ffffff;
+    --sf-final-text: #17242d;
+    --sf-final-muted: #56636b;
+}
+
+/* High-contrast institutional typography */
+
+body {
+    color:
+        var(--sf-final-text) !important;
+
+    font-weight:
+        500 !important;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    color:
+        var(--sf-final-navy) !important;
+
+    font-weight:
+        700 !important;
+}
+
+p {
+    color:
+        var(--sf-final-muted) !important;
+
+    font-weight:
+        500 !important;
+}
+
+label {
+    color:
+        #293943 !important;
+
+    font-weight:
+        750 !important;
+
+    letter-spacing:
+        0.035em !important;
+}
+
+input,
+select,
+textarea {
+    color:
+        #101c24 !important;
+
+    font-weight:
+        600 !important;
+
+    background:
+        #ffffff !important;
+}
+
+input::placeholder,
+textarea::placeholder {
+    color:
+        #7b878e !important;
+
+    opacity:
+        1 !important;
+}
+
+th {
+    color:
+        #293943 !important;
+
+    font-weight:
+        800 !important;
+}
+
+td {
+    color:
+        #17242d !important;
+
+    font-weight:
+        600 !important;
+}
+
+
+/* Dark institutional areas */
+
+.topbar h1,
+.topbar h2,
+.topbar h3,
+.topbar h4,
+.topbar p,
+.welcome h1,
+.welcome h2,
+.welcome h3,
+.intro h1,
+.intro h2,
+.intro h3,
+.summary-card h1,
+.summary-card h2,
+.summary-card h3,
+.result-card h1,
+.result-card h2,
+.result-card h3,
+.visual-panel h1,
+.visual-panel h2,
+.visual-panel h3,
+.sidebar h1,
+.sidebar h2,
+.sidebar h3,
+.admin-sidebar h1,
+.admin-sidebar h2,
+.admin-sidebar h3 {
+    color:
+        #ffffff !important;
+}
+
+.topbar p,
+.welcome p,
+.intro p,
+.summary-card p,
+.result-card p,
+.visual-panel p {
+    color:
+        #d5dde1 !important;
+}
+
+.badge,
+.welcome-badge,
+.diagram-badge {
+    color:
+        var(--sf-final-gold-light) !important;
+
+    font-weight:
+        800 !important;
+}
+
+
+/* Clear workflow/application form content */
+
+.form-card h1,
+.form-card h2,
+.form-card h3,
+.form-section h1,
+.form-section h2,
+.form-section h3,
+.preview-card h1,
+.preview-card h2,
+.preview-card h3,
+.preview-panel h1,
+.preview-panel h2,
+.preview-panel h3,
+.workflow-preview h1,
+.workflow-preview h2,
+.workflow-preview h3 {
+    color:
+        var(--sf-final-navy) !important;
+
+    font-weight:
+        750 !important;
+}
+
+.preview-card p,
+.preview-panel p,
+.workflow-preview p {
+    color:
+        #45535c !important;
+
+    font-weight:
+        600 !important;
+}
+
+.preview-card span,
+.preview-panel span,
+.workflow-preview span {
+    color:
+        #32424b !important;
+
+    font-weight:
+        650 !important;
+}
+
+.preview-card strong,
+.preview-panel strong,
+.workflow-preview strong {
+    color:
+        #9a763d !important;
+
+    font-weight:
+        800 !important;
+}
+
+.flow-step,
+.workflow-step {
+    color:
+        var(--sf-final-navy) !important;
+
+    font-weight:
+        750 !important;
+
+    background:
+        #ffffff !important;
+}
+
+.flow-line,
+.workflow-line {
+    background:
+        var(--sf-final-gold) !important;
+}
+
+
+/* Cards */
+
+.card,
+.applications-card,
+.stat-card,
+.form-card,
+.form-section,
+.preview-card,
+.preview-panel,
+.workflow-preview,
+.document-upload {
+    background:
+        #ffffff !important;
+}
+
+.card p,
+.applications-card p,
+.stat-card p,
+.form-card p,
+.form-section p {
+    color:
+        #57656d !important;
+}
+
+
+/* Stat confidence */
+
+.stat-card strong {
+    color:
+        var(--sf-final-navy) !important;
+
+    font-weight:
+        700 !important;
+}
+
+.stat-card span {
+    color:
+        #4a5861 !important;
+
+    font-weight:
+        750 !important;
+}
+
+
+/* Buttons */
+
+.apply-button,
+.forward-button,
+form button[type="submit"],
+.login-btn,
+.primary-button {
+    color:
+        #07141d !important;
+
+    font-weight:
+        800 !important;
+
+    background:
+        var(--sf-final-gold) !important;
+}
+
+.view-button,
+.review-button {
+    color:
+        #ffffff !important;
+
+    font-weight:
+        750 !important;
+
+    background:
+        var(--sf-final-navy-soft) !important;
+}
+
+.approve-button {
+    color:
+        #ffffff !important;
+
+    font-weight:
+        750 !important;
+
+    background:
+        #256b55 !important;
+}
+
+.reject-button {
+    color:
+        #ffffff !important;
+
+    font-weight:
+        750 !important;
+
+    background:
+        #954343 !important;
+}
+
+
+/* Result panel */
+
+.result-card .result-row span,
+.result-card .recommendation span,
+.result-card .empty-result {
+    color:
+        #c2ccd1 !important;
+
+    font-weight:
+        600 !important;
+}
+
+.result-card .result-row strong,
+.result-card .recommendation p {
+    color:
+        #ffffff !important;
+
+    font-weight:
+        700 !important;
+}
+
+.score-box strong {
+    color:
+        var(--sf-final-gold-light) !important;
+
+    font-weight:
+        700 !important;
+}
+
+
+/* Workflow details */
+
+.detail span {
+    color:
+        #56646c !important;
+
+    font-weight:
+        750 !important;
+}
+
+.detail strong {
+    color:
+        #17242d !important;
+
+    font-weight:
+        700 !important;
+}
+
+.summary-row span {
+    color:
+        #ccd6db !important;
+
+    font-weight:
+        700 !important;
+}
+
+.summary-row strong {
+    color:
+        #ffffff !important;
+
+    font-weight:
+        750 !important;
+}
+
+.history-status {
+    color:
+        #8d6830 !important;
+
+    font-weight:
+        800 !important;
+}
+
+.history-actor {
+    color:
+        #1b2932 !important;
+
+    font-weight:
+        650 !important;
+}
+
+.history-date {
+    color:
+        #5d6971 !important;
+
+    font-weight:
+        600 !important;
+}
+
+
+/* Dark headers */
+
+.topbar span,
+.topbar .user-area span,
+.topbar .topbar-actions span {
+    color:
+        #ffffff !important;
+
+    font-weight:
+        650 !important;
+}
+
+.sidebar,
+.admin-sidebar,
+.side-nav {
+    color:
+        #ffffff !important;
+}
+
+.sidebar a,
+.admin-sidebar a,
+.side-nav a {
+    color:
+        #f0f3f4 !important;
+
+    font-weight:
+        650 !important;
+}
+
+.sidebar a:hover,
+.admin-sidebar a:hover,
+.side-nav a:hover {
+    color:
+        var(--sf-final-gold-light) !important;
+}

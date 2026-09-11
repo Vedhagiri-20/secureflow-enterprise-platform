@@ -1,133 +1,438 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manager Dashboard</title>
 
-    <link rel="stylesheet" href="manager-dashboard.css">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
+    <title>
+        Manager Banking | SecureFlow International Bank
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="../../assets/secureflow-portal.css"
+    >
+    <link rel="stylesheet" href="../../assets/secureflow-unified.css">
 </head>
+
 <body>
 
-<div class="sidebar">
+<div class="portal-shell">
 
-    <h2>Manager Panel</h2>
+    <aside class="portal-sidebar">
 
-    <ul>
+        <div class="portal-brand">
 
-        <li>
-            <a href="manager-dashboard.html">
+            <div class="portal-mark">
+                SF
+            </div>
+
+            <div>
+                <strong>SECUREFLOW</strong>
+                <span>INTERNATIONAL BANK</span>
+            </div>
+
+        </div>
+
+
+        <p class="portal-role-label">
+            CREDIT MANAGEMENT
+        </p>
+
+
+        <nav class="portal-nav">
+
+            <button
+                class="portal-nav-button active"
+                data-page="dashboard"
+            >
                 Dashboard
-            </a>
-        </li>
+            </button>
 
-        <li>
-            <a href="../../workflow/pending/pending-approvals.html">
+            <button
+                class="portal-nav-button"
+                data-page="pending"
+            >
                 Pending Approvals
-            </a>
-        </li>
+            </button>
 
-        <li>
-            <a href="../../workflow/details/workflow-details.html">
-                Workflow Details
-            </a>
-        </li>
+            <button
+                class="portal-nav-button"
+                data-page="history"
+            >
+                Decision History
+            </button>
 
-        <li>
-            <a href="../../audit/audit-log.html">
-                Audit Logs
-            </a>
-        </li>
+            <button
+                class="portal-nav-button"
+                data-page="profile"
+            >
+                Profile
+            </button>
 
-        <li>
-            <a href="../../notifications/notifications.html">
-                Notifications
-            </a>
-        </li>
+        </nav>
 
-        <li>
-            <a href="../../index.html">
-                Logout
-            </a>
-        </li>
 
-    </ul>
+        <div class="portal-profile">
+
+            <div class="profile-row">
+
+                <div
+                    class="profile-avatar"
+                    id="profileInitials"
+                >
+                    SF
+                </div>
+
+                <div>
+                    <strong id="sidebarName">
+                        Manager
+                    </strong>
+
+                    <span id="sidebarEmail">
+                        -
+                    </span>
+                </div>
+
+            </div>
+
+
+            <button
+                class="portal-logout"
+                onclick="logout()"
+            >
+                Secure Logout
+            </button>
+
+        </div>
+
+    </aside>
+
+
+    <main class="portal-content">
+
+        <header class="portal-header">
+
+            <div>
+                <span class="portal-kicker">
+                    CREDIT APPROVAL WORKSPACE
+                </span>
+
+                <h1 id="pageTitle">
+                    Approval Dashboard
+                </h1>
+
+                <p id="pageDescription">
+                    Review forwarded loan applications and make final decisions.
+                </p>
+            </div>
+
+
+            <div class="portal-security">
+
+                <span class="portal-security-dot"></span>
+
+                <div>
+                    <strong>
+                        Secure Session
+                    </strong>
+
+                    <small>
+                        JWT · MANAGER
+                    </small>
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <p
+            id="message"
+            class="portal-message"
+        ></p>
+
+
+        <section
+            id="dashboardPage"
+            class="portal-view active"
+        >
+
+            <div class="portal-metrics">
+
+                <article class="portal-metric">
+                    <span>Awaiting Approval</span>
+                    <strong id="awaitingCount">0</strong>
+                    <small>Requires your decision</small>
+                </article>
+
+                <article class="portal-metric">
+                    <span>Approved</span>
+                    <strong id="approvedCount">0</strong>
+                    <small>Successful decisions</small>
+                </article>
+
+                <article class="portal-metric">
+                    <span>Rejected</span>
+                    <strong id="rejectedCount">0</strong>
+                    <small>Declined decisions</small>
+                </article>
+
+            </div>
+
+
+            <section class="portal-card">
+
+                <div class="portal-card-header">
+
+                    <div>
+                        <span class="portal-kicker">
+                            APPROVAL QUEUE
+                        </span>
+
+                        <h2>
+                            Applications Requiring Decision
+                        </h2>
+
+                        <p>
+                            Applications forwarded by lending employees.
+                        </p>
+                    </div>
+
+                </div>
+
+
+                <div class="portal-table">
+
+                    <table>
+
+                        <thead>
+                        <tr>
+                            <th>Application</th>
+                            <th>Applicant</th>
+                            <th>Loan Type</th>
+                            <th>Amount</th>
+                            <th>Employee</th>
+                            <th>Actions</th>
+                        </tr>
+                        </thead>
+
+                        <tbody id="dashboardPendingTable"></tbody>
+
+                    </table>
+
+                </div>
+
+            </section>
+
+        </section>
+
+
+        <section
+            id="pendingPage"
+            class="portal-view"
+        >
+
+            <section class="portal-card">
+
+                <div class="portal-card-header">
+
+                    <div>
+                        <span class="portal-kicker">
+                            PENDING CREDIT DECISIONS
+                        </span>
+
+                        <h2>
+                            Pending Approvals
+                        </h2>
+
+                        <p>
+                            Search by application number, applicant or loan type.
+                        </p>
+                    </div>
+
+                </div>
+
+
+                <div class="portal-search">
+
+                    <input
+                        id="pendingSearch"
+                        type="search"
+                        placeholder="Search application number, applicant, employee or loan type"
+                    >
+
+                    <button
+                        class="portal-dark-button"
+                        onclick="renderPending()"
+                    >
+                        Search
+                    </button>
+
+                </div>
+
+
+                <div class="portal-table">
+
+                    <table>
+
+                        <thead>
+                        <tr>
+                            <th>Application</th>
+                            <th>Applicant</th>
+                            <th>Loan Type</th>
+                            <th>Amount</th>
+                            <th>Employee</th>
+                            <th>Priority</th>
+                            <th>Actions</th>
+                        </tr>
+                        </thead>
+
+                        <tbody id="pendingTable"></tbody>
+
+                    </table>
+
+                </div>
+
+            </section>
+
+        </section>
+
+
+        <section
+            id="historyPage"
+            class="portal-view"
+        >
+
+            <section class="portal-card">
+
+                <div class="portal-card-header">
+
+                    <div>
+                        <span class="portal-kicker">
+                            DECISION ARCHIVE
+                        </span>
+
+                        <h2>
+                            Decision History
+                        </h2>
+
+                        <p>
+                            Search applications previously approved or rejected.
+                        </p>
+                    </div>
+
+                </div>
+
+
+                <div class="portal-search">
+
+                    <input
+                        id="historySearch"
+                        type="search"
+                        placeholder="Search application number, applicant, employee or status"
+                    >
+
+                    <button
+                        class="portal-dark-button"
+                        onclick="renderHistory()"
+                    >
+                        Search
+                    </button>
+
+                </div>
+
+
+                <div class="portal-table">
+
+                    <table>
+
+                        <thead>
+                        <tr>
+                            <th>Application</th>
+                            <th>Applicant</th>
+                            <th>Loan Type</th>
+                            <th>Amount</th>
+                            <th>Employee</th>
+                            <th>Decision</th>
+                            <th>Action</th>
+                        </tr>
+                        </thead>
+
+                        <tbody id="historyTable"></tbody>
+
+                    </table>
+
+                </div>
+
+            </section>
+
+        </section>
+
+
+        <section
+            id="profilePage"
+            class="portal-view"
+        >
+
+            <section class="portal-card">
+
+                <div class="portal-card-header">
+
+                    <div>
+                        <span class="portal-kicker">
+                            MANAGER IDENTITY
+                        </span>
+
+                        <h2>
+                            Manager Profile
+                        </h2>
+
+                        <p>
+                            Your authenticated SecureFlow management identity.
+                        </p>
+                    </div>
+
+                </div>
+
+
+                <div class="portal-profile-grid">
+
+                    <div>
+                        <span>Full Name</span>
+                        <strong id="profileName">-</strong>
+                    </div>
+
+                    <div>
+                        <span>Email</span>
+                        <strong id="profileEmail">-</strong>
+                    </div>
+
+                    <div>
+                        <span>Role</span>
+                        <strong>MANAGER</strong>
+                    </div>
+
+                    <div>
+                        <span>Authority</span>
+                        <strong>Final Credit Decision</strong>
+                    </div>
+
+                </div>
+
+            </section>
+
+        </section>
+
+    </main>
 
 </div>
 
-<div class="main-content">
-
-    <div class="topbar">
-
-        <h1>Manager Dashboard</h1>
-
-    </div>
-
-    <div class="cards">
-
-        <div class="card">
-            <h3>Total Requests</h3>
-            <p>24</p>
-        </div>
-
-        <div class="card pending">
-            <h3>Pending</h3>
-            <p>8</p>
-        </div>
-
-        <div class="card approved">
-            <h3>Approved</h3>
-            <p>12</p>
-        </div>
-
-        <div class="card rejected">
-            <h3>Rejected</h3>
-            <p>4</p>
-        </div>
-
-    </div>
-
-    <div class="table-section">
-
-        <h2>Pending Approval Requests</h2>
-
-        <table>
-
-            <thead>
-
-            <tr>
-                <th>ID</th>
-                <th>Employee</th>
-                <th>Workflow</th>
-                <th>Status</th>
-            </tr>
-
-            </thead>
-
-            <tbody>
-
-            <tr>
-                <td>#WF101</td>
-                <td>Ved</td>
-                <td>Bank Verification</td>
-                <td>Pending</td>
-            </tr>
-
-            <tr>
-                <td>#WF102</td>
-                <td>Rahul</td>
-                <td>Insurance Approval</td>
-                <td>Approved</td>
-            </tr>
-
-            </tbody>
-
-        </table>
-
-    </div>
-
-</div>
 
 <script src="manager-dashboard.js"></script>
 

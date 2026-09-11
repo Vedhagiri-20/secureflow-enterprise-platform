@@ -1,135 +1,300 @@
-document.addEventListener("DOMContentLoaded", async () => {
+const API_URL =
+    "http://localhost:8080/api/reports/employee";
 
-    const savedName =
-        localStorage.getItem("secureFlowUserName") ||
-        "Ved";
+const email =
+    localStorage.getItem(
+        "secureFlowUserEmail"
+    );
 
-    const savedEmail =
-        localStorage.getItem("secureFlowUserEmail") ||
-        "employee@secureflow.com";
+const role =
+    localStorage.getItem(
+        "secureFlowUserRole"
+    );
 
-    document.getElementById("welcomeText").innerText =
-        `Hi ${savedName}!`;
+const token =
+    localStorage.getItem(
+        "secureFlowToken"
+    );
 
-    document.querySelector(".avatar").innerText =
-        savedName.charAt(0).toUpperCase();
+let allWorkflows = [];
 
-    await loadReport(savedEmail);
-});
+if (!email
+        || role !== "EMPLOYEE"
+        || !token) {
 
-async function loadReport(email) {
+    goToLogin();
+}
 
+document.getElementById(
+    "employeeEmail"
+).textContent = email || "";
+
+document.getElementById(
+    "searchInput"
+).addEventListener(
+    "input",
+    filterWorkflows
+);
+
+loadReport();
+
+async function loadReport() {
     try {
-
         const response = await fetch(
-            `http://localhost:8080/api/reports/employee?email=${email}`
+            API_URL,
+            {
+                headers: {
+                    "Authorization":
+                        `Bearer ${token}`
+                }
+            }
         );
 
-        const data = await response.json();
+        if (response.status === 401
+                || response.status === 403) {
 
-        loadSummary(data);
+            localStorage.clear();
+            goToLogin();
+            return;
+        }
 
-        loadLoanBreakdown(data);
+        if (!response.ok) {
+            throw new Error(
+                "Report request failed"
+            );
+        }
 
-        loadWorkflowTable(data);
+        const data =
+            await response.json();
 
-    }
-    catch(error){
+        document.getElementById(
+            "totalWorkflows"
+        ).textContent = data.total;
+
+        document.getElementById(
+            "pendingCount"
+        ).textContent = data.pending;
+
+        document.getElementById(
+            "approvedCount"
+        ).textContent = data.approved;
+
+        document.getElementById(
+            "rejectedCount"
+        ).textContent = data.rejected;
+
+        allWorkflows =
+            data.workflows || [];
+
+        renderLoanBreakdown(
+            data.loanBreakdown || {}
+        );
+
+        renderWorkflows(
+            allWorkflows
+        );
+
+    } catch (error) {
+        document.getElementById(
+            "message"
+        ).textContent =
+            "Unable to load report.";
 
         console.error(error);
-
-        alert("Unable to load report data.");
     }
 }
 
-function loadSummary(data){
+function renderLoanBreakdown(
+    breakdown
+) {
+    const container =
+        document.getElementById(
+            "loanBreakdown"
+        );
 
-    document.getElementById("totalWorkflows").innerText =
-        data.total;
+    const entries =
+        Object.entries(breakdown);
 
-    document.getElementById("pendingCount").innerText =
-        data.pending;
+    if (entries.length === 0) {
+        container.innerHTML = `
+            <div class="loan-card">
+                <span>
+                    No application data available.
+                </span>
+            </div>
+        `;
+        return;
+    }
 
-    document.getElementById("approvedCount").innerText =
-        data.approved;
-
-    document.getElementById("rejectedCount").innerText =
-        data.rejected;
-
-    document.getElementById("pendingCircle").innerText =
-        data.pending;
-
-    document.getElementById("approvedCircle").innerText =
-        data.approved;
-
-    document.getElementById("rejectedCircle").innerText =
-        data.rejected;
-
-    document.getElementById("donutTotal").innerText =
-        data.total;
-}
-
-function loadLoanBreakdown(data){
-
-    const legend =
-        document.getElementById("loanLegend");
-
-    const breakdown =
-        document.getElementById("loanBreakdown");
-
-    legend.innerHTML = "";
-    breakdown.innerHTML = "";
-
-    Object.entries(data.loanBreakdown)
-        .forEach(([loan,count]) => {
-
-            legend.innerHTML += `
-                <li>${loan} - ${count}</li>
-            `;
-
-            breakdown.innerHTML += `
+    container.innerHTML =
+        entries
+            .map(([loanType, count]) => `
                 <div class="loan-card">
-                    <h4>${loan}</h4>
-                    <h2>${count}</h2>
-                    <p>Total Workflows</p>
+                    <span>
+                        ${escapeHtml(loanType)}
+                    </span>
+
+                    <strong>
+                        ${count}
+                    </strong>
                 </div>
-            `;
-        });
+            `)
+            .join("");
 }
 
-function loadWorkflowTable(data){
+function renderWorkflows(workflows) {
+    const table =
+        document.getElementById(
+            "reportTableBody"
+        );
 
-    const tbody =
-        document.getElementById("reportTableBody");
-
-    tbody.innerHTML = "";
-
-    data.workflows.forEach(workflow => {
-
-        tbody.innerHTML += `
+    if (workflows.length === 0) {
+        table.innerHTML = `
             <tr>
-                <td>${workflow.workItemNumber}</td>
-                <td>${workflow.loanType}</td>
-                <td>${workflow.applicantName}</td>
-                <td>$${Number(workflow.loanAmount).toLocaleString()}</td>
-                <td>${workflow.status}</td>
-                <td>${workflow.managerName}</td>
-                <td>${formatDate(workflow.createdDate)}</td>
+                <td colspan="7" class="empty">
+                    No matching applications.
+                </td>
             </tr>
         `;
-    });
+        return;
+    }
+
+    table.innerHTML =
+        workflows
+            .map(workflow => `
+                <tr>
+                    <td>
+                        ${escapeHtml(
+                            workflow.workItemNumber
+                        )}
+                    </td>
+
+                    <td>
+                        ${escapeHtml(
+                            workflow.loanType
+                        )}
+                    </td>
+
+                    <td>
+                        ${escapeHtml(
+                            workflow.applicantName
+                        )}
+                    </td>
+
+                    <td>
+                        ${formatAmount(
+                            workflow.loanAmount
+                        )}
+                    </td>
+
+                    <td>
+                        <span class="status">
+                            ${formatStatus(
+                                workflow.status
+                            )}
+                        </span>
+                    </td>
+
+                    <td>
+                        ${escapeHtml(
+                            workflow.managerName
+                        )}
+                    </td>
+
+                    <td>
+                        ${formatDate(
+                            workflow.createdDate
+                        )}
+                    </td>
+                </tr>
+            `)
+            .join("");
 }
 
-function formatDate(dateString){
+function filterWorkflows() {
+    const query =
+        document.getElementById(
+            "searchInput"
+        ).value
+            .trim()
+            .toLowerCase();
 
-    const date = new Date(dateString);
+    if (!query) {
+        renderWorkflows(
+            allWorkflows
+        );
+        return;
+    }
 
-    return date.toLocaleDateString(
-        "en-US",
-        {
-            year:"numeric",
-            month:"short",
-            day:"numeric"
-        }
-    );
+    const filtered =
+        allWorkflows.filter(
+            workflow =>
+                workflow.workItemNumber
+                    .toLowerCase()
+                    .includes(query)
+
+                || workflow.loanType
+                    .toLowerCase()
+                    .includes(query)
+
+                || workflow.applicantName
+                    .toLowerCase()
+                    .includes(query)
+
+                || workflow.status
+                    .toLowerCase()
+                    .includes(query)
+        );
+
+    renderWorkflows(filtered);
+}
+
+function formatAmount(amount) {
+    return Number(amount)
+        .toLocaleString(
+            "en-US",
+            {
+                style: "currency",
+                currency: "USD",
+                maximumFractionDigits: 0
+            }
+        );
+}
+
+function formatStatus(status) {
+    if (!status) {
+        return "-";
+    }
+
+    return status
+        .replaceAll("_", " ")
+        .toLowerCase()
+        .replace(
+            /\b\w/g,
+            letter => letter.toUpperCase()
+        );
+}
+
+function formatDate(value) {
+    if (!value) {
+        return "-";
+    }
+
+    return new Date(value)
+        .toLocaleDateString();
+}
+
+function escapeHtml(value) {
+    const element =
+        document.createElement("div");
+
+    element.textContent =
+        value || "-";
+
+    return element.innerHTML;
+}
+
+function goToLogin() {
+    window.location.href =
+        "../auth/login/login.html";
 }
