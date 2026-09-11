@@ -51,6 +51,25 @@ Unlike a static UI demonstration, Secure Flow runs as a deployed application wit
 
 ---
 
+## System Architecture
+
+Secure Flow is deployed as a containerized full-stack application with
+role-based access enforced by the Spring Boot backend.
+
+<p align="center">
+  <img
+    src="doc/architecture/secureflow-production-architecture.png"
+    alt="Secure Flow Production Architecture"
+    width="100%"
+  />
+</p>
+
+### Production Architecture
+
+The platform combines a role-based Java/Spring Boot application, JWT
+authentication, workflow services, managed PostgreSQL storage, centralized
+logging, Docker containerization, and cloud deployment through Render.
+
 ## Key Features
 
 ### Customer Portal
