@@ -16,6 +16,7 @@ import com.secureflow.entity.WorkflowStatus;
 import com.secureflow.repository.LoanTypeRepository;
 import com.secureflow.repository.UserRepository;
 import com.secureflow.repository.WorkflowRequestRepository;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +40,7 @@ public class WorkflowService {
     public ApplicationDetailResponse createApplication(
             CreateApplicationRequest request
     ) {
+        validateCreateApplicationRequest(request);
         User customer = getCustomer(request.getCustomerEmail());
 
         LoanType loanType = loanTypeRepository
@@ -55,15 +57,84 @@ public class WorkflowService {
         workflow.setCreatedByUser(customer);
         workflow.setAssignedEmployee(null);
         workflow.setAssignedManager(loanType.getManager());
-        workflow.setApplicantName(request.getApplicantName());
-        workflow.setApplicantEmail(customer.getEmail());
-        workflow.setApplicantPhone(request.getApplicantPhone());
-        workflow.setLoanAmount(request.getLoanAmount());
-        workflow.setLoanPurpose(request.getLoanPurpose());
-        workflow.setEmploymentType(request.getEmploymentType());
-        workflow.setGovernmentIdType(request.getGovernmentIdType());
-        workflow.setGovernmentIdNumber(request.getGovernmentIdNumber());
-        workflow.setResidentialAddress(request.getResidentialAddress());
+        workflow.setApplicantFirstName(
+                request.getApplicantFirstName()
+        );
+        workflow.setApplicantMiddleName(
+                request.getApplicantMiddleName()
+        );
+        workflow.setApplicantLastName(
+                request.getApplicantLastName()
+        );
+        workflow.setApplicantName(
+                buildApplicantName(request)
+        );
+        workflow.setApplicantEmail(
+                customer.getEmail()
+        );
+        workflow.setApplicantPhone(
+                request.getApplicantPhone()
+        );
+        workflow.setDateOfBirth(
+                request.getDateOfBirth()
+        );
+        workflow.setCitizenshipStatus(
+                request.getCitizenshipStatus()
+        );
+        workflow.setLoanAmount(
+                request.getLoanAmount()
+        );
+        workflow.setLoanPurpose(
+                request.getLoanPurpose()
+        );
+        workflow.setRequestedTermMonths(
+                request.getRequestedTermMonths()
+        );
+        workflow.setEmploymentType(
+                request.getEmploymentType()
+        );
+        workflow.setEmployerName(
+                request.getEmployerName()
+        );
+        workflow.setJobTitle(
+                request.getJobTitle()
+        );
+        workflow.setAnnualGrossIncome(
+                request.getAnnualGrossIncome()
+        );
+        workflow.setGovernmentIdType(
+                request.getGovernmentIdType()
+        );
+        workflow.setGovernmentIdNumber(
+                request.getGovernmentIdNumber()
+        );
+        workflow.setAddressLine1(
+                request.getAddressLine1()
+        );
+        workflow.setAddressLine2(
+                request.getAddressLine2()
+        );
+        workflow.setCity(
+                request.getCity()
+        );
+        workflow.setStateProvince(
+                request.getStateProvince()
+        );
+        workflow.setPostalCode(
+                request.getPostalCode()
+        );
+        workflow.setCountryCode(
+                request.getCountryCode()
+        );
+        workflow.setHousingStatus(
+                request.getHousingStatus()
+        );
+        workflow.setMonthlyHousingPayment(
+                request.getMonthlyHousingPayment()
+        );
+        workflow.setResidentialAddress(
+                buildResidentialAddress(request)
+        );
         workflow.setPriority(loanType.getDefaultPriority());
         workflow.setCurrentStatus(WorkflowStatus.SUBMITTED);
 
@@ -331,6 +402,246 @@ public class WorkflowService {
         );
 
         return toEmployeeApplication(saved);
+    }
+
+    private void validateCreateApplicationRequest(
+            CreateApplicationRequest request
+    ) {
+        if (request == null) {
+            throw new RuntimeException(
+                    "Application details are required"
+            );
+        }
+
+        if (request.getLoanTypeId() == null) {
+            throw new RuntimeException(
+                    "Loan type is required"
+            );
+        }
+
+        if (request.getLoanAmount() == null
+                || request.getLoanAmount().signum() <= 0) {
+            throw new RuntimeException(
+                    "Requested amount must be greater than zero"
+            );
+        }
+
+        if (request.getRequestedTermMonths() == null
+                || request.getRequestedTermMonths() <= 0
+                || request.getRequestedTermMonths() > 480) {
+            throw new RuntimeException(
+                    "Select a valid requested loan term"
+            );
+        }
+
+        requireText(
+                request.getApplicantFirstName(),
+                "First name is required"
+        );
+
+        requireText(
+                request.getApplicantLastName(),
+                "Last name is required"
+        );
+
+        requireText(
+                request.getApplicantPhone(),
+                "Mobile number is required"
+        );
+
+        if (request.getDateOfBirth() == null) {
+            throw new RuntimeException(
+                    "Date of birth is required"
+            );
+        }
+
+        if (request.getDateOfBirth()
+                .isAfter(
+                        LocalDate.now()
+                                .minusYears(18)
+                )) {
+            throw new RuntimeException(
+                    "Applicant must be at least 18 years old"
+            );
+        }
+
+        requireText(
+                request.getCitizenshipStatus(),
+                "Residency or citizenship status is required"
+        );
+
+        requireText(
+                request.getLoanPurpose(),
+                "Loan purpose is required"
+        );
+
+        requireText(
+                request.getEmploymentType(),
+                "Employment status is required"
+        );
+
+        boolean employerRequired =
+                "Employed Full Time".equals(
+                        request.getEmploymentType()
+                )
+                || "Employed Part Time".equals(
+                        request.getEmploymentType()
+                )
+                || "Self Employed".equals(
+                        request.getEmploymentType()
+                )
+                || "Business Owner".equals(
+                        request.getEmploymentType()
+                );
+
+        if (employerRequired) {
+            requireText(
+                    request.getEmployerName(),
+                    "Employer or business name is required"
+            );
+        }
+
+        if (request.getAnnualGrossIncome() == null
+                || request.getAnnualGrossIncome().signum() < 0) {
+            throw new RuntimeException(
+                    "Enter a valid annual gross income"
+            );
+        }
+
+        requireText(
+                request.getGovernmentIdType(),
+                "Government ID type is required"
+        );
+
+        requireText(
+                request.getGovernmentIdNumber(),
+                "Government ID number is required"
+        );
+
+        requireText(
+                request.getCountryCode(),
+                "Country is required"
+        );
+
+        requireText(
+                request.getAddressLine1(),
+                "Street address is required"
+        );
+
+        requireText(
+                request.getCity(),
+                "City is required"
+        );
+
+        requireText(
+                request.getStateProvince(),
+                "State, province or region is required"
+        );
+
+        requireText(
+                request.getPostalCode(),
+                "Postal or ZIP code is required"
+        );
+
+        requireText(
+                request.getHousingStatus(),
+                "Housing status is required"
+        );
+
+        if (request.getMonthlyHousingPayment() == null
+                || request.getMonthlyHousingPayment().signum() < 0) {
+            throw new RuntimeException(
+                    "Enter a valid monthly housing payment"
+            );
+        }
+    }
+
+    private void requireText(
+            String value,
+            String message
+    ) {
+        if (value == null
+                || value.isBlank()) {
+            throw new RuntimeException(
+                    message
+            );
+        }
+    }
+
+    private String buildApplicantName(
+            CreateApplicationRequest request
+    ) {
+        StringBuilder name =
+                new StringBuilder();
+
+        name.append(
+                request.getApplicantFirstName()
+                        .trim()
+        );
+
+        if (request.getApplicantMiddleName() != null
+                && !request.getApplicantMiddleName()
+                        .isBlank()) {
+            name.append(" ")
+                    .append(
+                            request.getApplicantMiddleName()
+                                    .trim()
+                    );
+        }
+
+        name.append(" ")
+                .append(
+                        request.getApplicantLastName()
+                                .trim()
+                );
+
+        return name.toString();
+    }
+
+    private String buildResidentialAddress(
+            CreateApplicationRequest request
+    ) {
+        StringBuilder address =
+                new StringBuilder();
+
+        address.append(
+                request.getAddressLine1()
+                        .trim()
+        );
+
+        if (request.getAddressLine2() != null
+                && !request.getAddressLine2()
+                        .isBlank()) {
+            address.append(", ")
+                    .append(
+                            request.getAddressLine2()
+                                    .trim()
+                    );
+        }
+
+        address.append(", ")
+                .append(
+                        request.getCity()
+                                .trim()
+                )
+                .append(", ")
+                .append(
+                        request.getStateProvince()
+                                .trim()
+                )
+                .append(" ")
+                .append(
+                        request.getPostalCode()
+                                .trim()
+                )
+                .append(", ")
+                .append(
+                        request.getCountryCode()
+                                .trim()
+                                .toUpperCase()
+                );
+
+        return address.toString();
     }
 
     private WorkflowRequest findCustomerWorkflow(

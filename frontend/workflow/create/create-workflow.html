@@ -1,28 +1,69 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Apply for Loan | SecureFlow</title>
-    <link rel="stylesheet" href="create-workflow.css">
-    <link rel="stylesheet" href="../../assets/secureflow-premium.css">
-    <link rel="stylesheet" href="../../assets/secureflow-contrast.css">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Apply for Loan | Secure Flow
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="../../assets/secureflow-unified.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="create-workflow.css"
+    >
+
+    <link
+        rel="stylesheet"
+        href="realistic-loan-application.css"
+    >
 </head>
+
+
 <body>
 
-<div class="page-wrapper">
+<div class="application-page">
 
-    <div class="workflow-shell">
+    <div class="application-shell">
+
 
         <header class="topbar">
-            <div class="brand">
-                <div class="brand-logo">S</div>
 
-                <div>
-                    <h2>SecureFlow International Bank</h2>
-                    <p>Customer Loan Portal</p>
+            <div class="brand">
+
+                <div class="brand-logo">
+                    SF
                 </div>
+
+
+                <div class="brand-copy">
+
+                    <strong>
+                        SECURE FLOW
+                    </strong>
+
+                    <span>
+                        INTERNATIONAL BANKING
+                    </span>
+
+                    <small>
+                        CUSTOMER LOAN PORTAL
+                    </small>
+
+                </div>
+
             </div>
+
 
             <a
                 href="../../dashboard/customer/customer-dashboard.html"
@@ -30,223 +71,1000 @@
             >
                 Back to Dashboard
             </a>
+
         </header>
+
 
         <main class="content-grid">
 
+
             <section class="form-card">
 
-                <span class="badge">Loan Application</span>
+                <span class="page-label">
+                    SECURE LOAN APPLICATION
+                </span>
 
-                <h1>Apply for a Loan</h1>
+
+                <h1>
+                    Apply for a Loan
+                </h1>
+
 
                 <p class="subtitle">
-                    Complete the form below. Your application will be submitted
-                    to SecureFlow for employee review.
+                    Complete the application below.
+                    Required fields are marked with an asterisk.
                 </p>
+
 
                 <form id="workflowForm">
 
-                    <div class="section-title">Loan Details</div>
 
-                    <div class="form-grid">
+                    <div class="form-section-heading">
+
+                        <span>
+                            01
+                        </span>
+
+                        <div>
+
+                            <h2>
+                                Loan Request
+                            </h2>
+
+                            <p>
+                                Select the financing product,
+                                requested amount and preferred term.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="form-grid three-column">
 
                         <div class="form-group">
-                            <label for="loanType">Loan Type</label>
 
-                            <select id="loanType" required>
-                                <option value="">Select loan type</option>
-                                <option value="home">Home Loan</option>
-                                <option value="car">Car Loan</option>
+                            <label for="loanType">
+                                Loan Type *
+                            </label>
+
+
+                            <select
+                                id="loanType"
+                                required
+                            >
+
+                                <option value="">
+                                    Select loan type
+                                </option>
+
+                                <option value="home">
+                                    Home Loan
+                                </option>
+
+                                <option value="car">
+                                    Auto Loan
+                                </option>
+
                                 <option value="education">
                                     Education Loan
                                 </option>
+
                                 <option value="business">
                                     Business Loan
                                 </option>
+
                             </select>
+
                         </div>
 
+
                         <div class="form-group">
-                            <label for="loanAmount">Requested Amount</label>
+
+                            <label for="loanAmount">
+                                Requested Amount *
+                            </label>
+
 
                             <input
                                 type="number"
                                 id="loanAmount"
                                 min="1"
                                 step="0.01"
-                                placeholder="Enter loan amount"
+                                placeholder="e.g. 25000"
                                 required
                             >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="requestedTermMonths">
+                                Requested Term *
+                            </label>
+
+
+                            <select
+                                id="requestedTermMonths"
+                                required
+                                disabled
+                            >
+
+                                <option value="">
+                                    Select loan type first
+                                </option>
+
+                            </select>
+
                         </div>
 
                     </div>
 
+
                     <div class="form-group">
+
                         <label for="description">
-                            Loan Purpose / Description
+                            Loan Purpose *
                         </label>
+
 
                         <textarea
                             id="description"
                             rows="4"
-                            placeholder="Briefly describe why the loan is required"
+                            maxlength="1000"
+                            placeholder="Describe how the requested funds will be used"
                             required
                         ></textarea>
+
                     </div>
 
-                    <div class="section-title">Applicant Details</div>
+
+                    <div class="form-section-heading">
+
+                        <span>
+                            02
+                        </span>
+
+                        <div>
+
+                            <h2>
+                                Applicant Details
+                            </h2>
+
+                            <p>
+                                Enter the applicant's legal identity
+                                and contact information.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="form-grid three-column">
+
+                        <div class="form-group">
+
+                            <label for="firstName">
+                                First Name *
+                            </label>
+
+
+                            <input
+                                id="firstName"
+                                type="text"
+                                autocomplete="given-name"
+                                maxlength="100"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="middleName">
+                                Middle Name
+                            </label>
+
+
+                            <input
+                                id="middleName"
+                                type="text"
+                                autocomplete="additional-name"
+                                maxlength="100"
+                                placeholder="Optional"
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="lastName">
+                                Last Name *
+                            </label>
+
+
+                            <input
+                                id="lastName"
+                                type="text"
+                                autocomplete="family-name"
+                                maxlength="100"
+                                required
+                            >
+
+                        </div>
+
+                    </div>
+
 
                     <div class="form-grid">
 
                         <div class="form-group">
-                            <label for="applicantName">Applicant Name</label>
 
-                            <input
-                                type="text"
-                                id="applicantName"
-                                placeholder="Enter applicant name"
-                                required
-                            >
-                        </div>
+                            <label for="accountEmail">
+                                Registered Email *
+                            </label>
 
-                        <div class="form-group">
-                            <label for="accountEmail">Account Email</label>
 
                             <input
                                 type="email"
                                 id="accountEmail"
                                 readonly
                             >
+
+
+                            <small class="field-note">
+                                Verified through your Secure Flow account.
+                            </small>
+
                         </div>
 
+
                         <div class="form-group">
-                            <label for="phone">Phone Number</label>
+
+                            <label for="phone">
+                                Mobile Number *
+                            </label>
+
 
                             <input
                                 type="tel"
                                 id="phone"
-                                placeholder="Enter phone number"
+                                autocomplete="tel"
+                                maxlength="25"
+                                placeholder="+1 555 000 0000"
                                 required
                             >
+
                         </div>
 
+
                         <div class="form-group">
-                            <label for="employmentType">
-                                Employment Type
+
+                            <label for="dateOfBirth">
+                                Date of Birth *
                             </label>
 
-                            <select id="employmentType" required>
+
+                            <input
+                                type="date"
+                                id="dateOfBirth"
+                                autocomplete="bday"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="citizenshipStatus">
+                                Residency / Citizenship Status *
+                            </label>
+
+
+                            <select
+                                id="citizenshipStatus"
+                                required
+                            >
+
                                 <option value="">
-                                    Select employment type
+                                    Select status
                                 </option>
-                                <option value="Salaried">Salaried</option>
+
+                                <option value="Citizen">
+                                    Citizen
+                                </option>
+
+                                <option value="Permanent Resident">
+                                    Permanent Resident
+                                </option>
+
+                                <option value="Temporary Resident">
+                                    Temporary Resident / Visa Holder
+                                </option>
+
+                                <option value="Non-Resident">
+                                    Non-Resident
+                                </option>
+
+                                <option value="Other">
+                                    Other
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="form-section-heading">
+
+                        <span>
+                            03
+                        </span>
+
+                        <div>
+
+                            <h2>
+                                Employment & Income
+                            </h2>
+
+                            <p>
+                                Provide the financial information
+                                used to assess repayment capacity.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="form-grid">
+
+                        <div class="form-group">
+
+                            <label for="employmentType">
+                                Employment Status *
+                            </label>
+
+
+                            <select
+                                id="employmentType"
+                                required
+                            >
+
+                                <option value="">
+                                    Select employment status
+                                </option>
+
+                                <option value="Employed Full Time">
+                                    Employed Full Time
+                                </option>
+
+                                <option value="Employed Part Time">
+                                    Employed Part Time
+                                </option>
+
                                 <option value="Self Employed">
                                     Self Employed
                                 </option>
+
                                 <option value="Business Owner">
                                     Business Owner
                                 </option>
-                                <option value="Student">Student</option>
-                                <option value="Retired">Retired</option>
+
+                                <option value="Student">
+                                    Student
+                                </option>
+
+                                <option value="Retired">
+                                    Retired
+                                </option>
+
+                                <option value="Unemployed">
+                                    Unemployed
+                                </option>
+
                             </select>
+
                         </div>
 
-                        <div class="form-group">
-                            <label for="idType">Government ID Type</label>
-
-                            <select id="idType" required>
-                                <option value="">Select ID type</option>
-                                <option value="PAN Card">PAN Card</option>
-                                <option value="Aadhaar Card">
-                                    Aadhaar Card
-                                </option>
-                                <option value="SSN">SSN</option>
-                                <option value="Passport">Passport</option>
-                                <option value="National ID">
-                                    National ID
-                                </option>
-                            </select>
-                        </div>
 
                         <div class="form-group">
-                            <label for="idNumber">
-                                Government ID Number
+
+                            <label for="employerName">
+                                Employer / Business Name
                             </label>
+
+
+                            <input
+                                type="text"
+                                id="employerName"
+                                maxlength="180"
+                                autocomplete="organization"
+                                placeholder="Employer or registered business"
+                            >
+
+
+                            <small class="field-note">
+                                Required when employed or self-employed.
+                            </small>
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="jobTitle">
+                                Occupation / Job Title
+                            </label>
+
+
+                            <input
+                                type="text"
+                                id="jobTitle"
+                                maxlength="150"
+                                autocomplete="organization-title"
+                                placeholder="Your current occupation"
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="annualGrossIncome">
+                                Gross Annual Income *
+                            </label>
+
+
+                            <input
+                                type="number"
+                                id="annualGrossIncome"
+                                min="0"
+                                step="0.01"
+                                placeholder="Annual income before taxes"
+                                required
+                            >
+
+
+                            <small class="field-note">
+                                Include only income you want considered.
+                            </small>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="form-section-heading">
+
+                        <span>
+                            04
+                        </span>
+
+                        <div>
+
+                            <h2>
+                                Identity Verification
+                            </h2>
+
+                            <p>
+                                Provide one government-issued
+                                identification record.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="form-grid">
+
+                        <div class="form-group">
+
+                            <label for="idType">
+                                Government ID Type *
+                            </label>
+
+
+                            <select
+                                id="idType"
+                                required
+                            >
+
+                                <option value="">
+                                    Select ID type
+                                </option>
+
+                                <option value="Passport">
+                                    Passport
+                                </option>
+
+                                <option value="Driver License">
+                                    Driver's License
+                                </option>
+
+                                <option value="National ID">
+                                    National / State ID
+                                </option>
+
+                                <option value="Residence Permit">
+                                    Residence Permit
+                                </option>
+
+                                <option value="Tax Identification Number">
+                                    Tax Identification Number
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="idNumber">
+                                Government ID Number *
+                            </label>
+
 
                             <input
                                 type="text"
                                 id="idNumber"
-                                placeholder="Enter ID number"
+                                maxlength="80"
+                                autocomplete="off"
+                                placeholder="Enter identification number"
                                 required
                             >
+
                         </div>
 
                     </div>
 
+
+                    <div class="form-section-heading">
+
+                        <span>
+                            05
+                        </span>
+
+                        <div>
+
+                            <h2>
+                                Residential Address
+                            </h2>
+
+                            <p>
+                                Enter your permanent residential address.
+                                Postal lookup can fill the city and region.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="form-grid">
+
+                        <div class="form-group">
+
+                            <label for="countryCode">
+                                Country *
+                            </label>
+
+
+                            <select
+                                id="countryCode"
+                                required
+                            >
+
+                                <option value="">
+                                    Select country
+                                </option>
+
+                                <option value="US">
+                                    United States
+                                </option>
+
+                                <option value="CA">
+                                    Canada
+                                </option>
+
+                                <option value="GB">
+                                    United Kingdom
+                                </option>
+
+                                <option value="AU">
+                                    Australia
+                                </option>
+
+                                <option value="CH">
+                                    Switzerland
+                                </option>
+
+                                <option value="DE">
+                                    Germany
+                                </option>
+
+                                <option value="FR">
+                                    France
+                                </option>
+
+                                <option value="NL">
+                                    Netherlands
+                                </option>
+
+                                <option value="IT">
+                                    Italy
+                                </option>
+
+                                <option value="ES">
+                                    Spain
+                                </option>
+
+                                <option value="AT">
+                                    Austria
+                                </option>
+
+                                <option value="BE">
+                                    Belgium
+                                </option>
+
+                                <option value="IE">
+                                    Ireland
+                                </option>
+
+                                <option value="JP">
+                                    Japan
+                                </option>
+
+                                <option value="NZ">
+                                    New Zealand
+                                </option>
+
+                                <option value="OTHER">
+                                    Other / Manual Entry
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="postalCode">
+                                Postal / ZIP Code *
+                            </label>
+
+
+                            <div class="postal-lookup">
+
+                                <input
+                                    type="text"
+                                    id="postalCode"
+                                    autocomplete="postal-code"
+                                    maxlength="30"
+                                    placeholder="e.g. 23220"
+                                    required
+                                >
+
+
+                                <button
+                                    id="postalLookupButton"
+                                    type="button"
+                                >
+                                    Find Address
+                                </button>
+
+                            </div>
+
+
+                            <small
+                                id="postalLookupStatus"
+                                class="field-note lookup-status"
+                            >
+                                Select a country, then enter the postal code.
+                            </small>
+
+                        </div>
+
+                    </div>
+
+
                     <div class="form-group">
-                        <label for="address">Residential Address</label>
 
-                        <textarea
-                            id="address"
-                            rows="3"
-                            placeholder="Enter full residential address"
+                        <label for="addressLine1">
+                            Street Address *
+                        </label>
+
+
+                        <input
+                            type="text"
+                            id="addressLine1"
+                            autocomplete="address-line1"
+                            maxlength="255"
+                            placeholder="Street number and street name"
                             required
-                        ></textarea>
+                        >
+
                     </div>
 
-                    <div class="section-title">Documents</div>
 
-                    <div id="documentList" class="document-list">
-                        <p>
-                            Select a loan type to view the expected documents.
+                    <div class="form-group">
+
+                        <label for="addressLine2">
+                            Apartment, Suite or Unit
+                        </label>
+
+
+                        <input
+                            type="text"
+                            id="addressLine2"
+                            autocomplete="address-line2"
+                            maxlength="255"
+                            placeholder="Optional"
+                        >
+
+                    </div>
+
+
+                    <div class="form-grid">
+
+                        <div class="form-group">
+
+                            <label for="city">
+                                City *
+                            </label>
+
+
+                            <input
+                                type="text"
+                                id="city"
+                                autocomplete="address-level2"
+                                maxlength="120"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="stateProvince">
+                                State / Province / Region *
+                            </label>
+
+
+                            <input
+                                type="text"
+                                id="stateProvince"
+                                autocomplete="address-level1"
+                                maxlength="120"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="housingStatus">
+                                Housing Status *
+                            </label>
+
+
+                            <select
+                                id="housingStatus"
+                                required
+                            >
+
+                                <option value="">
+                                    Select housing status
+                                </option>
+
+                                <option value="Own">
+                                    Own
+                                </option>
+
+                                <option value="Rent">
+                                    Rent
+                                </option>
+
+                                <option value="Family Residence">
+                                    Living with Family
+                                </option>
+
+                                <option value="Employer Provided">
+                                    Employer Provided
+                                </option>
+
+                                <option value="Other">
+                                    Other
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="monthlyHousingPayment">
+                                Monthly Housing Payment *
+                            </label>
+
+
+                            <input
+                                type="number"
+                                id="monthlyHousingPayment"
+                                min="0"
+                                step="0.01"
+                                placeholder="Rent or mortgage payment"
+                                required
+                            >
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="form-section-heading">
+
+                        <span>
+                            06
+                        </span>
+
+                        <div>
+
+                            <h2>
+                                Supporting Documents
+                            </h2>
+
+                            <p>
+                                These documents may be requested
+                                during application review.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div
+                        id="documentList"
+                        class="document-list"
+                    >
+
+                        <p class="document-placeholder">
+                            Select a loan type to view expected documents.
                         </p>
+
                     </div>
 
-                    <p id="errorMessage"></p>
 
-                    <button type="submit" class="submit-btn">
-                        Submit Application
+                    <div class="declaration">
+
+                        <label>
+
+                            <input
+                                id="customerDeclaration"
+                                type="checkbox"
+                                required
+                            >
+
+
+                            <span>
+                                I certify that the information provided
+                                is complete and accurate and authorize
+                                Secure Flow to use it for this loan
+                                application and review.
+                            </span>
+
+                        </label>
+
+                    </div>
+
+
+                    <p
+                        id="errorMessage"
+                        class="error-message"
+                    ></p>
+
+
+                    <button
+                        type="submit"
+                        class="submit-btn"
+                    >
+                        Submit Loan Application
                     </button>
+
+
+                    <p class="submission-note">
+                        Submission is not a commitment to lend
+                        and does not guarantee approval.
+                    </p>
 
                 </form>
 
             </section>
 
+
             <aside class="preview-panel">
 
-                <div class="preview-card main-preview">
-                    <span class="preview-label">Application Workflow</span>
+                <div class="summary-heading">
 
-                    <h2>Customer → Employee → Manager</h2>
+                    <span>
+                        APPLICATION SUMMARY
+                    </span>
 
-                    <div class="flow-line">
-                        <div>Application Submitted</div>
-                        <span></span>
-                        <div>Employee Review</div>
-                        <span></span>
-                        <div>Manager Decision</div>
-                    </div>
+                    <h2>
+                        Review your request
+                    </h2>
 
-                    <div class="decision-row">
-                        <div class="approve">Approved</div>
-                        <div class="reject">Rejected</div>
-                    </div>
+                    <p>
+                        Confirm the main application selections
+                        before submission.
+                    </p>
+
                 </div>
 
-                <div class="preview-card">
-                    <h3>Selected Loan</h3>
-                    <p id="previewLoan">Not selected</p>
-                </div>
 
                 <div class="preview-card">
-                    <h3>Application Priority</h3>
-                    <p id="previewPriority">Auto assigned</p>
+
+                    <span class="preview-label">
+                        SELECTED LOAN
+                    </span>
+
+                    <h3 id="previewLoan">
+                        Not selected
+                    </h3>
+
+                    <p>
+                        Financing product
+                    </p>
+
                 </div>
 
+
                 <div class="preview-card">
-                    <h3>Expected Documents</h3>
-                    <p id="previewDocs">0 documents</p>
+
+                    <span class="preview-label">
+                        APPLICATION PRIORITY
+                    </span>
+
+                    <h3 id="previewPriority">
+                        Auto assigned
+                    </h3>
+
+                    <p>
+                        Determined by the selected product.
+                    </p>
+
+                </div>
+
+
+                <div class="preview-card">
+
+                    <span class="preview-label">
+                        EXPECTED DOCUMENTS
+                    </span>
+
+                    <h3 id="previewDocs">
+                        0 documents
+                    </h3>
+
+                    <p>
+                        May be requested during review.
+                    </p>
+
                 </div>
 
             </aside>
@@ -257,16 +1075,33 @@
 
 </div>
 
-<div class="success-modal" id="successModal">
+
+<div
+    class="success-modal"
+    id="successModal"
+>
+
     <div class="success-modal-card">
 
-        <div class="success-icon">✓</div>
+        <div class="success-icon">
+            ✓
+        </div>
 
-        <span class="success-badge">Application Submitted</span>
 
-        <h2>Your loan application was submitted successfully.</h2>
+        <span class="success-badge">
+            APPLICATION SUBMITTED
+        </span>
 
-        <p>Your application number is</p>
+
+        <h2>
+            Your loan application has been received.
+        </h2>
+
+
+        <p>
+            Secure Flow application reference
+        </p>
+
 
         <div
             class="work-item-highlight"
@@ -275,12 +1110,23 @@
             -
         </div>
 
-        <button type="button" onclick="goToDashboard()">
-            Go to Dashboard
+
+        <p class="success-note">
+            Track your application from the client dashboard.
+        </p>
+
+
+        <button
+            type="button"
+            onclick="goToDashboard()"
+        >
+            Return to Dashboard
         </button>
 
     </div>
+
 </div>
+
 
 <script src="create-workflow.js"></script>
 

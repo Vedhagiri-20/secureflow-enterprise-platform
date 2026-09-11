@@ -1,0 +1,162 @@
+.form-grid.three-column {
+    grid-template-columns:
+        repeat(
+            3,
+            minmax(0, 1fr)
+        ) !important;
+}
+
+
+.form-section-heading h2 {
+    font-size: 27px !important;
+}
+
+
+.form-section-heading p {
+    font-size: 12px !important;
+
+    line-height: 1.55 !important;
+}
+
+
+.form-group label {
+    font-size: 10px !important;
+
+    font-weight: 800 !important;
+}
+
+
+.field-note {
+    color: #6c7b83 !important;
+
+    font-size: 9px !important;
+
+    font-weight: 600 !important;
+
+    line-height: 1.45 !important;
+}
+
+
+.postal-lookup {
+    display: flex;
+
+    gap: 8px;
+
+    align-items: stretch;
+}
+
+
+.postal-lookup input {
+    min-width: 0;
+
+    flex: 1;
+}
+
+
+.postal-lookup button {
+    flex: 0 0 auto;
+
+    min-height: 49px;
+
+    padding:
+        0 15px;
+
+    border:
+        1px solid #c8a86b !important;
+
+    border-radius: 1px !important;
+
+    color: #e0c48b !important;
+
+    background: #041522 !important;
+
+    font-family:
+        "Inter",
+        sans-serif !important;
+
+    font-size: 10px !important;
+
+    font-weight: 800 !important;
+
+    cursor: pointer;
+}
+
+
+.postal-lookup button:hover {
+    color: #041522 !important;
+
+    background: #c8a86b !important;
+}
+
+
+.postal-lookup button:disabled {
+    cursor: wait;
+
+    opacity: .65;
+}
+
+
+.lookup-status {
+    min-height: 14px;
+}
+
+
+.lookup-status.success {
+    color: #356653 !important;
+}
+
+
+.lookup-status.error {
+    color: #934545 !important;
+}
+
+
+.form-group input[type="date"] {
+    color-scheme: light;
+}
+
+
+.preview-panel {
+    top: 18px !important;
+}
+
+
+.document-list {
+    margin-bottom: 25px;
+}
+
+
+.declaration {
+    margin-top: 31px !important;
+}
+
+
+@media (max-width: 920px) {
+
+    .form-grid.three-column {
+        grid-template-columns:
+            repeat(
+                2,
+                minmax(0, 1fr)
+            ) !important;
+    }
+}
+
+
+@media (max-width: 650px) {
+
+    .form-grid.three-column {
+        grid-template-columns:
+            1fr !important;
+    }
+
+
+    .postal-lookup {
+        flex-direction: column;
+    }
+
+
+    .postal-lookup button {
+        min-height: 44px;
+    }
+}

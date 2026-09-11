@@ -53,11 +53,23 @@ public class SecurityConfig {
                                 "/**"
                         )
                         .permitAll()
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/",
+                                "/index.html",
+                                "/favicon.ico",
+                                "/assets/**",
+                                "/auth/**",
+                                "/customer/**",
+                                "/dashboard/**",
+                                "/workflow/**"
+                        )
+                        .permitAll()
 
                         .requestMatchers(
                                 HttpMethod.POST,
                                 "/api/auth/login"
-                        )
+                        , "/api/auth/register/customer")
                         .permitAll()
 
                         .requestMatchers("/error")

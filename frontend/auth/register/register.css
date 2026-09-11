@@ -1,0 +1,835 @@
+:root {
+    --navy: #041522;
+    --navy-soft: #08283c;
+    --gold: #c8a86b;
+    --gold-light: #e1ca98;
+    --ivory: #f7f5f0;
+    --white: #ffffff;
+    --text: #172630;
+    --muted: #617079;
+    --border: #d2dadd;
+    --error: #934040;
+}
+
+
+* {
+    box-sizing: border-box;
+}
+
+
+body {
+    min-height: 100vh;
+
+    margin: 0;
+
+    color: var(--text);
+
+    background:
+        linear-gradient(
+            135deg,
+            #e9edef,
+            #f8f6f1
+        );
+
+    font-family:
+        "Inter",
+        sans-serif;
+}
+
+
+body::before {
+    content: "";
+
+    position: fixed;
+
+    z-index: 100;
+
+    top: 0;
+    right: 0;
+    left: 0;
+
+    height: 3px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #806137,
+            var(--gold-light),
+            #806137
+        );
+}
+
+
+a {
+    text-decoration: none;
+}
+
+
+.registration-shell {
+    min-height: 100vh;
+}
+
+
+.registration-header {
+    display: flex;
+
+    width: min(
+        1220px,
+        92%
+    );
+
+    min-height: 75px;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    margin: 0 auto;
+}
+
+
+.header-brand {
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+}
+
+
+.brand-mark {
+    display: grid;
+
+    width: 43px;
+    height: 43px;
+
+    place-items: center;
+
+    border:
+        1px solid var(--gold);
+
+    color:
+        var(--gold-light);
+
+    background: var(--navy);
+
+    font-family:
+        "Cormorant Garamond",
+        Georgia,
+        serif;
+
+    font-size: 16px;
+
+    font-weight: 700;
+}
+
+
+.brand-copy strong,
+.brand-copy small {
+    display: block;
+}
+
+
+.brand-copy strong {
+    color: var(--navy);
+
+    font-family:
+        "Cormorant Garamond",
+        Georgia,
+        serif;
+
+    font-size: 20px;
+
+    font-weight: 700;
+
+    letter-spacing: .07em;
+}
+
+
+.brand-copy small {
+    margin-top: 2px;
+
+    color: #6e7d85;
+
+    font-size: 8px;
+
+    font-weight: 700;
+
+    letter-spacing: .18em;
+}
+
+
+.header-login {
+    padding:
+        10px 16px;
+
+    border:
+        1px solid var(--navy);
+
+    color: var(--navy);
+
+    font-size: 11px;
+
+    font-weight: 800;
+}
+
+
+.registration-stage {
+    display: grid;
+
+    place-items: center;
+
+    padding:
+        22px 32px 50px;
+}
+
+
+.registration-card {
+    display: grid;
+
+    width:
+        min(
+            1220px,
+            100%
+        );
+
+    grid-template-columns:
+        58% 42%;
+
+    overflow: hidden;
+
+    border:
+        1px solid #cbd4d8;
+
+    background: #ffffff;
+
+    box-shadow:
+        0 30px 85px
+        rgba(
+            4,
+            21,
+            34,
+            .14
+        );
+}
+
+
+.registration-form-panel {
+    padding:
+        45px 48px;
+}
+
+
+.section-label {
+    display: inline-block;
+
+    margin-bottom: 16px;
+
+    padding:
+        6px 9px;
+
+    border:
+        1px solid #decba7;
+
+    color: #987039;
+
+    font-size: 8px;
+
+    font-weight: 800;
+
+    letter-spacing: .17em;
+}
+
+
+.registration-heading h1 {
+    margin:
+        0 0 14px;
+
+    color: var(--navy);
+
+    font-family:
+        "Cormorant Garamond",
+        Georgia,
+        serif;
+
+    font-size:
+        clamp(
+            43px,
+            4vw,
+            55px
+        );
+
+    font-weight: 700;
+
+    line-height: .94;
+
+    letter-spacing: -.025em;
+}
+
+
+.registration-heading p {
+    max-width: 500px;
+
+    margin: 0;
+
+    color: var(--muted);
+
+    font-size: 13px;
+
+    font-weight: 500;
+
+    line-height: 1.65;
+}
+
+
+form {
+    margin-top: 30px;
+}
+
+
+.name-grid {
+    display: grid;
+
+    grid-template-columns:
+        1fr 1fr 1fr;
+
+    gap: 13px;
+}
+
+
+.two-column {
+    display: grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    gap: 13px;
+}
+
+
+.field-group {
+    margin-bottom: 17px;
+}
+
+
+.field-group label {
+    display: block;
+
+    margin-bottom: 7px;
+
+    color: #33434c;
+
+    font-size: 9px;
+
+    font-weight: 800;
+
+    letter-spacing: .055em;
+
+    text-transform: uppercase;
+}
+
+
+.field-group input {
+    width: 100%;
+
+    min-height: 48px;
+
+    padding:
+        0 13px;
+
+    border:
+        1px solid #c9d2d6;
+
+    border-radius: 0;
+
+    outline: none;
+
+    color: var(--navy);
+
+    background: #ffffff;
+
+    font-size: 12px;
+
+    font-weight: 600;
+}
+
+
+.field-group input:focus {
+    border-color:
+        #a9864d;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(
+            200,
+            168,
+            107,
+            .12
+        );
+}
+
+
+.field-group input::placeholder {
+    color: #89969d;
+
+    font-weight: 500;
+}
+
+
+.password-shell {
+    position: relative;
+}
+
+
+.password-shell input {
+    padding-right: 65px;
+}
+
+
+.password-shell button {
+    position: absolute;
+
+    top: 50%;
+    right: 7px;
+
+    padding:
+        7px 10px;
+
+    border: 0;
+
+    color: #70542a;
+
+    background: #f4ecdc;
+
+    font-size: 9px;
+
+    font-weight: 800;
+
+    transform:
+        translateY(-50%);
+
+    cursor: pointer;
+}
+
+
+.customer-note {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 18px;
+
+    margin:
+        3px 0 8px;
+
+    padding:
+        12px 14px;
+
+    border-left:
+        3px solid var(--gold);
+
+    background: #f8f3e9;
+}
+
+
+.customer-note strong {
+    color: var(--navy);
+
+    font-size: 10px;
+}
+
+
+.customer-note span {
+    color: #69777f;
+
+    font-size: 9px;
+
+    font-weight: 600;
+
+    text-align: right;
+}
+
+
+.form-error {
+    display: flex;
+
+    min-height: 33px;
+
+    align-items: center;
+
+    color: var(--error);
+
+    font-size: 10px;
+
+    font-weight: 700;
+}
+
+
+.form-error:not(:empty) {
+    margin:
+        4px 0 10px;
+
+    padding:
+        9px 11px;
+
+    border-left:
+        3px solid var(--error);
+
+    background: #f8eaea;
+}
+
+
+.create-account-button {
+    width: 100%;
+
+    min-height: 50px;
+
+    border:
+        1px solid var(--gold);
+
+    color: var(--navy);
+
+    background: var(--gold);
+
+    font-size: 11px;
+
+    font-weight: 800;
+
+    cursor: pointer;
+}
+
+
+.create-account-button:hover:not(:disabled) {
+    background:
+        var(--gold-light);
+}
+
+
+.create-account-button:disabled {
+    cursor: wait;
+
+    opacity: .72;
+}
+
+
+.existing-account {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 8px;
+
+    margin-top: 20px;
+
+    color: #728087;
+
+    font-size: 10px;
+
+    font-weight: 600;
+}
+
+
+.existing-account a {
+    color: #80602f;
+
+    font-weight: 800;
+}
+
+
+.registration-visual {
+    position: relative;
+
+    display: flex;
+
+    min-height: 670px;
+
+    overflow: hidden;
+
+    flex-direction: column;
+
+    padding:
+        42px;
+
+    color: #ffffff;
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(3, 17, 28, .14),
+            rgba(3, 17, 28, .20) 43%,
+            rgba(3, 17, 28, .95)
+        ),
+        url(
+            "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1500&q=90"
+        )
+        center / cover
+        no-repeat;
+}
+
+
+.visual-overlay {
+    position: absolute;
+
+    inset: 0;
+
+    background:
+        linear-gradient(
+            90deg,
+            rgba(
+                3,
+                17,
+                28,
+                .04
+            ),
+            transparent
+        );
+}
+
+
+.registration-visual > *:not(
+    .visual-overlay
+) {
+    position: relative;
+
+    z-index: 2;
+}
+
+
+.visual-topline {
+    display: flex;
+
+    justify-content: space-between;
+
+    gap: 15px;
+
+    color: var(--gold-light);
+
+    font-size: 8px;
+
+    font-weight: 800;
+
+    letter-spacing: .14em;
+}
+
+
+.visual-copy {
+    margin-top: auto;
+
+    padding-bottom: 55px;
+}
+
+
+.visual-label {
+    display: inline-block;
+
+    margin-bottom: 17px;
+
+    padding:
+        6px 8px;
+
+    border:
+        1px solid
+        rgba(
+            225,
+            202,
+            152,
+            .45
+        );
+
+    color:
+        var(--gold-light);
+
+    background:
+        rgba(
+            3,
+            17,
+            28,
+            .55
+        );
+
+    font-size: 8px;
+
+    font-weight: 800;
+
+    letter-spacing: .15em;
+}
+
+
+.visual-copy h2 {
+    margin:
+        0 0 18px;
+
+    color: #ffffff;
+
+    font-family:
+        "Cormorant Garamond",
+        Georgia,
+        serif;
+
+    font-size:
+        clamp(
+            48px,
+            5vw,
+            64px
+        );
+
+    font-weight: 700;
+
+    line-height: .91;
+
+    letter-spacing: -.025em;
+}
+
+
+.visual-copy p {
+    max-width: 430px;
+
+    margin: 0;
+
+    color: #d2dde2;
+
+    font-size: 12px;
+
+    font-weight: 500;
+
+    line-height: 1.7;
+}
+
+
+.visual-security {
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            3,
+            1fr
+        );
+
+    gap: 15px;
+
+    padding-top: 20px;
+
+    border-top:
+        1px solid
+        rgba(
+            255,
+            255,
+            255,
+            .24
+        );
+}
+
+
+.visual-security strong,
+.visual-security span {
+    display: block;
+}
+
+
+.visual-security strong {
+    color: #ffffff;
+
+    font-family:
+        "Cormorant Garamond",
+        Georgia,
+        serif;
+
+    font-size: 18px;
+
+    font-weight: 700;
+}
+
+
+.visual-security span {
+    margin-top: 3px;
+
+    color: #9fadb4;
+
+    font-size: 7px;
+
+    font-weight: 600;
+}
+
+
+@media (
+    max-width: 900px
+) {
+
+    .registration-card {
+        width:
+            min(
+                620px,
+                100%
+            );
+
+        grid-template-columns:
+            1fr;
+    }
+
+
+    .registration-visual {
+        display: none;
+    }
+}
+
+
+@media (
+    max-width: 620px
+) {
+
+    .registration-stage {
+        padding:
+            15px 12px
+            35px;
+    }
+
+
+    .registration-form-panel {
+        padding:
+            30px 22px;
+    }
+
+
+    .name-grid,
+    .two-column {
+        grid-template-columns:
+            1fr;
+    }
+
+
+    .registration-header {
+        min-height:
+            65px;
+    }
+
+
+    .brand-copy strong {
+        font-size:
+            17px;
+    }
+
+
+    .header-login {
+        padding:
+            8px 10px;
+    }
+
+
+    .customer-note {
+        align-items:
+            flex-start;
+
+        flex-direction:
+            column;
+    }
+
+
+    .customer-note span {
+        text-align:
+            left;
+    }
+}

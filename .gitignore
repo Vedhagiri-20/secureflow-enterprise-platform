@@ -1,1 +1,8 @@
 .DS_Store
+
+# Local environment and deployment secrets
+.env
+.env.*
+!.env.example
+*.backup
+*.dump

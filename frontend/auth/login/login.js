@@ -1,34 +1,93 @@
+const LOGIN_API =
+    "http://localhost:8080/api/auth/login";
+
+const emailInput =
+    document.getElementById(
+        "email"
+    );
+
+const passwordInput =
+    document.getElementById(
+        "password"
+    );
+
+const errorMessage =
+    document.getElementById(
+        "error-message"
+    );
+
+const successMessage =
+    document.getElementById(
+        "success-message"
+    );
+
+const loginButton =
+    document.getElementById(
+        "loginButton"
+    );
+
+const loginButtonText =
+    document.getElementById(
+        "loginButtonText"
+    );
+
+const rememberMe =
+    document.getElementById(
+        "rememberMe"
+    );
+
+
+restoreRememberedEmail();
+showRegistrationSuccess();
+
+
 async function login(event) {
     event.preventDefault();
 
+    clearError();
+
     const email =
-        document.getElementById(
-            "email"
-        ).value.trim();
+        emailInput.value.trim();
 
     const password =
-        document.getElementById(
-            "password"
-        ).value;
+        passwordInput.value;
 
-    const errorMessage =
-        document.getElementById(
-            "error-message"
+    if (!email) {
+        showError(
+            "Enter your registered email address."
         );
 
-    errorMessage.textContent = "";
-
-    if (!email || !password) {
-        errorMessage.textContent =
-            "Email and password are required.";
+        emailInput.focus();
 
         return;
     }
 
+    if (!isValidEmail(email)) {
+        showError(
+            "Enter a valid email address."
+        );
+
+        emailInput.focus();
+
+        return;
+    }
+
+    if (!password) {
+        showError(
+            "Enter your Secure Flow password."
+        );
+
+        passwordInput.focus();
+
+        return;
+    }
+
+    setLoading(true);
+
     try {
         const response =
             await fetch(
-                "http://localhost:8080/api/auth/login",
+                LOGIN_API,
                 {
                     method: "POST",
 
@@ -46,17 +105,24 @@ async function login(event) {
             );
 
         const data =
-            await response.json();
+            await response
+                .json()
+                .catch(() => ({}));
 
-        if (data.message !== "Login Successful"
+        if (!response.ok
+                || data.message
+                    !== "Login Successful"
                 || !data.token) {
 
-            errorMessage.textContent =
+            throw new Error(
                 data.message
-                || "Login failed.";
-
-            return;
+                || "Secure authentication failed."
+            );
         }
+
+        handleRememberedEmail(
+            email
+        );
 
         localStorage.setItem(
             "secureFlowUserEmail",
@@ -80,65 +146,226 @@ async function login(event) {
             data.token
         );
 
-        const destinations = {
-            CUSTOMER:
-                "../../dashboard/customer/customer-dashboard.html",
-
-            EMPLOYEE:
-                "../../dashboard/employee/employee-dashboard.html",
-
-            MANAGER:
-                "../../dashboard/manager/manager-dashboard.html",
-
-            ADMIN:
-                "../../dashboard/admin/admin-dashboard.html"
-        };
-
         const destination =
-            destinations[data.role];
+            getDestination(
+                data.role
+            );
 
         if (!destination) {
-            errorMessage.textContent =
-                "Unknown user role.";
-
-            return;
+            throw new Error(
+                "Your Secure Flow role is not configured for portal access."
+            );
         }
 
-        window.location.href =
-            destination;
+        loginButtonText.textContent =
+            "Access granted";
+
+        window.setTimeout(
+            () => {
+                window.location.href =
+                    destination;
+            },
+            220
+        );
 
     } catch (error) {
-        errorMessage.textContent =
-            "Unable to connect to SecureFlow.";
+        showError(
+            normalizeError(
+                error.message
+            )
+        );
 
-        console.error(error);
+        setLoading(false);
     }
 }
 
 
 function togglePassword() {
-    const password =
-        document.getElementById(
-            "password"
-        );
+    const showPassword =
+        passwordInput.type
+        === "password";
 
-    const button =
+    passwordInput.type =
+        showPassword
+            ? "text"
+            : "password";
+
+    const toggle =
         document.querySelector(
             ".toggle-btn"
         );
 
-    const hidden =
-        password.type === "password";
+    toggle.textContent =
+        showPassword
+            ? "Hide"
+            : "Show";
 
-    password.type =
-        hidden
-            ? "text"
-            : "password";
+    toggle.setAttribute(
+        "aria-label",
+        showPassword
+            ? "Hide password"
+            : "Show password"
+    );
+}
 
-    if (button) {
-        button.textContent =
-            hidden
-                ? "Hide"
-                : "Show";
+
+function setLoading(loading) {
+    loginButton.disabled =
+        loading;
+
+    emailInput.disabled =
+        loading;
+
+    passwordInput.disabled =
+        loading;
+
+    loginButtonText.textContent =
+        loading
+            ? "Verifying secure access..."
+            : "Sign in securely";
+}
+
+
+function getDestination(role) {
+    const destinations = {
+        CUSTOMER:
+            "../../dashboard/customer/customer-dashboard.html",
+
+        EMPLOYEE:
+            "../../dashboard/employee/employee-dashboard.html",
+
+        MANAGER:
+            "../../dashboard/manager/manager-dashboard.html",
+
+        ADMIN:
+            "../../dashboard/admin/admin-dashboard.html"
+    };
+
+    return destinations[role];
+}
+
+
+function handleRememberedEmail(email) {
+    if (rememberMe.checked) {
+        localStorage.setItem(
+            "secureFlowRememberedEmail",
+            email
+        );
+
+        return;
     }
+
+    localStorage.removeItem(
+        "secureFlowRememberedEmail"
+    );
+}
+
+
+function restoreRememberedEmail() {
+    const remembered =
+        localStorage.getItem(
+            "secureFlowRememberedEmail"
+        );
+
+    if (!remembered) {
+        return;
+    }
+
+    emailInput.value =
+        remembered;
+
+    rememberMe.checked =
+        true;
+}
+
+
+function showRegistrationSuccess() {
+    const message =
+        sessionStorage.getItem(
+            "secureFlowRegistrationSuccess"
+        );
+
+    const registeredEmail =
+        sessionStorage.getItem(
+            "secureFlowRegisteredEmail"
+        );
+
+    if (!message) {
+        return;
+    }
+
+    successMessage.textContent =
+        message;
+
+    successMessage.classList.add(
+        "show"
+    );
+
+    if (registeredEmail) {
+        emailInput.value =
+            registeredEmail;
+
+        passwordInput.focus();
+    }
+
+    sessionStorage.removeItem(
+        "secureFlowRegistrationSuccess"
+    );
+
+    sessionStorage.removeItem(
+        "secureFlowRegisteredEmail"
+    );
+}
+
+
+function isValidEmail(value) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+        .test(value);
+}
+
+
+function normalizeError(message) {
+    const lowerMessage =
+        String(
+            message || ""
+        ).toLowerCase();
+
+    if (lowerMessage.includes(
+        "invalid email"
+    )) {
+        return "We could not verify this email address.";
+    }
+
+    if (lowerMessage.includes(
+        "invalid password"
+    )) {
+        return "The password entered is incorrect.";
+    }
+
+    if (lowerMessage.includes(
+        "inactive"
+    )) {
+        return "This account is currently disabled.";
+    }
+
+    if (lowerMessage.includes(
+        "failed to fetch"
+    )) {
+        return "Secure Flow authentication services are currently unavailable.";
+    }
+
+    return message
+        || "Secure authentication failed.";
+}
+
+
+function showError(message) {
+    errorMessage.textContent =
+        message;
+}
+
+
+function clearError() {
+    errorMessage.textContent =
+        "";
 }
