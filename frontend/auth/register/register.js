@@ -1,5 +1,5 @@
 const REGISTER_API =
-    "http://localhost:8080/api/auth/register/customer";
+    window.secureFlowApiUrl('/api/auth/register/customer');
 
 const form =
     document.getElementById(

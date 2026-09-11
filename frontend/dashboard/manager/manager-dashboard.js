@@ -1,5 +1,5 @@
 const API =
-    "http://localhost:8080/api/manager";
+    window.secureFlowApiUrl('/api/manager');
 
 const token =
     localStorage.getItem(

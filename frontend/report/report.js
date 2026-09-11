@@ -1,5 +1,5 @@
 const API_URL =
-    "http://localhost:8080/api/reports/employee";
+    window.secureFlowApiUrl('/api/reports/employee');
 
 const email =
     localStorage.getItem(

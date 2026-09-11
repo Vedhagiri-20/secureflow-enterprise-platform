@@ -1,5 +1,5 @@
 const LOGIN_API =
-    "http://localhost:8080/api/auth/login";
+    window.secureFlowApiUrl('/api/auth/login');
 
 const emailInput =
     document.getElementById(

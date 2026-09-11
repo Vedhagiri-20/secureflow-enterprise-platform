@@ -1,5 +1,5 @@
 const API_URL =
-    "http://localhost:8080/api/eligibility/check";
+    window.secureFlowApiUrl('/api/eligibility/check');
 
 const email =
     localStorage.getItem(

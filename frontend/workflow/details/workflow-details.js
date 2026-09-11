@@ -43,7 +43,7 @@ const dashboardPaths = {
 };
 
 const API_URL =
-    `http://localhost:8080/api/${rolePaths[role]}`;
+    `${window.SECUREFLOW_API_BASE}/api/${rolePaths[role]}`;
 
 const backButton =
     document.querySelector(

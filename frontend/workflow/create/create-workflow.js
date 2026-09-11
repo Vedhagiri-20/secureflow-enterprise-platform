@@ -1,5 +1,5 @@
 const API_URL =
-    "http://localhost:8080/api/customer/applications";
+    window.secureFlowApiUrl('/api/customer/applications');
 
 const POSTAL_API =
     "https://api.zippopotam.us";
