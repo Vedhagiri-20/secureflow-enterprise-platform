@@ -4,21 +4,14 @@ WORKDIR /workspace
 
 COPY . .
 
-RUN rm -rf \
-        backend/secureflow-api/src/main/resources/static \
-    && mkdir -p \
-        backend/secureflow-api/src/main/resources/static \
-    && cp -R \
-        frontend/. \
-        backend/secureflow-api/src/main/resources/static/
+RUN rm -rf backend/secureflow-api/src/main/resources/static \
+    && mkdir -p backend/secureflow-api/src/main/resources/static \
+    && cp -R frontend/. backend/secureflow-api/src/main/resources/static/
 
 WORKDIR /workspace/backend/secureflow-api
 
 RUN chmod +x mvnw \
-    && ./mvnw \
-        clean \
-        package \
-        -DskipTests
+    && ./mvnw clean package -DskipTests
 
 
 FROM eclipse-temurin:21-jre
@@ -33,9 +26,4 @@ ENV PORT=10000
 
 EXPOSE 10000
 
-ENTRYPOINT [
-    "java",
-    "-XX:MaxRAMPercentage=75.0",
-    "-jar",
-    "/app/secureflow.jar"
-]
+ENTRYPOINT ["java", "-XX:MaxRAMPercentage=75.0", "-jar", "/app/secureflow.jar"]
