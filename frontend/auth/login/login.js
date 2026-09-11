@@ -2,56 +2,48 @@ async function login(event) {
     event.preventDefault();
 
     const email =
-        document.getElementById("email")
-            .value
-            .trim();
+        document.getElementById(
+            "email"
+        ).value.trim();
 
     const password =
-        document.getElementById("password")
-            .value
-            .trim();
+        document.getElementById(
+            "password"
+        ).value;
 
     const errorMessage =
-        document.getElementById("error-message");
+        document.getElementById(
+            "error-message"
+        );
 
     errorMessage.textContent = "";
 
-    if (!email) {
+    if (!email || !password) {
         errorMessage.textContent =
-            "Email address is mandatory.";
-        return;
-    }
+            "Email and password are required.";
 
-    const emailPattern =
-        /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
-
-    if (!emailPattern.test(email)) {
-        errorMessage.textContent =
-            "Please enter a valid email address.";
-        return;
-    }
-
-    if (!password) {
-        errorMessage.textContent =
-            "Password is mandatory.";
         return;
     }
 
     try {
-        const response = await fetch(
-            "http://localhost:8080/api/auth/login",
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type":
-                        "application/json"
-                },
-                body: JSON.stringify({
-                    email: email,
-                    password: password
-                })
-            }
-        );
+        const response =
+            await fetch(
+                "http://localhost:8080/api/auth/login",
+                {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body:
+                        JSON.stringify({
+                            email,
+                            password
+                        })
+                }
+            );
 
         const data =
             await response.json();
@@ -60,13 +52,22 @@ async function login(event) {
                 || !data.token) {
 
             errorMessage.textContent =
-                data.message || "Login failed.";
+                data.message
+                || "Login failed.";
+
             return;
         }
 
         localStorage.setItem(
             "secureFlowUserEmail",
             data.email || email
+        );
+
+        localStorage.setItem(
+            "secureFlowUserName",
+            data.fullName
+                || data.email
+                || email
         );
 
         localStorage.setItem(
@@ -79,53 +80,65 @@ async function login(event) {
             data.token
         );
 
-        if (data.role === "CUSTOMER") {
-            window.location.href =
-                "../../dashboard/customer/customer-dashboard.html";
+        const destinations = {
+            CUSTOMER:
+                "../../dashboard/customer/customer-dashboard.html",
+
+            EMPLOYEE:
+                "../../dashboard/employee/employee-dashboard.html",
+
+            MANAGER:
+                "../../dashboard/manager/manager-dashboard.html",
+
+            ADMIN:
+                "../../dashboard/admin/admin-dashboard.html"
+        };
+
+        const destination =
+            destinations[data.role];
+
+        if (!destination) {
+            errorMessage.textContent =
+                "Unknown user role.";
+
             return;
         }
 
-        if (data.role === "EMPLOYEE") {
-            window.location.href =
-                "../../dashboard/employee/employee-dashboard.html";
-            return;
-        }
-
-        if (data.role === "MANAGER") {
-            window.location.href =
-                "../../dashboard/manager/manager-dashboard.html";
-            return;
-        }
-
-        if (data.role === "ADMIN") {
-            window.location.href =
-                "../../dashboard/admin/admin-dashboard.html";
-            return;
-        }
-
-        errorMessage.textContent =
-            "Unknown user role.";
+        window.location.href =
+            destination;
 
     } catch (error) {
         errorMessage.textContent =
-            "Backend server is not running.";
+            "Unable to connect to SecureFlow.";
 
         console.error(error);
     }
 }
 
+
 function togglePassword() {
     const password =
-        document.getElementById("password");
+        document.getElementById(
+            "password"
+        );
 
-    const toggleButton =
-        document.querySelector(".toggle-btn");
+    const button =
+        document.querySelector(
+            ".toggle-btn"
+        );
 
-    if (password.type === "password") {
-        password.type = "text";
-        toggleButton.textContent = "Hide";
-    } else {
-        password.type = "password";
-        toggleButton.textContent = "Show";
+    const hidden =
+        password.type === "password";
+
+    password.type =
+        hidden
+            ? "text"
+            : "password";
+
+    if (button) {
+        button.textContent =
+            hidden
+                ? "Hide"
+                : "Show";
     }
 }

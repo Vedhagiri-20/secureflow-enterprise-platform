@@ -1,240 +1,379 @@
-const API_URL =
+const API =
     "http://localhost:8080/api/customer";
-
-const customerEmail =
-    localStorage.getItem(
-        "secureFlowUserEmail"
-    );
-
-const customerRole =
-    localStorage.getItem(
-        "secureFlowUserRole"
-    );
 
 const token =
     localStorage.getItem(
         "secureFlowToken"
     );
 
-if (!customerEmail
-        || customerRole !== "CUSTOMER"
-        || !token) {
+const role =
+    localStorage.getItem(
+        "secureFlowUserRole"
+    );
 
+const email =
+    localStorage.getItem(
+        "secureFlowUserEmail"
+    );
+
+const fullName =
+    localStorage.getItem(
+        "secureFlowUserName"
+    ) || email || "SecureFlow Client";
+
+let applications = [];
+
+
+if (!token || role !== "CUSTOMER") {
     goToLogin();
 }
 
-document.getElementById(
-    "customerEmail"
-).textContent = customerEmail || "";
+
+initializeProfile();
+initializeNavigation();
+loadPage();
+
+
+function initializeProfile() {
+    document.getElementById(
+        "sidebarName"
+    ).textContent =
+        fullName;
+
+    document.getElementById(
+        "sidebarEmail"
+    ).textContent =
+        email || "-";
+
+    document.getElementById(
+        "profileName"
+    ).textContent =
+        fullName;
+
+    document.getElementById(
+        "profileEmail"
+    ).textContent =
+        email || "-";
+
+    document.getElementById(
+        "profileInitials"
+    ).textContent =
+        getInitials(fullName);
+}
+
+
+function initializeNavigation() {
+    document.querySelectorAll(
+        ".portal-nav-button"
+    ).forEach(button => {
+
+        button.addEventListener(
+            "click",
+            () => showPage(
+                button.dataset.page
+            )
+        );
+
+    });
+}
+
+
+function showPage(name) {
+    document.querySelectorAll(
+        ".portal-view"
+    ).forEach(view => {
+        view.classList.remove(
+            "active"
+        );
+    });
+
+    document.querySelectorAll(
+        ".portal-nav-button"
+    ).forEach(button => {
+        button.classList.remove(
+            "active"
+        );
+    });
+
+    document.getElementById(
+        `${name}Page`
+    ).classList.add(
+        "active"
+    );
+
+    const button =
+        document.querySelector(
+            `[data-page="${name}"]`
+        );
+
+    if (button) {
+        button.classList.add(
+            "active"
+        );
+    }
+
+    const meta = {
+        dashboard: [
+            "Client Dashboard",
+            "Review your loan portfolio and application progress."
+        ],
+
+        current: [
+            "Current Applications",
+            "Monitor applications moving through SecureFlow review."
+        ],
+
+        completed: [
+            "Completed Applications",
+            "Review your final approved and rejected decisions."
+        ],
+
+        profile: [
+            "Account Profile",
+            "Review your authenticated SecureFlow identity."
+        ]
+    };
+
+    const selected =
+        meta[name];
+
+    document.getElementById(
+        "pageTitle"
+    ).textContent =
+        selected[0];
+
+    document.getElementById(
+        "pageDescription"
+    ).textContent =
+        selected[1];
+}
+
 
 async function loadPage() {
-    document.getElementById(
-        "message"
-    ).textContent = "";
-
     try {
-        await Promise.all([
-            loadDashboard(),
-            loadApplications()
+        const [
+            dashboard,
+            applicationData
+        ] = await Promise.all([
+            api("/dashboard"),
+            api("/applications")
         ]);
-    } catch (error) {
+
+        applications =
+            applicationData;
+
         document.getElementById(
-            "message"
+            "totalCount"
         ).textContent =
-            "Unable to load customer data.";
+            dashboard.total;
 
-        console.error(error);
-    }
-}
-
-async function loadDashboard() {
-    const response = await fetch(
-        `${API_URL}/dashboard`,
-        {
-            headers: authHeaders()
-        }
-    );
-
-    checkAuthorization(response);
-
-    if (!response.ok) {
-        throw new Error(
-            "Dashboard request failed"
-        );
-    }
-
-    const data =
-        await response.json();
-
-    document.getElementById(
-        "totalCount"
-    ).textContent = data.total;
-
-    document.getElementById(
-        "submittedCount"
-    ).textContent = data.submitted;
-
-    document.getElementById(
-        "reviewCount"
-    ).textContent =
-        data.underReview + data.forwarded;
-
-    document.getElementById(
-        "approvedCount"
-    ).textContent = data.approved;
-
-    document.getElementById(
-        "rejectedCount"
-    ).textContent = data.rejected;
-}
-
-async function loadApplications() {
-    const response = await fetch(
-        `${API_URL}/applications`,
-        {
-            headers: authHeaders()
-        }
-    );
-
-    checkAuthorization(response);
-
-    if (!response.ok) {
-        throw new Error(
-            "Applications request failed"
-        );
-    }
-
-    const applications =
-        await response.json();
-
-    renderApplications(applications);
-}
-
-function renderApplications(applications) {
-    const table =
         document.getElementById(
-            "applicationTable"
+            "submittedCount"
+        ).textContent =
+            dashboard.submitted;
+
+        document.getElementById(
+            "reviewCount"
+        ).textContent =
+            dashboard.underReview
+            + dashboard.forwarded;
+
+        document.getElementById(
+            "approvedCount"
+        ).textContent =
+            dashboard.approved;
+
+        document.getElementById(
+            "rejectedCount"
+        ).textContent =
+            dashboard.rejected;
+
+        renderTables();
+
+    } catch (error) {
+        showError(
+            error.message
+        );
+    }
+}
+
+
+async function api(path) {
+    const response =
+        await fetch(
+            `${API}${path}`,
+            {
+                headers: {
+                    "Authorization":
+                        `Bearer ${token}`
+                }
+            }
         );
 
-    if (applications.length === 0) {
-        table.innerHTML = `
-            <tr>
-                <td colspan="6" class="empty">
-                    No applications yet.
-                </td>
-            </tr>
-        `;
-        return;
-    }
-
-    table.innerHTML = applications
-        .map(application => `
-            <tr>
-                <td>
-                    ${escapeHtml(
-                        application.workItemNumber || "-"
-                    )}
-                </td>
-
-                <td>
-                    ${escapeHtml(
-                        application.loanType || "-"
-                    )}
-                </td>
-
-                <td>
-                    ${formatAmount(
-                        application.loanAmount
-                    )}
-                </td>
-
-                <td>
-                    <span class="status ${
-                        statusClass(
-                            application.status
-                        )
-                    }">
-                        ${formatStatus(
-                            application.status
-                        )}
-                    </span>
-                </td>
-
-                <td>
-                    ${formatDate(
-                        application.submittedAt
-                    )}
-                </td>
-
-                <td>
-                    <button
-                        type="button"
-                        class="refresh-button"
-                        onclick="viewApplication(
-                            ${application.workflowId}
-                        )"
-                    >
-                        View
-                    </button>
-                </td>
-            </tr>
-        `)
-        .join("");
-}
-
-function authHeaders() {
-    return {
-        "Authorization":
-            `Bearer ${token}`
-    };
-}
-
-function checkAuthorization(response) {
-    if (response.status === 401
-            || response.status === 403) {
-
+    if (
+        response.status === 401
+        || response.status === 403
+    ) {
         logout();
+
         throw new Error(
             "Session expired"
         );
     }
+
+    const data =
+        await response.json()
+            .catch(() => ({}));
+
+    if (!response.ok) {
+        throw new Error(
+            data.message
+            || "Request failed"
+        );
+    }
+
+    return data;
 }
 
-function viewApplication(workflowId) {
+
+function renderTables() {
+    renderApplications(
+        document.getElementById(
+            "recentTable"
+        ),
+        applications.slice(
+            0,
+            5
+        )
+    );
+
+    renderApplications(
+        document.getElementById(
+            "currentTable"
+        ),
+        applications.filter(
+            application =>
+                [
+                    "SUBMITTED",
+                    "UNDER_REVIEW",
+                    "FORWARDED_TO_MANAGER"
+                ].includes(
+                    application.status
+                )
+        )
+    );
+
+    renderApplications(
+        document.getElementById(
+            "completedTable"
+        ),
+        applications.filter(
+            application =>
+                [
+                    "APPROVED",
+                    "REJECTED"
+                ].includes(
+                    application.status
+                )
+        )
+    );
+}
+
+
+function renderApplications(
+    target,
+    items
+) {
+    if (!items.length) {
+        target.innerHTML = `
+            <tr>
+                <td
+                    colspan="6"
+                    class="portal-empty"
+                >
+                    No applications in this section.
+                </td>
+            </tr>
+        `;
+
+        return;
+    }
+
+    target.innerHTML =
+        items.map(
+            application => `
+                <tr>
+
+                    <td>
+                        ${escapeHtml(
+                            application.workItemNumber
+                        )}
+                    </td>
+
+                    <td>
+                        ${escapeHtml(
+                            application.loanType
+                        )}
+                    </td>
+
+                    <td>
+                        ${formatAmount(
+                            application.loanAmount
+                        )}
+                    </td>
+
+                    <td>
+                        <span
+                            class="
+                                portal-status
+                                ${
+                                    statusClass(
+                                        application.status
+                                    )
+                                }
+                            "
+                        >
+                            ${formatStatus(
+                                application.status
+                            )}
+                        </span>
+                    </td>
+
+                    <td>
+                        ${formatDate(
+                            application.submittedAt
+                        )}
+                    </td>
+
+                    <td>
+                        <button
+                            class="
+                                portal-action
+                                view
+                            "
+                            onclick="
+                                viewApplication(
+                                    ${application.workflowId}
+                                )
+                            "
+                        >
+                            View
+                        </button>
+                    </td>
+
+                </tr>
+            `
+        ).join("");
+}
+
+
+function viewApplication(
+    workflowId
+) {
     window.location.href =
         `../../workflow/details/workflow-details.html?id=${workflowId}`;
 }
 
-function formatAmount(amount) {
-    if (amount === null
-            || amount === undefined) {
-        return "-";
-    }
-
-    return Number(amount)
-        .toLocaleString(
-            "en-US",
-            {
-                style: "currency",
-                currency: "USD",
-                maximumFractionDigits: 0
-            }
-        );
-}
-
-function formatStatus(status) {
-    if (!status) {
-        return "-";
-    }
-
-    return status
-        .replaceAll("_", " ")
-        .toLowerCase()
-        .replace(
-            /\b\w/g,
-            letter => letter.toUpperCase()
-        );
-}
 
 function statusClass(status) {
     if (status === "APPROVED") {
@@ -245,13 +384,44 @@ function statusClass(status) {
         return "rejected";
     }
 
-    if (status === "UNDER_REVIEW"
-            || status === "FORWARDED_TO_MANAGER") {
+    if (
+        status === "UNDER_REVIEW"
+        || status === "FORWARDED_TO_MANAGER"
+    ) {
         return "review";
     }
 
     return "";
 }
+
+
+function formatStatus(status) {
+    return String(
+        status || "-"
+    )
+        .replaceAll("_", " ")
+        .toLowerCase()
+        .replace(
+            /\b\w/g,
+            value =>
+                value.toUpperCase()
+        );
+}
+
+
+function formatAmount(value) {
+    return Number(
+        value || 0
+    ).toLocaleString(
+        "en-US",
+        {
+            style: "currency",
+            currency: "USD",
+            maximumFractionDigits: 0
+        }
+    );
+}
+
 
 function formatDate(value) {
     if (!value) {
@@ -262,9 +432,28 @@ function formatDate(value) {
         .toLocaleString();
 }
 
+
+function getInitials(value) {
+    return String(
+        value || "SF"
+    )
+        .trim()
+        .split(/\s+/)
+        .slice(0, 2)
+        .map(part =>
+            part.charAt(0)
+                .toUpperCase()
+        )
+        .join("")
+        || "SF";
+}
+
+
 function escapeHtml(value) {
     const element =
-        document.createElement("div");
+        document.createElement(
+            "div"
+        );
 
     element.textContent =
         value || "-";
@@ -272,25 +461,22 @@ function escapeHtml(value) {
     return element.innerHTML;
 }
 
+
+function showError(message) {
+    document.getElementById(
+        "message"
+    ).textContent =
+        message;
+}
+
+
 function logout() {
-    localStorage.removeItem(
-        "secureFlowUserEmail"
-    );
-
-    localStorage.removeItem(
-        "secureFlowUserRole"
-    );
-
-    localStorage.removeItem(
-        "secureFlowToken"
-    );
-
+    localStorage.clear();
     goToLogin();
 }
+
 
 function goToLogin() {
     window.location.href =
         "../../auth/login/login.html";
 }
-
-loadPage();

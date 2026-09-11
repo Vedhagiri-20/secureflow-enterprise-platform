@@ -8,25 +8,32 @@ import com.secureflow.entity.WorkflowStatus;
 import com.secureflow.repository.UserRepository;
 import com.secureflow.repository.WorkflowRequestRepository;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class ManagerService {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+    private final WorkflowRequestRepository workflowRequestRepository;
+    private final WorkflowHistoryService workflowHistoryService;
 
-    @Autowired
-    private WorkflowRequestRepository workflowRequestRepository;
-
-    @Autowired
-    private WorkflowHistoryService workflowHistoryService;
+    public ManagerService(
+            UserRepository userRepository,
+            WorkflowRequestRepository workflowRequestRepository,
+            WorkflowHistoryService workflowHistoryService
+    ) {
+        this.userRepository = userRepository;
+        this.workflowRequestRepository =
+                workflowRequestRepository;
+        this.workflowHistoryService =
+                workflowHistoryService;
+    }
 
     public ManagerDashboardResponse getDashboard(
             String email
     ) {
-        User manager = getManager(email);
+        User manager =
+                getManager(email);
 
         long awaitingApproval =
                 workflowRequestRepository
@@ -59,8 +66,12 @@ public class ManagerService {
     }
 
     public List<ManagerApplicationResponse>
-            getPendingApplications(String email) {
-        User manager = getManager(email);
+            getPendingApplications(
+                    String email
+            ) {
+
+        User manager =
+                getManager(email);
 
         return workflowRequestRepository
                 .findByAssignedManagerAndCurrentStatusOrderByUpdatedAtDesc(
@@ -74,11 +85,29 @@ public class ManagerService {
                 .toList();
     }
 
+    public List<ManagerApplicationResponse>
+            getAllApplications(
+                    String email
+            ) {
+
+        User manager =
+                getManager(email);
+
+        return workflowRequestRepository
+                .findByAssignedManagerOrderByUpdatedAtDesc(
+                        manager
+                )
+                .stream()
+                .map(this::toResponse)
+                .toList();
+    }
+
     public ManagerApplicationResponse approveApplication(
             Long workflowId,
             String email
     ) {
-        User manager = getManager(email);
+        User manager =
+                getManager(email);
 
         WorkflowRequest workflow =
                 getManagerWorkflow(
@@ -86,14 +115,17 @@ public class ManagerService {
                         manager
                 );
 
-        validatePendingDecision(workflow);
+        validatePendingDecision(
+                workflow
+        );
 
         workflow.setCurrentStatus(
                 WorkflowStatus.APPROVED
         );
 
         WorkflowRequest saved =
-                workflowRequestRepository.save(workflow);
+                workflowRequestRepository
+                        .save(workflow);
 
         workflowHistoryService.record(
                 saved,
@@ -109,7 +141,8 @@ public class ManagerService {
             Long workflowId,
             String email
     ) {
-        User manager = getManager(email);
+        User manager =
+                getManager(email);
 
         WorkflowRequest workflow =
                 getManagerWorkflow(
@@ -117,14 +150,17 @@ public class ManagerService {
                         manager
                 );
 
-        validatePendingDecision(workflow);
+        validatePendingDecision(
+                workflow
+        );
 
         workflow.setCurrentStatus(
                 WorkflowStatus.REJECTED
         );
 
         WorkflowRequest saved =
-                workflowRequestRepository.save(workflow);
+                workflowRequestRepository
+                        .save(workflow);
 
         workflowHistoryService.record(
                 saved,
@@ -158,15 +194,22 @@ public class ManagerService {
         if (!WorkflowStatus
                 .FORWARDED_TO_MANAGER
                 .name()
-                .equals(workflow.getCurrentStatus())) {
+                .equals(
+                        workflow.getCurrentStatus()
+                )) {
+
             throw new RuntimeException(
                     "Application is not waiting for manager approval"
             );
         }
     }
 
-    private User getManager(String email) {
-        if (email == null || email.isBlank()) {
+    private User getManager(
+            String email
+    ) {
+        if (email == null
+                || email.isBlank()) {
+
             throw new RuntimeException(
                     "Manager email is required"
             );
@@ -174,7 +217,9 @@ public class ManagerService {
 
         User manager =
                 userRepository
-                        .findByEmail(email.trim())
+                        .findByEmail(
+                                email.trim()
+                        )
                         .orElseThrow(
                                 () -> new RuntimeException(
                                         "Manager not found"
@@ -189,14 +234,12 @@ public class ManagerService {
             );
         }
 
-        if (
-                manager.getRole() == null
-                        || !"MANAGER".equalsIgnoreCase(
-                                manager
-                                        .getRole()
-                                        .getRoleName()
-                        )
-        ) {
+        if (manager.getRole() == null
+                || !"MANAGER".equalsIgnoreCase(
+                        manager.getRole()
+                                .getRoleName()
+                )) {
+
             throw new RuntimeException(
                     "User is not a manager"
             );
@@ -212,15 +255,16 @@ public class ManagerService {
                 workflow.getAssignedEmployee() == null
                         ? "Not Assigned"
                         : workflow
-                        .getAssignedEmployee()
-                        .getFullName();
+                                .getAssignedEmployee()
+                                .getFullName();
 
         return new ManagerApplicationResponse(
                 workflow.getWorkflowId(),
                 workflow.getWorkItemNumber(),
                 workflow.getApplicantName(),
                 workflow.getApplicantEmail(),
-                workflow.getLoanType().getLoanName(),
+                workflow.getLoanType()
+                        .getLoanName(),
                 workflow.getLoanAmount(),
                 workflow.getPriority(),
                 workflow.getCurrentStatus(),

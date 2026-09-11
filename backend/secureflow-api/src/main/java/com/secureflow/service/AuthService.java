@@ -24,25 +24,19 @@ public class AuthService {
             JwtService jwtService,
             AuditService auditService
     ) {
-        this.userRepository =
-                userRepository;
-        this.passwordEncoder =
-                passwordEncoder;
-        this.jwtService =
-                jwtService;
-        this.auditService =
-                auditService;
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.jwtService = jwtService;
+        this.auditService = auditService;
     }
 
     public LoginResponse login(
             LoginRequest request
     ) {
         if (request.getEmail() == null
-                || request.getEmail()
-                        .isBlank()
+                || request.getEmail().isBlank()
                 || request.getPassword() == null
-                || request.getPassword()
-                        .isBlank()) {
+                || request.getPassword().isBlank()) {
 
             return new LoginResponse(
                     "Email and password are required",
@@ -51,12 +45,10 @@ public class AuthService {
         }
 
         String email =
-                request.getEmail()
-                        .trim();
+                request.getEmail().trim();
 
         Optional<User> userOptional =
-                userRepository
-                        .findByEmail(email);
+                userRepository.findByEmail(email);
 
         if (userOptional.isEmpty()) {
             return new LoginResponse(
@@ -109,10 +101,10 @@ public class AuthService {
 
         return new LoginResponse(
                 "Login Successful",
-                user.getRole()
-                        .getRoleName(),
+                user.getRole().getRoleName(),
                 token,
-                user.getEmail()
+                user.getEmail(),
+                user.getFullName()
         );
     }
 
@@ -127,15 +119,15 @@ public class AuthService {
         if (isBcryptPassword(
                 storedPassword
         )) {
-            return passwordEncoder
-                    .matches(
-                            password,
-                            storedPassword
-                    );
+            return passwordEncoder.matches(
+                    password,
+                    storedPassword
+            );
         }
 
-        return storedPassword
-                .equals(password);
+        return storedPassword.equals(
+                password
+        );
     }
 
     private void upgradePasswordIfNeeded(
@@ -149,8 +141,9 @@ public class AuthService {
         }
 
         user.setPasswordHash(
-                passwordEncoder
-                        .encode(password)
+                passwordEncoder.encode(
+                        password
+                )
         );
     }
 

@@ -1,122 +1,306 @@
-const API_URL =
+const API =
     "http://localhost:8080/api/manager";
-
-const managerEmail =
-    localStorage.getItem(
-        "secureFlowUserEmail"
-    );
-
-const managerRole =
-    localStorage.getItem(
-        "secureFlowUserRole"
-    );
 
 const token =
     localStorage.getItem(
         "secureFlowToken"
     );
 
-if (!managerEmail
-        || managerRole !== "MANAGER"
-        || !token) {
+const role =
+    localStorage.getItem(
+        "secureFlowUserRole"
+    );
+
+const email =
+    localStorage.getItem(
+        "secureFlowUserEmail"
+    );
+
+const fullName =
+    localStorage.getItem(
+        "secureFlowUserName"
+    ) || email || "SecureFlow Manager";
+
+let pendingApplications = [];
+let allApplications = [];
+
+
+if (!token || role !== "MANAGER") {
     goToLogin();
 }
 
-document.getElementById(
-    "managerEmail"
-).textContent =
-    managerEmail || "";
 
-async function loadPage() {
-    clearMessage();
+initializeProfile();
+initializeNavigation();
+initializeSearch();
+loadPage();
 
-    try {
-        await Promise.all([
-            loadDashboard(),
-            loadApplications()
-        ]);
-    } catch (error) {
-        showError(
-            "Unable to load manager data."
+
+function initializeProfile() {
+    setText(
+        "sidebarName",
+        fullName
+    );
+
+    setText(
+        "sidebarEmail",
+        email || "-"
+    );
+
+    setText(
+        "profileName",
+        fullName
+    );
+
+    setText(
+        "profileEmail",
+        email || "-"
+    );
+
+    setText(
+        "profileInitials",
+        getInitials(fullName)
+    );
+}
+
+
+function initializeNavigation() {
+    document.querySelectorAll(
+        ".portal-nav-button"
+    ).forEach(button => {
+
+        button.addEventListener(
+            "click",
+            () => showPage(
+                button.dataset.page
+            )
         );
 
-        console.error(error);
+    });
+}
+
+
+function initializeSearch() {
+    document.getElementById(
+        "pendingSearch"
+    ).addEventListener(
+        "input",
+        renderPending
+    );
+
+    document.getElementById(
+        "historySearch"
+    ).addEventListener(
+        "input",
+        renderHistory
+    );
+}
+
+
+function showPage(name) {
+    document.querySelectorAll(
+        ".portal-view"
+    ).forEach(view => {
+        view.classList.remove(
+            "active"
+        );
+    });
+
+    document.querySelectorAll(
+        ".portal-nav-button"
+    ).forEach(button => {
+        button.classList.remove(
+            "active"
+        );
+    });
+
+    document.getElementById(
+        `${name}Page`
+    ).classList.add(
+        "active"
+    );
+
+    const button =
+        document.querySelector(
+            `[data-page="${name}"]`
+        );
+
+    if (button) {
+        button.classList.add(
+            "active"
+        );
+    }
+
+    const meta = {
+        dashboard: [
+            "Approval Dashboard",
+            "Review forwarded loan applications and make final decisions."
+        ],
+
+        pending: [
+            "Pending Approvals",
+            "Search applications currently waiting for your decision."
+        ],
+
+        history: [
+            "Decision History",
+            "Review applications previously approved or rejected."
+        ],
+
+        profile: [
+            "Manager Profile",
+            "Review your authenticated management identity."
+        ]
+    };
+
+    const selected =
+        meta[name];
+
+    setText(
+        "pageTitle",
+        selected[0]
+    );
+
+    setText(
+        "pageDescription",
+        selected[1]
+    );
+}
+
+
+async function loadPage() {
+    try {
+        const [
+            dashboard,
+            pending,
+            all
+        ] = await Promise.all([
+            api("/dashboard"),
+            api("/applications"),
+            api("/applications/all")
+        ]);
+
+        pendingApplications =
+            pending;
+
+        allApplications =
+            all;
+
+        setText(
+            "awaitingCount",
+            dashboard.awaitingApproval
+        );
+
+        setText(
+            "approvedCount",
+            dashboard.approved
+        );
+
+        setText(
+            "rejectedCount",
+            dashboard.rejected
+        );
+
+        renderDashboard();
+        renderPending();
+        renderHistory();
+
+    } catch (error) {
+        showError(
+            error.message
+        );
     }
 }
 
-async function loadDashboard() {
-    const response = await fetch(
-        `${API_URL}/dashboard`,
-        {
-            headers: authHeaders()
-        }
-    );
 
-    checkAuthorization(response);
+async function api(
+    path,
+    options = {}
+) {
+    const response =
+        await fetch(
+            `${API}${path}`,
+            {
+                ...options,
 
-    if (!response.ok) {
+                headers: {
+                    "Authorization":
+                        `Bearer ${token}`,
+                    ...(options.headers || {})
+                }
+            }
+        );
+
+    if (
+        response.status === 401
+        || response.status === 403
+    ) {
+        logout();
+
         throw new Error(
-            "Dashboard request failed"
+            "Session expired"
         );
     }
 
     const data =
-        await response.json();
-
-    document.getElementById(
-        "awaitingCount"
-    ).textContent =
-        data.awaitingApproval;
-
-    document.getElementById(
-        "approvedCount"
-    ).textContent =
-        data.approved;
-
-    document.getElementById(
-        "rejectedCount"
-    ).textContent =
-        data.rejected;
-}
-
-async function loadApplications() {
-    const response = await fetch(
-        `${API_URL}/applications`,
-        {
-            headers: authHeaders()
-        }
-    );
-
-    checkAuthorization(response);
+        await response.json()
+            .catch(() => ({}));
 
     if (!response.ok) {
         throw new Error(
-            "Applications request failed"
+            data.message
+            || "Request failed"
         );
     }
 
-    const applications =
-        await response.json();
+    return data;
+}
 
+
+function renderDashboard() {
     renderApplications(
-        applications
+        document.getElementById(
+            "dashboardPendingTable"
+        ),
+        pendingApplications.slice(
+            0,
+            5
+        ),
+        true,
+        false
     );
 }
 
-function renderApplications(
-    applications
-) {
-    const table =
+
+function renderPending() {
+    const query =
         document.getElementById(
-            "applicationTable"
+            "pendingSearch"
+        ).value.trim()
+            .toLowerCase();
+
+    const filtered =
+        pendingApplications
+            .filter(application =>
+                matchesSearch(
+                    application,
+                    query
+                )
+            );
+
+    const target =
+        document.getElementById(
+            "pendingTable"
         );
 
-    if (applications.length === 0) {
-        table.innerHTML = `
+    if (!filtered.length) {
+        target.innerHTML = `
             <tr>
-                <td colspan="7" class="empty">
-                    No applications are
-                    waiting for approval.
+                <td
+                    colspan="7"
+                    class="portal-empty"
+                >
+                    No matching applications are waiting for approval.
                 </td>
             </tr>
         `;
@@ -124,9 +308,9 @@ function renderApplications(
         return;
     }
 
-    table.innerHTML =
-        applications
-            .map(application => `
+    target.innerHTML =
+        filtered.map(
+            application => `
                 <tr>
 
                     <td>
@@ -166,114 +350,348 @@ function renderApplications(
                     </td>
 
                     <td>
-                        <div class="action-group">
-
-                            <button
-                                class="action-button view-button"
-                                onclick="viewApplication(
-                                    ${application.workflowId}
-                                )"
-                            >
-                                View
-                            </button>
-
-                            <button
-                                class="action-button approve-button"
-                                onclick="approveApplication(
-                                    ${application.workflowId}
-                                )"
-                            >
-                                Approve
-                            </button>
-
-                            <button
-                                class="action-button reject-button"
-                                onclick="rejectApplication(
-                                    ${application.workflowId}
-                                )"
-                            >
-                                Reject
-                            </button>
-
-                        </div>
+                        ${decisionActions(
+                            application.workflowId
+                        )}
                     </td>
 
                 </tr>
-            `)
-            .join("");
+            `
+        ).join("");
 }
 
-function viewApplication(workflowId) {
+
+function renderHistory() {
+    const query =
+        document.getElementById(
+            "historySearch"
+        ).value.trim()
+            .toLowerCase();
+
+    const completed =
+        allApplications
+            .filter(application =>
+                [
+                    "APPROVED",
+                    "REJECTED"
+                ].includes(
+                    application.status
+                )
+            )
+            .filter(application =>
+                matchesSearch(
+                    application,
+                    query
+                )
+            );
+
+    const target =
+        document.getElementById(
+            "historyTable"
+        );
+
+    if (!completed.length) {
+        target.innerHTML = `
+            <tr>
+                <td
+                    colspan="7"
+                    class="portal-empty"
+                >
+                    No completed manager decisions found.
+                </td>
+            </tr>
+        `;
+
+        return;
+    }
+
+    target.innerHTML =
+        completed.map(
+            application => `
+                <tr>
+
+                    <td>
+                        ${escapeHtml(
+                            application.workItemNumber
+                        )}
+                    </td>
+
+                    <td>
+                        ${escapeHtml(
+                            application.applicantName
+                        )}
+                    </td>
+
+                    <td>
+                        ${escapeHtml(
+                            application.loanType
+                        )}
+                    </td>
+
+                    <td>
+                        ${formatAmount(
+                            application.loanAmount
+                        )}
+                    </td>
+
+                    <td>
+                        ${escapeHtml(
+                            application.employeeName
+                        )}
+                    </td>
+
+                    <td>
+                        <span
+                            class="
+                                portal-status
+                                ${
+                                    statusClass(
+                                        application.status
+                                    )
+                                }
+                            "
+                        >
+                            ${formatStatus(
+                                application.status
+                            )}
+                        </span>
+                    </td>
+
+                    <td>
+                        <button
+                            class="
+                                portal-action
+                                view
+                            "
+                            onclick="
+                                viewApplication(
+                                    ${application.workflowId}
+                                )
+                            "
+                        >
+                            View
+                        </button>
+                    </td>
+
+                </tr>
+            `
+        ).join("");
+}
+
+
+function renderApplications(
+    target,
+    items,
+    actions,
+    showStatus
+) {
+    if (!items.length) {
+        target.innerHTML = `
+            <tr>
+                <td
+                    colspan="6"
+                    class="portal-empty"
+                >
+                    No applications are waiting for approval.
+                </td>
+            </tr>
+        `;
+
+        return;
+    }
+
+    target.innerHTML =
+        items.map(
+            application => `
+                <tr>
+
+                    <td>
+                        ${escapeHtml(
+                            application.workItemNumber
+                        )}
+                    </td>
+
+                    <td>
+                        ${escapeHtml(
+                            application.applicantName
+                        )}
+                    </td>
+
+                    <td>
+                        ${escapeHtml(
+                            application.loanType
+                        )}
+                    </td>
+
+                    <td>
+                        ${formatAmount(
+                            application.loanAmount
+                        )}
+                    </td>
+
+                    <td>
+                        ${escapeHtml(
+                            application.employeeName
+                        )}
+                    </td>
+
+                    <td>
+                        ${
+                            actions
+                                ? decisionActions(
+                                    application.workflowId
+                                )
+                                : showStatus
+                                    ? formatStatus(
+                                        application.status
+                                    )
+                                    : "-"
+                        }
+                    </td>
+
+                </tr>
+            `
+        ).join("");
+}
+
+
+function decisionActions(
+    workflowId
+) {
+    return `
+        <div class="portal-actions">
+
+            <button
+                class="
+                    portal-action
+                    view
+                "
+                onclick="
+                    viewApplication(
+                        ${workflowId}
+                    )
+                "
+            >
+                View
+            </button>
+
+            <button
+                class="
+                    portal-action
+                    approve
+                "
+                onclick="
+                    approveApplication(
+                        ${workflowId}
+                    )
+                "
+            >
+                Approve
+            </button>
+
+            <button
+                class="
+                    portal-action
+                    reject
+                "
+                onclick="
+                    rejectApplication(
+                        ${workflowId}
+                    )
+                "
+            >
+                Reject
+            </button>
+
+        </div>
+    `;
+}
+
+
+function matchesSearch(
+    application,
+    query
+) {
+    if (!query) {
+        return true;
+    }
+
+    return [
+        application.workItemNumber,
+        application.applicantName,
+        application.applicantEmail,
+        application.loanType,
+        application.employeeName,
+        application.priority,
+        application.status
+    ]
+        .filter(Boolean)
+        .some(value =>
+            String(value)
+                .toLowerCase()
+                .includes(query)
+        );
+}
+
+
+function viewApplication(
+    workflowId
+) {
     window.location.href =
         `../../workflow/details/workflow-details.html?id=${workflowId}`;
 }
 
+
 async function approveApplication(
     workflowId
 ) {
-    const confirmed =
-        window.confirm(
+    if (
+        !window.confirm(
             "Approve this loan application?"
-        );
-
-    if (!confirmed) {
+        )
+    ) {
         return;
     }
 
-    await performDecision(
+    await decide(
         workflowId,
         "approve",
-        "Application approved successfully."
+        "Application approved."
     );
 }
+
 
 async function rejectApplication(
     workflowId
 ) {
-    const confirmed =
-        window.confirm(
+    if (
+        !window.confirm(
             "Reject this loan application?"
-        );
-
-    if (!confirmed) {
+        )
+    ) {
         return;
     }
 
-    await performDecision(
+    await decide(
         workflowId,
         "reject",
         "Application rejected."
     );
 }
 
-async function performDecision(
+
+async function decide(
     workflowId,
     action,
     successMessage
 ) {
-    clearMessage();
-
     try {
-        const response = await fetch(
-            `${API_URL}/applications/${workflowId}/${action}`,
+        await api(
+            `/applications/${workflowId}/${action}`,
             {
-                method: "PUT",
-                headers: authHeaders()
+                method: "PUT"
             }
         );
-
-        checkAuthorization(response);
-
-        if (!response.ok) {
-            const data =
-                await response.json()
-                    .catch(() => ({}));
-
-            throw new Error(
-                data.message
-                || "Manager action failed"
-            );
-        }
 
         await loadPage();
 
@@ -284,43 +702,78 @@ async function performDecision(
     } catch (error) {
         showError(
             error.message
-            || "Unable to update application."
-        );
-
-        console.error(error);
-    }
-}
-
-function authHeaders() {
-    return {
-        "Authorization":
-            `Bearer ${token}`
-    };
-}
-
-function checkAuthorization(response) {
-    if (response.status === 401
-            || response.status === 403) {
-
-        logout();
-
-        throw new Error(
-            "Session expired"
         );
     }
 }
 
-function formatAmount(amount) {
-    return Number(amount)
-        .toLocaleString(
-            "en-US",
-            {
-                style: "currency",
-                currency: "USD",
-                maximumFractionDigits: 0
-            }
+
+function statusClass(status) {
+    if (status === "APPROVED") {
+        return "approved";
+    }
+
+    if (status === "REJECTED") {
+        return "rejected";
+    }
+
+    return "review";
+}
+
+
+function formatStatus(value) {
+    return String(
+        value || "-"
+    )
+        .replaceAll("_", " ")
+        .toLowerCase()
+        .replace(
+            /\b\w/g,
+            character =>
+                character.toUpperCase()
         );
 }
+
+
+function formatAmount(value) {
+    return Number(
+        value || 0
+    ).toLocaleString(
+        "en-US",
+        {
+            style: "currency",
+            currency: "USD",
+            maximumFractionDigits: 0
+        }
+    );
+}
+
+
+function getInitials(value) {
+    return String(
+        value || "SF"
+    )
+        .trim()
+        .split(/\s+/)
+        .slice(0, 2)
+        .map(part =>
+            part.charAt(0)
+                .toUpperCase()
+        )
+        .join("")
+        || "SF";
+}
+
+
+function setText(
+    id,
+    value
+) {
+    document.getElementById(
+        id
+    ).textContent =
+        value ?? "-";
+}
+
 
 function escapeHtml(value) {
     const element =
@@ -334,42 +787,42 @@ function escapeHtml(value) {
     return element.innerHTML;
 }
 
-function clearMessage() {
-    document.getElementById(
-        "message"
-    ).textContent = "";
-}
 
-function showSuccess(text) {
-    const message =
+function showSuccess(message) {
+    const element =
         document.getElementById(
             "message"
         );
 
-    message.textContent = text;
-    message.style.color =
-        "#45dfbb";
+    element.textContent =
+        message;
+
+    element.style.color =
+        "#236b53";
 }
 
-function showError(text) {
-    const message =
+
+function showError(message) {
+    const element =
         document.getElementById(
             "message"
         );
 
-    message.textContent = text;
-    message.style.color =
-        "#ff8585";
+    element.textContent =
+        message;
+
+    element.style.color =
+        "#974646";
 }
+
 
 function logout() {
     localStorage.clear();
     goToLogin();
 }
 
+
 function goToLogin() {
     window.location.href =
         "../../auth/login/login.html";
 }
-
-loadPage();

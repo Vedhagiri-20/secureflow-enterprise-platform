@@ -1,144 +1,433 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Customer Dashboard | SecureFlow</title>
-    <link rel="stylesheet" href="customer-dashboard.css">
-    <link rel="stylesheet" href="../../assets/secureflow-premium.css">
-    <link rel="stylesheet" href="../../assets/secureflow-contrast.css">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Client Banking | SecureFlow International Bank
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="../../assets/secureflow-portal.css"
+    >
 </head>
+
 <body>
 
-<div class="page">
+<div class="portal-shell">
 
-    <header class="topbar">
-        <div>
-            <h2>SecureFlow International Bank</h2>
-            <p>Customer Loan Portal</p>
-        </div>
+    <aside class="portal-sidebar">
 
-        <div class="topbar-actions">
-            <span id="customerEmail"></span>
-            <button type="button" onclick="logout()">Logout</button>
-        </div>
-    </header>
+        <div class="portal-brand">
 
-    <main class="content">
-
-        <section class="welcome">
-
-            <div>
-                <span class="badge">Customer Dashboard</span>
-
-                <h1>My Loan Applications</h1>
-
-                <p>
-                    Check your eligibility, apply for a loan, and track
-                    your submitted applications.
-                </p>
+            <div class="portal-mark">
+                SF
             </div>
 
+            <div>
+                <strong>SECUREFLOW</strong>
+                <span>INTERNATIONAL BANK</span>
+            </div>
+
+        </div>
+
+
+        <p class="portal-role-label">
+            PRIVATE CLIENT
+        </p>
+
+
+        <nav class="portal-nav">
+
+            <button
+                class="portal-nav-button active"
+                data-page="dashboard"
+            >
+                Dashboard
+            </button>
+
+            <button
+                class="portal-nav-button"
+                data-page="current"
+            >
+                Current Applications
+            </button>
+
+            <button
+                class="portal-nav-button"
+                data-page="completed"
+            >
+                Completed Applications
+            </button>
+
             <a
-                class="apply-button"
+                class="portal-nav-link"
                 href="../../customer/eligibility/eligibility.html"
             >
-                Check Eligibility
+                Eligibility Check
             </a>
 
             <a
-                class="apply-button"
+                class="portal-nav-link"
                 href="../../workflow/create/create-workflow.html"
             >
                 Apply for Loan
             </a>
 
-        </section>
+            <button
+                class="portal-nav-button"
+                data-page="profile"
+            >
+                Profile
+            </button>
 
-        <section class="stats">
+        </nav>
 
-            <div class="stat-card">
-                <span>Total</span>
-                <strong id="totalCount">0</strong>
-            </div>
 
-            <div class="stat-card">
-                <span>Submitted</span>
-                <strong id="submittedCount">0</strong>
-            </div>
+        <div class="portal-profile">
 
-            <div class="stat-card">
-                <span>Under Review</span>
-                <strong id="reviewCount">0</strong>
-            </div>
+            <div class="profile-row">
 
-            <div class="stat-card">
-                <span>Approved</span>
-                <strong id="approvedCount">0</strong>
-            </div>
-
-            <div class="stat-card">
-                <span>Rejected</span>
-                <strong id="rejectedCount">0</strong>
-            </div>
-
-        </section>
-
-        <section class="applications-card">
-
-            <div class="section-header">
-
-                <div>
-                    <h2>Applications</h2>
-                    <p>Your most recent loan applications.</p>
+                <div
+                    class="profile-avatar"
+                    id="profileInitials"
+                >
+                    SF
                 </div>
 
-                <button
-                    type="button"
-                    class="refresh-button"
-                    onclick="loadPage()"
-                >
-                    Refresh
-                </button>
+                <div>
+                    <strong id="sidebarName">
+                        Client
+                    </strong>
+
+                    <span id="sidebarEmail">
+                        -
+                    </span>
+                </div>
 
             </div>
 
-            <p id="message"></p>
 
-            <div class="table-wrapper">
+            <button
+                class="portal-logout"
+                onclick="logout()"
+            >
+                Secure Logout
+            </button>
 
-                <table>
+        </div>
 
-                    <thead>
-                    <tr>
-                        <th>Application</th>
-                        <th>Loan Type</th>
-                        <th>Amount</th>
-                        <th>Status</th>
-                        <th>Submitted</th>
-                        <th>Action</th>
-                    </tr>
-                    </thead>
+    </aside>
 
-                    <tbody id="applicationTable">
 
-                    <tr>
-                        <td colspan="6" class="empty">
-                            Loading applications...
-                        </td>
-                    </tr>
+    <main class="portal-content">
 
-                    </tbody>
+        <header class="portal-header">
 
-                </table>
+            <div>
+                <span class="portal-kicker">
+                    PRIVATE CLIENT BANKING
+                </span>
+
+                <h1 id="pageTitle">
+                    Client Dashboard
+                </h1>
+
+                <p id="pageDescription">
+                    Review your loan portfolio and application progress.
+                </p>
+            </div>
+
+
+            <div class="portal-security">
+
+                <span class="portal-security-dot"></span>
+
+                <div>
+                    <strong>
+                        Secure Session
+                    </strong>
+
+                    <small>
+                        JWT · CUSTOMER
+                    </small>
+                </div>
 
             </div>
+
+        </header>
+
+
+        <p
+            id="message"
+            class="portal-message"
+        ></p>
+
+
+        <section
+            id="dashboardPage"
+            class="portal-view active"
+        >
+
+            <div class="portal-metrics">
+
+                <article class="portal-metric">
+                    <span>Total Applications</span>
+                    <strong id="totalCount">0</strong>
+                    <small>All submitted requests</small>
+                </article>
+
+                <article class="portal-metric">
+                    <span>Submitted</span>
+                    <strong id="submittedCount">0</strong>
+                    <small>Waiting for review</small>
+                </article>
+
+                <article class="portal-metric">
+                    <span>In Progress</span>
+                    <strong id="reviewCount">0</strong>
+                    <small>Employee or manager review</small>
+                </article>
+
+                <article class="portal-metric">
+                    <span>Approved</span>
+                    <strong id="approvedCount">0</strong>
+                    <small>Completed successfully</small>
+                </article>
+
+                <article class="portal-metric">
+                    <span>Rejected</span>
+                    <strong id="rejectedCount">0</strong>
+                    <small>Final declined decisions</small>
+                </article>
+
+            </div>
+
+
+            <section class="portal-card">
+
+                <div class="portal-card-header">
+
+                    <div>
+                        <span class="portal-kicker">
+                            RECENT PORTFOLIO
+                        </span>
+
+                        <h2>
+                            Recent Applications
+                        </h2>
+
+                        <p>
+                            Your latest loan application activity.
+                        </p>
+                    </div>
+
+
+                    <a
+                        class="portal-gold-button"
+                        href="../../workflow/create/create-workflow.html"
+                    >
+                        Apply for Loan
+                    </a>
+
+                </div>
+
+
+                <div class="portal-table">
+
+                    <table>
+
+                        <thead>
+                        <tr>
+                            <th>Application</th>
+                            <th>Loan Type</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Submitted</th>
+                            <th>Action</th>
+                        </tr>
+                        </thead>
+
+                        <tbody id="recentTable"></tbody>
+
+                    </table>
+
+                </div>
+
+            </section>
+
+        </section>
+
+
+        <section
+            id="currentPage"
+            class="portal-view"
+        >
+
+            <section class="portal-card">
+
+                <div class="portal-card-header">
+
+                    <div>
+                        <span class="portal-kicker">
+                            ACTIVE REQUESTS
+                        </span>
+
+                        <h2>
+                            Current Applications
+                        </h2>
+
+                        <p>
+                            Applications still moving through the review process.
+                        </p>
+                    </div>
+
+                </div>
+
+
+                <div class="portal-table">
+
+                    <table>
+
+                        <thead>
+                        <tr>
+                            <th>Application</th>
+                            <th>Loan Type</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Submitted</th>
+                            <th>Action</th>
+                        </tr>
+                        </thead>
+
+                        <tbody id="currentTable"></tbody>
+
+                    </table>
+
+                </div>
+
+            </section>
+
+        </section>
+
+
+        <section
+            id="completedPage"
+            class="portal-view"
+        >
+
+            <section class="portal-card">
+
+                <div class="portal-card-header">
+
+                    <div>
+                        <span class="portal-kicker">
+                            FINAL DECISIONS
+                        </span>
+
+                        <h2>
+                            Completed Applications
+                        </h2>
+
+                        <p>
+                            Applications with an approved or rejected decision.
+                        </p>
+                    </div>
+
+                </div>
+
+
+                <div class="portal-table">
+
+                    <table>
+
+                        <thead>
+                        <tr>
+                            <th>Application</th>
+                            <th>Loan Type</th>
+                            <th>Amount</th>
+                            <th>Decision</th>
+                            <th>Submitted</th>
+                            <th>Action</th>
+                        </tr>
+                        </thead>
+
+                        <tbody id="completedTable"></tbody>
+
+                    </table>
+
+                </div>
+
+            </section>
+
+        </section>
+
+
+        <section
+            id="profilePage"
+            class="portal-view"
+        >
+
+            <section class="portal-card">
+
+                <div class="portal-card-header">
+
+                    <div>
+                        <span class="portal-kicker">
+                            CLIENT IDENTITY
+                        </span>
+
+                        <h2>
+                            Account Profile
+                        </h2>
+
+                        <p>
+                            Your authenticated SecureFlow banking identity.
+                        </p>
+                    </div>
+
+                </div>
+
+
+                <div class="portal-profile-grid">
+
+                    <div>
+                        <span>Full Name</span>
+                        <strong id="profileName">-</strong>
+                    </div>
+
+                    <div>
+                        <span>Email</span>
+                        <strong id="profileEmail">-</strong>
+                    </div>
+
+                    <div>
+                        <span>Role</span>
+                        <strong>CUSTOMER</strong>
+                    </div>
+
+                    <div>
+                        <span>Session Security</span>
+                        <strong>JWT Authenticated</strong>
+                    </div>
+
+                </div>
+
+            </section>
 
         </section>
 
     </main>
 
 </div>
+
 
 <script src="customer-dashboard.js"></script>
 

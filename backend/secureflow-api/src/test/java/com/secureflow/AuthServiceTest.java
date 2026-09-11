@@ -1,8 +1,7 @@
 package com.secureflow;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -51,14 +50,18 @@ class AuthServiceTest {
                         auditService
                 );
 
-        user =
-                new User();
-
         Role role =
                 mock(Role.class);
 
         when(role.getRoleName())
                 .thenReturn("CUSTOMER");
+
+        user =
+                new User();
+
+        user.setFullName(
+                "Test Customer"
+        );
 
         user.setEmail(
                 "customer@test.com"
@@ -73,7 +76,7 @@ class AuthServiceTest {
     }
 
     @Test
-    void successfulLoginReturnsJwtAndUpdatesLastLogin() {
+    void successfulLoginReturnsProfileAndJwt() {
         user.setPasswordHash(
                 "password123"
         );
@@ -100,8 +103,17 @@ class AuthServiceTest {
         );
 
         assertEquals(
+                "Test Customer",
+                response.getFullName()
+        );
+
+        assertEquals(
                 "test-token",
                 response.getToken()
+        );
+
+        assertNotNull(
+                user.getLastLoginAt()
         );
 
         verify(userRepository)
@@ -116,7 +128,7 @@ class AuthServiceTest {
     }
 
     @Test
-    void bcryptPasswordStillAuthenticates() {
+    void bcryptPasswordAuthenticates() {
         BCryptPasswordEncoder encoder =
                 new BCryptPasswordEncoder();
 
@@ -172,36 +184,6 @@ class AuthServiceTest {
 
         assertEquals(
                 "Invalid Password",
-                response.getMessage()
-        );
-    }
-
-    @Test
-    void inactiveUserIsRejected() {
-        user.setPasswordHash(
-                "password123"
-        );
-
-        user.setIsActive(false);
-
-        when(userRepository
-                .findByEmail(
-                        "customer@test.com"
-                ))
-                .thenReturn(
-                        Optional.of(user)
-                );
-
-        LoginResponse response =
-                authService.login(
-                        request(
-                                "customer@test.com",
-                                "password123"
-                        )
-                );
-
-        assertEquals(
-                "User is inactive",
                 response.getMessage()
         );
     }

@@ -1,4 +1,4 @@
-const API_URL =
+const API =
     "http://localhost:8080/api/admin";
 
 const token =
@@ -16,9 +16,11 @@ const email =
         "secureFlowUserEmail"
     );
 
+
 if (!token || role !== "ADMIN") {
     goToLogin();
 }
+
 
 document.getElementById(
     "adminEmail"
@@ -26,166 +28,109 @@ document.getElementById(
     email || "Administrator";
 
 
-const pageContent = {
+const pageMeta = {
+
     dashboard: {
-        title: "Executive Dashboard",
+        title:
+            "Executive Dashboard",
+
         description:
-            "Monitor users, workflow activity and platform security."
+            "Monitor users, application workflows and security activity."
     },
 
     users: {
-        title: "User Management",
+        title:
+            "User Management",
+
         description:
-            "Manage identities, roles and access to SecureFlow."
+            "Manage identities, roles and SecureFlow access."
     },
 
     audit: {
-        title: "Audit & Compliance",
+        title:
+            "Audit & Compliance",
+
         description:
             "Review authentication and workflow activity."
     },
 
     settings: {
-        title: "Security Settings",
+        title:
+            "Security Settings",
+
         description:
             "Review the current platform security configuration."
     }
+
 };
 
 
-document.querySelectorAll(
-    ".nav-item"
-).forEach(button => {
+document
+    .querySelectorAll(
+        ".nav-button"
+    )
+    .forEach(button => {
 
-    button.addEventListener(
-        "click",
-        () => {
-            showSection(
-                button.dataset.section
-            );
+        button.addEventListener(
+            "click",
+            () => showPage(
+                button.dataset.page
+            )
+        );
+
+    });
+
+
+document
+    .getElementById(
+        "createUserForm"
+    )
+    .addEventListener(
+        "submit",
+        createUser
+    );
+
+
+document
+    .getElementById(
+        "userSearch"
+    )
+    .addEventListener(
+        "keydown",
+        event => {
+
+            if (event.key === "Enter") {
+                loadUsers();
+            }
+
         }
     );
 
-});
 
+document
+    .getElementById(
+        "auditSearch"
+    )
+    .addEventListener(
+        "keydown",
+        event => {
 
-document.getElementById(
-    "userSearch"
-).addEventListener(
-    "keydown",
-    event => {
+            if (event.key === "Enter") {
+                loadAudit();
+            }
 
-        if (event.key === "Enter") {
-            loadUsers();
         }
-
-    }
-);
+    );
 
 
-document.getElementById(
-    "auditSearch"
-).addEventListener(
-    "keydown",
-    event => {
-
-        if (event.key === "Enter") {
-            loadAudit();
-        }
-
-    }
-);
-
-
-document.getElementById(
-    "createUserForm"
-).addEventListener(
-    "submit",
-    createUser
-);
-
-
-async function initialLoad() {
-    try {
-        await Promise.all([
-            loadDashboard(),
-            loadUsers(),
-            loadAudit()
-        ]);
-    } catch (error) {
-        showError(
-            error.message
-        );
-    }
-}
-
-
-function showSection(sectionName) {
-    document.querySelectorAll(
-        ".admin-section"
-    ).forEach(section => {
-        section.classList.remove(
-            "active"
-        );
-    });
-
-    document.querySelectorAll(
-        ".nav-item"
-    ).forEach(button => {
-        button.classList.remove(
-            "active"
-        );
-    });
-
-    const target =
-        document.getElementById(
-            `${sectionName}Section`
-        );
-
-    if (target) {
-        target.classList.add(
-            "active"
-        );
-    }
-
-    const navButton =
-        document.querySelector(
-            `[data-section="${sectionName}"]`
-        );
-
-    if (navButton) {
-        navButton.classList.add(
-            "active"
-        );
-    }
-
-    const content =
-        pageContent[sectionName];
-
-    if (content) {
-        document.getElementById(
-            "pageTitle"
-        ).textContent =
-            content.title;
-
-        document.getElementById(
-            "pageDescription"
-        ).textContent =
-            content.description;
-    }
-
-    clearMessage();
-}
-
-
-async function apiRequest(
+async function api(
     path,
     options = {}
 ) {
     const headers = {
         "Authorization":
             `Bearer ${token}`,
-        ...options.headers
+        ...(options.headers || {})
     };
 
     if (options.body) {
@@ -195,44 +140,130 @@ async function apiRequest(
 
     const response =
         await fetch(
-            `${API_URL}${path}`,
+            `${API}${path}`,
             {
                 ...options,
                 headers
             }
         );
 
-    if (response.status === 401
-            || response.status === 403) {
+    if (
+        response.status === 401
+        || response.status === 403
+    ) {
+        localStorage.clear();
 
-        logout();
+        goToLogin();
 
         throw new Error(
             "Administrator session expired"
         );
     }
 
-    const data =
-        await response.json()
+    const body =
+        await response
+            .json()
             .catch(() => ({}));
 
     if (!response.ok) {
         throw new Error(
-            data.message
-            || "Request failed"
+            body.message
+            || `Request failed (${response.status})`
         );
     }
 
-    return data;
+    return body;
+}
+
+
+function showPage(name) {
+
+    document
+        .querySelectorAll(
+            ".admin-page"
+        )
+        .forEach(page => {
+            page.classList.remove(
+                "active"
+            );
+        });
+
+
+    document
+        .querySelectorAll(
+            ".nav-button"
+        )
+        .forEach(button => {
+            button.classList.remove(
+                "active"
+            );
+        });
+
+
+    const page =
+        document.getElementById(
+            `${name}Page`
+        );
+
+    if (page) {
+        page.classList.add(
+            "active"
+        );
+    }
+
+
+    const nav =
+        document.querySelector(
+            `[data-page="${name}"]`
+        );
+
+    if (nav) {
+        nav.classList.add(
+            "active"
+        );
+    }
+
+
+    const meta =
+        pageMeta[name];
+
+    if (meta) {
+
+        document.getElementById(
+            "pageTitle"
+        ).textContent =
+            meta.title;
+
+        document.getElementById(
+            "pageDescription"
+        ).textContent =
+            meta.description;
+
+    }
+
+
+    if (name === "users") {
+        loadUsers();
+    }
+
+    if (name === "audit") {
+        loadAudit();
+    }
+
+
+    clearMessage();
 }
 
 
 async function loadDashboard() {
+
     try {
+
         const data =
-            await apiRequest(
+            await api(
                 "/dashboard"
             );
+
 
         setText(
             "totalUsers",
@@ -269,26 +300,32 @@ async function loadDashboard() {
             data.managers
         );
 
-        renderRecentActivity(
+
+        renderRecent(
             data.recentActivities || []
         );
 
     } catch (error) {
+
         showError(
             error.message
         );
+
     }
 }
 
 
-function renderRecentActivity(events) {
-    const body =
+function renderRecent(events) {
+
+    const tbody =
         document.getElementById(
             "recentActivityBody"
         );
 
-    if (events.length === 0) {
-        body.innerHTML = `
+
+    if (!events.length) {
+
+        tbody.innerHTML = `
             <tr>
                 <td
                     colspan="5"
@@ -298,10 +335,12 @@ function renderRecentActivity(events) {
                 </td>
             </tr>
         `;
+
         return;
     }
 
-    body.innerHTML =
+
+    tbody.innerHTML =
         events
             .map(event => `
                 <tr>
@@ -313,13 +352,13 @@ function renderRecentActivity(events) {
                     </td>
 
                     <td>
-                        ${roleBadge(
+                        ${rolePill(
                             event.actorRole
                         )}
                     </td>
 
                     <td>
-                        ${formatAction(
+                        ${formatText(
                             event.action
                         )}
                     </td>
@@ -343,37 +382,48 @@ function renderRecentActivity(events) {
 
 
 async function loadUsers() {
+
     try {
+
         const search =
             document.getElementById(
                 "userSearch"
             ).value.trim();
 
+
         const users =
-            await apiRequest(
+            await api(
                 `/users?search=${
-                    encodeURIComponent(search)
+                    encodeURIComponent(
+                        search
+                    )
                 }`
             );
+
 
         renderUsers(users);
 
     } catch (error) {
+
         showError(
             error.message
         );
+
     }
 }
 
 
 function renderUsers(users) {
-    const body =
+
+    const tbody =
         document.getElementById(
             "usersBody"
         );
 
-    if (users.length === 0) {
-        body.innerHTML = `
+
+    if (!users.length) {
+
+        tbody.innerHTML = `
             <tr>
                 <td
                     colspan="7"
@@ -383,22 +433,27 @@ function renderUsers(users) {
                 </td>
             </tr>
         `;
+
         return;
     }
 
-    body.innerHTML =
+
+    tbody.innerHTML =
         users
             .map(user => {
 
                 const active =
-                    Boolean(user.active);
+                    Boolean(
+                        user.active
+                    );
 
                 return `
                     <tr>
 
                         <td>
                             ${escapeHtml(
-                                user.fullName || "-"
+                                user.fullName
+                                || "-"
                             )}
                         </td>
 
@@ -409,14 +464,15 @@ function renderUsers(users) {
                         </td>
 
                         <td>
-                            ${roleBadge(
+                            ${rolePill(
                                 user.role
                             )}
                         </td>
 
                         <td>
                             ${escapeHtml(
-                                user.department || "-"
+                                user.department
+                                || "-"
                             )}
                         </td>
 
@@ -428,13 +484,14 @@ function renderUsers(users) {
                         </td>
 
                         <td>
+
                             <span
                                 class="
                                     status-pill
                                     ${
                                         active
                                             ? "active"
-                                            : "inactive"
+                                            : "disabled"
                                     }
                                 "
                             >
@@ -444,15 +501,16 @@ function renderUsers(users) {
                                         : "DISABLED"
                                 }
                             </span>
+
                         </td>
 
                         <td>
 
-                            <div class="action-group">
+                            <div class="action-row">
 
                                 <button
                                     class="
-                                        table-action
+                                        small-button
                                         gold
                                     "
                                     onclick="
@@ -466,7 +524,7 @@ function renderUsers(users) {
 
                                 <button
                                     class="
-                                        table-action
+                                        small-button
                                         ${
                                             active
                                                 ? "danger"
@@ -474,7 +532,7 @@ function renderUsers(users) {
                                         }
                                     "
                                     onclick="
-                                        setUserActive(
+                                        changeAccess(
                                             ${user.userId},
                                             ${!active}
                                         )
@@ -493,65 +551,69 @@ function renderUsers(users) {
 
                     </tr>
                 `;
+
             })
             .join("");
 }
 
 
 async function viewUser(userId) {
+
     try {
+
         const user =
-            await apiRequest(
+            await api(
                 `/users/${userId}`
             );
 
+
         setText(
-            "detailUserId",
+            "viewUserId",
             user.userId
         );
 
         setText(
-            "detailName",
+            "viewName",
             user.fullName || "-"
         );
 
         setText(
-            "detailEmail",
+            "viewEmail",
             user.email
         );
 
         setText(
-            "detailRole",
+            "viewRole",
             user.role
         );
 
         setText(
-            "detailPhone",
+            "viewPhone",
             user.phoneNumber || "-"
         );
 
         setText(
-            "detailDepartment",
+            "viewDepartment",
             user.department || "-"
         );
 
         setText(
-            "detailStatus",
+            "viewStatus",
             user.active
                 ? "ACTIVE"
                 : "DISABLED"
         );
 
         setText(
-            "detailLastLogin",
+            "viewLastLogin",
             formatDate(
                 user.lastLoginAt,
-                "Not recorded yet"
+                "Not recorded"
             )
         );
 
         setText(
-            "detailCreated",
+            "viewCreated",
             formatDate(
                 user.createdAt,
                 "-"
@@ -559,49 +621,58 @@ async function viewUser(userId) {
         );
 
         setText(
-            "detailPassword",
+            "viewPassword",
             user.passwordStatus
         );
 
-        document.getElementById(
-            "userDetailsModal"
-        ).classList.add(
-            "show"
-        );
+
+        document
+            .getElementById(
+                "userModal"
+            )
+            .classList.add(
+                "show"
+            );
 
     } catch (error) {
+
         showError(
             error.message
         );
+
     }
 }
 
 
-async function setUserActive(
+async function changeAccess(
     userId,
     active
 ) {
-    const action =
+
+    const verb =
         active
             ? "enable"
             : "disable";
 
-    const confirmed =
-        window.confirm(
-            `Are you sure you want to ${action} this user?`
-        );
 
-    if (!confirmed) {
+    if (
+        !window.confirm(
+            `Are you sure you want to ${verb} this user?`
+        )
+    ) {
         return;
     }
 
+
     try {
-        await apiRequest(
+
+        await api(
             `/users/${userId}/active?active=${active}`,
             {
                 method: "PUT"
             }
         );
+
 
         showSuccess(
             active
@@ -609,6 +680,7 @@ async function setUserActive(
                 : "User access disabled."
         );
 
+
         await Promise.all([
             loadUsers(),
             loadDashboard(),
@@ -616,166 +688,73 @@ async function setUserActive(
         ]);
 
     } catch (error) {
+
         showError(
             error.message
         );
-    }
-}
 
-
-function openCreateUserModal() {
-    document.getElementById(
-        "createUserError"
-    ).textContent = "";
-
-    document.getElementById(
-        "createUserModal"
-    ).classList.add(
-        "show"
-    );
-}
-
-
-function closeCreateUserModal() {
-    document.getElementById(
-        "createUserModal"
-    ).classList.remove(
-        "show"
-    );
-}
-
-
-function closeUserDetailsModal() {
-    document.getElementById(
-        "userDetailsModal"
-    ).classList.remove(
-        "show"
-    );
-}
-
-
-async function createUser(event) {
-    event.preventDefault();
-
-    const errorElement =
-        document.getElementById(
-            "createUserError"
-        );
-
-    errorElement.textContent = "";
-
-    const requestBody = {
-        fullName:
-            document.getElementById(
-                "createFullName"
-            ).value.trim(),
-
-        email:
-            document.getElementById(
-                "createEmail"
-            ).value.trim(),
-
-        password:
-            document.getElementById(
-                "createPassword"
-            ).value,
-
-        role:
-            document.getElementById(
-                "createRole"
-            ).value,
-
-        phoneNumber:
-            document.getElementById(
-                "createPhone"
-            ).value.trim(),
-
-        department:
-            document.getElementById(
-                "createDepartment"
-            ).value.trim()
-    };
-
-    try {
-        await apiRequest(
-            "/users",
-            {
-                method: "POST",
-                body:
-                    JSON.stringify(
-                        requestBody
-                    )
-            }
-        );
-
-        document.getElementById(
-            "createUserForm"
-        ).reset();
-
-        closeCreateUserModal();
-
-        showSuccess(
-            "Secure user account created."
-        );
-
-        await Promise.all([
-            loadUsers(),
-            loadDashboard(),
-            loadAudit()
-        ]);
-
-    } catch (error) {
-        errorElement.textContent =
-            error.message;
     }
 }
 
 
 async function loadAudit() {
+
     try {
+
         const search =
             document.getElementById(
                 "auditSearch"
             ).value.trim();
 
+
         const events =
-            await apiRequest(
+            await api(
                 `/audit?search=${
-                    encodeURIComponent(search)
+                    encodeURIComponent(
+                        search
+                    )
                 }`
             );
+
 
         renderAudit(events);
 
     } catch (error) {
+
         showError(
             error.message
         );
+
     }
 }
 
 
 function renderAudit(events) {
-    const body =
+
+    const tbody =
         document.getElementById(
             "auditBody"
         );
 
-    if (events.length === 0) {
-        body.innerHTML = `
+
+    if (!events.length) {
+
+        tbody.innerHTML = `
             <tr>
                 <td
                     colspan="6"
                     class="empty"
                 >
-                    No matching audit activity.
+                    No matching audit events.
                 </td>
             </tr>
         `;
+
         return;
     }
 
-    body.innerHTML =
+
+    tbody.innerHTML =
         events
             .map(event => `
                 <tr>
@@ -793,13 +772,13 @@ function renderAudit(events) {
                     </td>
 
                     <td>
-                        ${roleBadge(
+                        ${rolePill(
                             event.actorRole
                         )}
                     </td>
 
                     <td>
-                        ${formatAction(
+                        ${formatText(
                             event.action
                         )}
                     </td>
@@ -822,12 +801,148 @@ function renderAudit(events) {
 }
 
 
-function roleBadge(roleName) {
+function openCreateUser() {
+
+    document.getElementById(
+        "createError"
+    ).textContent = "";
+
+
+    document
+        .getElementById(
+            "createModal"
+        )
+        .classList.add(
+            "show"
+        );
+}
+
+
+function closeCreateUser() {
+
+    document
+        .getElementById(
+            "createModal"
+        )
+        .classList.remove(
+            "show"
+        );
+}
+
+
+function closeUserModal() {
+
+    document
+        .getElementById(
+            "userModal"
+        )
+        .classList.remove(
+            "show"
+        );
+}
+
+
+async function createUser(event) {
+
+    event.preventDefault();
+
+
+    const error =
+        document.getElementById(
+            "createError"
+        );
+
+
+    error.textContent = "";
+
+
+    const payload = {
+
+        fullName:
+            document.getElementById(
+                "newName"
+            ).value.trim(),
+
+        email:
+            document.getElementById(
+                "newEmail"
+            ).value.trim(),
+
+        password:
+            document.getElementById(
+                "newPassword"
+            ).value,
+
+        role:
+            document.getElementById(
+                "newRole"
+            ).value,
+
+        phoneNumber:
+            document.getElementById(
+                "newPhone"
+            ).value.trim(),
+
+        department:
+            document.getElementById(
+                "newDepartment"
+            ).value.trim()
+
+    };
+
+
+    try {
+
+        await api(
+            "/users",
+            {
+                method: "POST",
+                body:
+                    JSON.stringify(
+                        payload
+                    )
+            }
+        );
+
+
+        document
+            .getElementById(
+                "createUserForm"
+            )
+            .reset();
+
+
+        closeCreateUser();
+
+
+        showSuccess(
+            "Secure user account created."
+        );
+
+
+        await Promise.all([
+            loadUsers(),
+            loadDashboard(),
+            loadAudit()
+        ]);
+
+    } catch (requestError) {
+
+        error.textContent =
+            requestError.message;
+
+    }
+}
+
+
+function rolePill(roleName) {
+
     return `
-        <span class="status">
+        <span class="role-pill">
             ${escapeHtml(
-                formatAction(
-                    roleName || "UNKNOWN"
+                formatText(
+                    roleName
+                    || "UNKNOWN"
                 )
             )}
         </span>
@@ -835,13 +950,18 @@ function roleBadge(roleName) {
 }
 
 
-function formatAction(value) {
+function formatText(value) {
+
     if (!value) {
         return "-";
     }
 
-    return value
-        .replaceAll("_", " ")
+
+    return String(value)
+        .replaceAll(
+            "_",
+            " "
+        )
         .toLowerCase()
         .replace(
             /\b\w/g,
@@ -855,9 +975,11 @@ function formatDate(
     value,
     fallback = "-"
 ) {
+
     if (!value) {
         return fallback;
     }
+
 
     return new Date(value)
         .toLocaleString();
@@ -868,6 +990,7 @@ function setText(
     id,
     value
 ) {
+
     document.getElementById(
         id
     ).textContent =
@@ -876,58 +999,67 @@ function setText(
 
 
 function escapeHtml(value) {
+
     const element =
         document.createElement(
             "div"
         );
+
 
     element.textContent =
         String(
             value ?? "-"
         );
 
+
     return element.innerHTML;
 }
 
 
 function clearMessage() {
-    const message =
-        document.getElementById(
-            "adminMessage"
-        );
 
-    message.textContent = "";
+    document.getElementById(
+        "adminMessage"
+    ).textContent = "";
 }
 
 
-function showSuccess(text) {
-    const message =
+function showSuccess(message) {
+
+    const element =
         document.getElementById(
             "adminMessage"
         );
 
-    message.textContent = text;
 
-    message.style.color =
-        "#23694f";
+    element.textContent =
+        message;
+
+
+    element.style.color =
+        "#23684f";
 }
 
 
-function showError(text) {
-    const message =
+function showError(message) {
+
+    const element =
         document.getElementById(
             "adminMessage"
         );
 
-    message.textContent =
-        text || "Request failed.";
 
-    message.style.color =
-        "#963f3f";
+    element.textContent =
+        message || "Request failed.";
+
+
+    element.style.color =
+        "#983d3d";
 }
 
 
 function logout() {
+
     localStorage.clear();
 
     goToLogin();
@@ -935,9 +1067,20 @@ function logout() {
 
 
 function goToLogin() {
+
     window.location.href =
         "../../auth/login/login.html";
 }
 
 
-initialLoad();
+async function startAdmin() {
+
+    await Promise.all([
+        loadDashboard(),
+        loadUsers(),
+        loadAudit()
+    ]);
+}
+
+
+startAdmin();

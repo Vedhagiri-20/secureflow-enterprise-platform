@@ -25,8 +25,11 @@ public class ManagerController {
             ManagerService managerService,
             ApplicationViewService applicationViewService
     ) {
-        this.managerService = managerService;
-        this.applicationViewService = applicationViewService;
+        this.managerService =
+                managerService;
+
+        this.applicationViewService =
+                applicationViewService;
     }
 
     @GetMapping("/dashboard")
@@ -40,11 +43,25 @@ public class ManagerController {
     }
 
     @GetMapping("/applications")
-    public List<ManagerApplicationResponse> getApplications(
-            Authentication authentication
-    ) {
+    public List<ManagerApplicationResponse>
+            getApplications(
+                    Authentication authentication
+            ) {
+
         return managerService
                 .getPendingApplications(
+                        authentication.getName()
+                );
+    }
+
+    @GetMapping("/applications/all")
+    public List<ManagerApplicationResponse>
+            getAllApplications(
+                    Authentication authentication
+            ) {
+
+        return managerService
+                .getAllApplications(
                         authentication.getName()
                 );
     }
@@ -61,7 +78,9 @@ public class ManagerController {
                 );
     }
 
-    @GetMapping("/applications/{workflowId}/history")
+    @GetMapping(
+            "/applications/{workflowId}/history"
+    )
     public List<WorkflowHistoryResponse> getHistory(
             @PathVariable Long workflowId,
             Authentication authentication
@@ -73,7 +92,9 @@ public class ManagerController {
                 );
     }
 
-    @PutMapping("/applications/{workflowId}/approve")
+    @PutMapping(
+            "/applications/{workflowId}/approve"
+    )
     public ManagerApplicationResponse approveApplication(
             @PathVariable Long workflowId,
             Authentication authentication
@@ -85,7 +106,9 @@ public class ManagerController {
                 );
     }
 
-    @PutMapping("/applications/{workflowId}/reject")
+    @PutMapping(
+            "/applications/{workflowId}/reject"
+    )
     public ManagerApplicationResponse rejectApplication(
             @PathVariable Long workflowId,
             Authentication authentication

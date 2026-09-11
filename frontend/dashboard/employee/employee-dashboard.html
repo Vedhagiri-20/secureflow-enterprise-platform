@@ -1,140 +1,454 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Employee Dashboard | SecureFlow</title>
-    <link rel="stylesheet" href="employee-dashboard.css">
-    <link rel="stylesheet" href="../../assets/secureflow-premium.css">
-    <link rel="stylesheet" href="../../assets/secureflow-contrast.css">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Employee Banking | SecureFlow International Bank
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="../../assets/secureflow-portal.css"
+    >
 </head>
+
 <body>
 
-<div class="page">
+<div class="portal-shell">
 
-    <header class="topbar">
-        <div>
-            <h2>SecureFlow International Bank</h2>
-            <p>Employee Review Workspace</p>
-        </div>
+    <aside class="portal-sidebar">
 
-        <div class="user-area">
-            <span id="employeeEmail"></span>
-            <button type="button" onclick="logout()">Logout</button>
-        </div>
-    </header>
+        <div class="portal-brand">
 
-    <main>
+            <div class="portal-mark">
+                SF
+            </div>
 
-        <section class="intro">
             <div>
-                <span class="badge">Employee</span>
-                <h1>Application Review</h1>
-                <p>
-                    Review customer loan applications and forward qualified
-                    applications to the manager.
+                <strong>SECUREFLOW</strong>
+                <span>INTERNATIONAL BANK</span>
+            </div>
+
+        </div>
+
+
+        <p class="portal-role-label">
+            LENDING OPERATIONS
+        </p>
+
+
+        <nav class="portal-nav">
+
+            <button
+                class="portal-nav-button active"
+                data-page="dashboard"
+            >
+                Dashboard
+            </button>
+
+            <button
+                class="portal-nav-button"
+                data-page="available"
+            >
+                Available Applications
+            </button>
+
+            <button
+                class="portal-nav-button"
+                data-page="reviews"
+            >
+                My Reviews
+            </button>
+
+            <a
+                class="portal-nav-link"
+                href="../../report/report.html"
+            >
+                Reports
+            </a>
+
+            <button
+                class="portal-nav-button"
+                data-page="profile"
+            >
+                Profile
+            </button>
+
+        </nav>
+
+
+        <div class="portal-profile">
+
+            <div class="profile-row">
+
+                <div
+                    class="profile-avatar"
+                    id="profileInitials"
+                >
+                    SF
+                </div>
+
+                <div>
+                    <strong id="sidebarName">
+                        Employee
+                    </strong>
+
+                    <span id="sidebarEmail">
+                        -
+                    </span>
+                </div>
+
+            </div>
+
+
+            <button
+                class="portal-logout"
+                onclick="logout()"
+            >
+                Secure Logout
+            </button>
+
+        </div>
+
+    </aside>
+
+
+    <main class="portal-content">
+
+        <header class="portal-header">
+
+            <div>
+                <span class="portal-kicker">
+                    EMPLOYEE REVIEW WORKSPACE
+                </span>
+
+                <h1 id="pageTitle">
+                    Lending Dashboard
+                </h1>
+
+                <p id="pageDescription">
+                    Review and process SecureFlow customer applications.
                 </p>
             </div>
 
-            <button type="button" class="refresh" onclick="loadPage()">
-                Refresh
-            </button>
-        </section>
 
-        <section class="stats">
+            <div class="portal-security">
 
-            <div class="stat-card">
-                <span>Available</span>
-                <strong id="availableCount">0</strong>
-            </div>
+                <span class="portal-security-dot"></span>
 
-            <div class="stat-card">
-                <span>My Applications</span>
-                <strong id="assignedCount">0</strong>
-            </div>
-
-            <div class="stat-card">
-                <span>Under Review</span>
-                <strong id="reviewCount">0</strong>
-            </div>
-
-            <div class="stat-card">
-                <span>Forwarded</span>
-                <strong id="forwardedCount">0</strong>
-            </div>
-
-            <div class="stat-card">
-                <span>Rejected</span>
-                <strong id="rejectedCount">0</strong>
-            </div>
-
-        </section>
-
-        <p id="message"></p>
-
-        <section class="card">
-
-            <div class="section-header">
                 <div>
-                    <h2>Available Applications</h2>
-                    <p>
-                        New customer applications waiting for an employee.
-                    </p>
+                    <strong>
+                        Secure Session
+                    </strong>
+
+                    <small>
+                        JWT · EMPLOYEE
+                    </small>
                 </div>
+
             </div>
 
-            <div class="table-wrapper">
-                <table>
-                    <thead>
-                    <tr>
-                        <th>Application</th>
-                        <th>Applicant</th>
-                        <th>Loan Type</th>
-                        <th>Amount</th>
-                        <th>Priority</th>
-                        <th>Action</th>
-                    </tr>
-                    </thead>
+        </header>
 
-                    <tbody id="availableTable"></tbody>
-                </table>
+
+        <p
+            id="message"
+            class="portal-message"
+        ></p>
+
+
+        <section
+            id="dashboardPage"
+            class="portal-view active"
+        >
+
+            <div class="portal-metrics">
+
+                <article class="portal-metric">
+                    <span>Available</span>
+                    <strong id="availableCount">0</strong>
+                    <small>Waiting to be assigned</small>
+                </article>
+
+                <article class="portal-metric">
+                    <span>My Applications</span>
+                    <strong id="assignedCount">0</strong>
+                    <small>Handled by you</small>
+                </article>
+
+                <article class="portal-metric">
+                    <span>Under Review</span>
+                    <strong id="reviewCount">0</strong>
+                    <small>Currently being assessed</small>
+                </article>
+
+                <article class="portal-metric">
+                    <span>Forwarded</span>
+                    <strong id="forwardedCount">0</strong>
+                    <small>Sent to management</small>
+                </article>
+
+                <article class="portal-metric">
+                    <span>Rejected</span>
+                    <strong id="rejectedCount">0</strong>
+                    <small>Employee decisions</small>
+                </article>
+
             </div>
+
+
+            <section class="portal-card">
+
+                <div class="portal-card-header">
+
+                    <div>
+                        <span class="portal-kicker">
+                            REVIEW PIPELINE
+                        </span>
+
+                        <h2>
+                            Recent Assigned Applications
+                        </h2>
+
+                        <p>
+                            Latest applications handled through your employee account.
+                        </p>
+                    </div>
+
+                </div>
+
+
+                <div class="portal-table">
+
+                    <table>
+
+                        <thead>
+                        <tr>
+                            <th>Application</th>
+                            <th>Applicant</th>
+                            <th>Loan Type</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                        </thead>
+
+                        <tbody id="recentAssignedTable"></tbody>
+
+                    </table>
+
+                </div>
+
+            </section>
 
         </section>
 
-        <section class="card">
 
-            <div class="section-header">
-                <div>
-                    <h2>My Applications</h2>
-                    <p>
-                        Applications currently or previously handled by you.
-                    </p>
+        <section
+            id="availablePage"
+            class="portal-view"
+        >
+
+            <section class="portal-card">
+
+                <div class="portal-card-header">
+
+                    <div>
+                        <span class="portal-kicker">
+                            UNASSIGNED QUEUE
+                        </span>
+
+                        <h2>
+                            Available Applications
+                        </h2>
+
+                        <p>
+                            Search and select new applications waiting for review.
+                        </p>
+                    </div>
+
                 </div>
-            </div>
 
-            <div class="table-wrapper">
-                <table>
-                    <thead>
-                    <tr>
-                        <th>Application</th>
-                        <th>Applicant</th>
-                        <th>Loan Type</th>
-                        <th>Amount</th>
-                        <th>Status</th>
-                        <th>Action</th>
-                    </tr>
-                    </thead>
 
-                    <tbody id="assignedTable"></tbody>
-                </table>
-            </div>
+                <div class="portal-search">
+
+                    <input
+                        id="availableSearch"
+                        type="search"
+                        placeholder="Search application number, applicant or loan type"
+                    >
+
+                    <button
+                        class="portal-dark-button"
+                        onclick="renderAvailable()"
+                    >
+                        Search
+                    </button>
+
+                </div>
+
+
+                <div class="portal-table">
+
+                    <table>
+
+                        <thead>
+                        <tr>
+                            <th>Application</th>
+                            <th>Applicant</th>
+                            <th>Loan Type</th>
+                            <th>Amount</th>
+                            <th>Priority</th>
+                            <th>Actions</th>
+                        </tr>
+                        </thead>
+
+                        <tbody id="availableTable"></tbody>
+
+                    </table>
+
+                </div>
+
+            </section>
+
+        </section>
+
+
+        <section
+            id="reviewsPage"
+            class="portal-view"
+        >
+
+            <section class="portal-card">
+
+                <div class="portal-card-header">
+
+                    <div>
+                        <span class="portal-kicker">
+                            MY WORKFLOW
+                        </span>
+
+                        <h2>
+                            My Reviews
+                        </h2>
+
+                        <p>
+                            Search your assigned, forwarded and completed applications.
+                        </p>
+                    </div>
+
+                </div>
+
+
+                <div class="portal-search">
+
+                    <input
+                        id="reviewSearch"
+                        type="search"
+                        placeholder="Search application number, applicant, loan type or status"
+                    >
+
+                    <button
+                        class="portal-dark-button"
+                        onclick="renderAssigned()"
+                    >
+                        Search
+                    </button>
+
+                </div>
+
+
+                <div class="portal-table">
+
+                    <table>
+
+                        <thead>
+                        <tr>
+                            <th>Application</th>
+                            <th>Applicant</th>
+                            <th>Loan Type</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                        </thead>
+
+                        <tbody id="assignedTable"></tbody>
+
+                    </table>
+
+                </div>
+
+            </section>
+
+        </section>
+
+
+        <section
+            id="profilePage"
+            class="portal-view"
+        >
+
+            <section class="portal-card">
+
+                <div class="portal-card-header">
+
+                    <div>
+                        <span class="portal-kicker">
+                            EMPLOYEE IDENTITY
+                        </span>
+
+                        <h2>
+                            Employee Profile
+                        </h2>
+
+                        <p>
+                            Your authenticated SecureFlow employee session.
+                        </p>
+                    </div>
+
+                </div>
+
+
+                <div class="portal-profile-grid">
+
+                    <div>
+                        <span>Full Name</span>
+                        <strong id="profileName">-</strong>
+                    </div>
+
+                    <div>
+                        <span>Email</span>
+                        <strong id="profileEmail">-</strong>
+                    </div>
+
+                    <div>
+                        <span>Role</span>
+                        <strong>EMPLOYEE</strong>
+                    </div>
+
+                    <div>
+                        <span>Access</span>
+                        <strong>Loan Review Operations</strong>
+                    </div>
+
+                </div>
+
+            </section>
 
         </section>
 
     </main>
 
 </div>
+
 
 <script src="employee-dashboard.js"></script>
 
