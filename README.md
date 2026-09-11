@@ -276,6 +276,68 @@ Runtime log files are intentionally excluded from Git.
 
 ---
 
+## Application Showcase
+
+### Secure Flow Landing Experience
+
+<p align="center">
+  <img
+    src="doc/screenshots/01-landing-page.png"
+    alt="Secure Flow landing page"
+    width="100%"
+  />
+</p>
+
+### Secure Client Access
+
+<p align="center">
+  <img
+    src="doc/screenshots/02-secure-login.png"
+    alt="Secure Flow client login"
+    width="100%"
+  />
+</p>
+
+### Customer Dashboard
+
+<p align="center">
+  <img
+    src="doc/screenshots/03-customer-dashboard.png"
+    alt="Secure Flow customer dashboard"
+    width="100%"
+  />
+</p>
+
+### Employee Lending Workspace
+
+<p align="center">
+  <img
+    src="doc/screenshots/04-employee-dashboard.png"
+    alt="Secure Flow employee lending dashboard"
+    width="100%"
+  />
+</p>
+
+### Administrative Oversight
+
+<p align="center">
+  <img
+    src="doc/screenshots/05-admin-dashboard.png"
+    alt="Secure Flow administration dashboard"
+    width="100%"
+  />
+</p>
+
+### Workflow Reporting
+
+<p align="center">
+  <img
+    src="doc/screenshots/06-workflow-report.png"
+    alt="Secure Flow workflow report"
+    width="100%"
+  />
+</p>
+
 ## Technology Stack
 
 ### Frontend
