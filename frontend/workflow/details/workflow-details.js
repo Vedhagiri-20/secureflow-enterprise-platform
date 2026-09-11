@@ -1,6 +1,3 @@
-const API_URL =
-    "http://localhost:8080/api/customer";
-
 const email =
     localStorage.getItem(
         "secureFlowUserEmail"
@@ -16,11 +13,46 @@ const token =
         "secureFlowToken"
     );
 
-if (!email
-        || role !== "CUSTOMER"
-        || !token) {
+const allowedRoles = [
+    "CUSTOMER",
+    "EMPLOYEE",
+    "MANAGER"
+];
 
+if (!email
+        || !token
+        || !allowedRoles.includes(role)) {
     goToLogin();
+}
+
+const rolePaths = {
+    CUSTOMER: "customer",
+    EMPLOYEE: "employee",
+    MANAGER: "manager"
+};
+
+const dashboardPaths = {
+    CUSTOMER:
+        "../../dashboard/customer/customer-dashboard.html",
+
+    EMPLOYEE:
+        "../../dashboard/employee/employee-dashboard.html",
+
+    MANAGER:
+        "../../dashboard/manager/manager-dashboard.html"
+};
+
+const API_URL =
+    `http://localhost:8080/api/${rolePaths[role]}`;
+
+const backButton =
+    document.querySelector(
+        ".back-button"
+    );
+
+if (backButton) {
+    backButton.href =
+        dashboardPaths[role];
 }
 
 const parameters =
@@ -47,7 +79,8 @@ async function loadPage() {
         ]);
     } catch (error) {
         showError(
-            "Unable to load application details."
+            error.message
+            || "Unable to load application details."
         );
 
         console.error(error);
@@ -65,8 +98,13 @@ async function loadApplication() {
     checkAuthorization(response);
 
     if (!response.ok) {
+        const data =
+            await response.json()
+                .catch(() => ({}));
+
         throw new Error(
-            "Application request failed"
+            data.message
+            || "Application request failed"
         );
     }
 
@@ -87,8 +125,13 @@ async function loadHistory() {
     checkAuthorization(response);
 
     if (!response.ok) {
+        const data =
+            await response.json()
+                .catch(() => ({}));
+
         throw new Error(
-            "History request failed"
+            data.message
+            || "History request failed"
         );
     }
 
@@ -209,6 +252,7 @@ function renderHistory(history) {
     if (history.length === 0) {
         container.innerHTML =
             '<p class="history-empty">No history available.</p>';
+
         return;
     }
 
@@ -295,10 +339,7 @@ function updateTracker(status) {
 
     if (status === "REJECTED") {
         decision.classList.add(
-            "active"
-        );
-
-        decision.classList.add(
+            "active",
             "rejected"
         );
     }
@@ -307,7 +348,8 @@ function updateTracker(status) {
 function setText(id, value) {
     document.getElementById(
         id
-    ).textContent = value || "-";
+    ).textContent =
+        value || "-";
 }
 
 function formatStatus(status) {
@@ -352,7 +394,9 @@ function formatDate(value) {
 
 function escapeHtml(value) {
     const element =
-        document.createElement("div");
+        document.createElement(
+            "div"
+        );
 
     element.textContent =
         value || "-";

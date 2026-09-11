@@ -19,13 +19,13 @@ const token =
 if (!managerEmail
         || managerRole !== "MANAGER"
         || !token) {
-
     goToLogin();
 }
 
 document.getElementById(
     "managerEmail"
-).textContent = managerEmail || "";
+).textContent =
+    managerEmail || "";
 
 async function loadPage() {
     clearMessage();
@@ -120,76 +120,92 @@ function renderApplications(
                 </td>
             </tr>
         `;
+
         return;
     }
 
-    table.innerHTML = applications
-        .map(application => `
-            <tr>
+    table.innerHTML =
+        applications
+            .map(application => `
+                <tr>
 
-                <td>
-                    ${escapeHtml(
-                        application.workItemNumber
-                    )}
-                </td>
+                    <td>
+                        ${escapeHtml(
+                            application.workItemNumber
+                        )}
+                    </td>
 
-                <td>
-                    ${escapeHtml(
-                        application.applicantName
-                    )}
-                </td>
+                    <td>
+                        ${escapeHtml(
+                            application.applicantName
+                        )}
+                    </td>
 
-                <td>
-                    ${escapeHtml(
-                        application.loanType
-                    )}
-                </td>
+                    <td>
+                        ${escapeHtml(
+                            application.loanType
+                        )}
+                    </td>
 
-                <td>
-                    ${formatAmount(
-                        application.loanAmount
-                    )}
-                </td>
+                    <td>
+                        ${formatAmount(
+                            application.loanAmount
+                        )}
+                    </td>
 
-                <td>
-                    ${escapeHtml(
-                        application.employeeName
-                    )}
-                </td>
+                    <td>
+                        ${escapeHtml(
+                            application.employeeName
+                        )}
+                    </td>
 
-                <td>
-                    ${escapeHtml(
-                        application.priority || "-"
-                    )}
-                </td>
+                    <td>
+                        ${escapeHtml(
+                            application.priority || "-"
+                        )}
+                    </td>
 
-                <td>
-                    <div class="action-group">
+                    <td>
+                        <div class="action-group">
 
-                        <button
-                            class="action-button approve-button"
-                            onclick="approveApplication(
-                                ${application.workflowId}
-                            )"
-                        >
-                            Approve
-                        </button>
+                            <button
+                                class="action-button view-button"
+                                onclick="viewApplication(
+                                    ${application.workflowId}
+                                )"
+                            >
+                                View
+                            </button>
 
-                        <button
-                            class="action-button reject-button"
-                            onclick="rejectApplication(
-                                ${application.workflowId}
-                            )"
-                        >
-                            Reject
-                        </button>
+                            <button
+                                class="action-button approve-button"
+                                onclick="approveApplication(
+                                    ${application.workflowId}
+                                )"
+                            >
+                                Approve
+                            </button>
 
-                    </div>
-                </td>
+                            <button
+                                class="action-button reject-button"
+                                onclick="rejectApplication(
+                                    ${application.workflowId}
+                                )"
+                            >
+                                Reject
+                            </button>
 
-            </tr>
-        `)
-        .join("");
+                        </div>
+                    </td>
+
+                </tr>
+            `)
+            .join("");
+}
+
+function viewApplication(workflowId) {
+    window.location.href =
+        `../../workflow/details/workflow-details.html?id=${workflowId}`;
 }
 
 async function approveApplication(
@@ -255,15 +271,15 @@ async function performDecision(
 
             throw new Error(
                 data.message
-                    || "Manager action failed"
+                || "Manager action failed"
             );
         }
+
+        await loadPage();
 
         showSuccess(
             successMessage
         );
-
-        await loadPage();
 
     } catch (error) {
         showError(
@@ -308,7 +324,9 @@ function formatAmount(amount) {
 
 function escapeHtml(value) {
     const element =
-        document.createElement("div");
+        document.createElement(
+            "div"
+        );
 
     element.textContent =
         value || "-";
@@ -317,12 +335,9 @@ function escapeHtml(value) {
 }
 
 function clearMessage() {
-    const message =
-        document.getElementById(
-            "message"
-        );
-
-    message.textContent = "";
+    document.getElementById(
+        "message"
+    ).textContent = "";
 }
 
 function showSuccess(text) {

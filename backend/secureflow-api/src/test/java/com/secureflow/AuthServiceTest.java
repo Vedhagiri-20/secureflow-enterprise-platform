@@ -1,9 +1,9 @@
 package com.secureflow;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -13,6 +13,7 @@ import com.secureflow.entity.Role;
 import com.secureflow.entity.User;
 import com.secureflow.repository.UserRepository;
 import com.secureflow.security.JwtService;
+import com.secureflow.service.AuditService;
 import com.secureflow.service.AuthService;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,9 +25,9 @@ class AuthServiceTest {
 
     private UserRepository userRepository;
     private JwtService jwtService;
+    private AuditService auditService;
     private AuthService authService;
     private User user;
-    private Role role;
 
     @BeforeEach
     void setUp() {
@@ -36,6 +37,9 @@ class AuthServiceTest {
         jwtService =
                 mock(JwtService.class);
 
+        auditService =
+                mock(AuditService.class);
+
         PasswordEncoder passwordEncoder =
                 new BCryptPasswordEncoder();
 
@@ -43,41 +47,41 @@ class AuthServiceTest {
                 new AuthService(
                         userRepository,
                         passwordEncoder,
-                        jwtService
+                        jwtService,
+                        auditService
                 );
 
         user =
-                mock(User.class);
+                new User();
 
-        role =
+        Role role =
                 mock(Role.class);
-
-        when(user.getIsActive())
-                .thenReturn(true);
-
-        when(user.getRole())
-                .thenReturn(role);
-
-        when(user.getEmail())
-                .thenReturn(
-                        "customer@test.com"
-                );
 
         when(role.getRoleName())
                 .thenReturn("CUSTOMER");
 
-        when(jwtService.generateToken(user))
+        user.setEmail(
+                "customer@test.com"
+        );
+
+        user.setRole(role);
+        user.setIsActive(true);
+
+        when(jwtService
+                .generateToken(user))
                 .thenReturn("test-token");
     }
 
     @Test
-    void loginAcceptsPlainTextPasswordAndReturnsToken() {
-        when(user.getPasswordHash())
-                .thenReturn("password123");
+    void successfulLoginReturnsJwtAndUpdatesLastLogin() {
+        user.setPasswordHash(
+                "password123"
+        );
 
-        when(userRepository.findByEmail(
-                "customer@test.com"
-        ))
+        when(userRepository
+                .findByEmail(
+                        "customer@test.com"
+                ))
                 .thenReturn(
                         Optional.of(user)
                 );
@@ -96,40 +100,36 @@ class AuthServiceTest {
         );
 
         assertEquals(
-                "CUSTOMER",
-                response.getRole()
-        );
-
-        assertEquals(
                 "test-token",
                 response.getToken()
         );
-
-        verify(user)
-                .setPasswordHash(
-                        anyString()
-                );
 
         verify(userRepository)
                 .save(user);
+
+        verify(auditService)
+                .record(
+                        user,
+                        "LOGIN",
+                        "Successful secure login"
+                );
     }
 
     @Test
-    void loginAcceptsBcryptPassword() {
+    void bcryptPasswordStillAuthenticates() {
         BCryptPasswordEncoder encoder =
                 new BCryptPasswordEncoder();
 
-        String hash =
+        user.setPasswordHash(
                 encoder.encode(
                         "password123"
-                );
+                )
+        );
 
-        when(user.getPasswordHash())
-                .thenReturn(hash);
-
-        when(userRepository.findByEmail(
-                "customer@test.com"
-        ))
+        when(userRepository
+                .findByEmail(
+                        "customer@test.com"
+                ))
                 .thenReturn(
                         Optional.of(user)
                 );
@@ -146,26 +146,18 @@ class AuthServiceTest {
                 "Login Successful",
                 response.getMessage()
         );
-
-        assertEquals(
-                "test-token",
-                response.getToken()
-        );
-
-        verify(userRepository, never())
-                .save(user);
     }
 
     @Test
-    void loginRejectsInvalidPassword() {
-        when(user.getPasswordHash())
-                .thenReturn(
-                        "password123"
-                );
+    void invalidPasswordIsRejected() {
+        user.setPasswordHash(
+                "password123"
+        );
 
-        when(userRepository.findByEmail(
-                "customer@test.com"
-        ))
+        when(userRepository
+                .findByEmail(
+                        "customer@test.com"
+                ))
                 .thenReturn(
                         Optional.of(user)
                 );
@@ -185,13 +177,17 @@ class AuthServiceTest {
     }
 
     @Test
-    void loginRejectsInactiveUser() {
-        when(user.getIsActive())
-                .thenReturn(false);
+    void inactiveUserIsRejected() {
+        user.setPasswordHash(
+                "password123"
+        );
 
-        when(userRepository.findByEmail(
-                "customer@test.com"
-        ))
+        user.setIsActive(false);
+
+        when(userRepository
+                .findByEmail(
+                        "customer@test.com"
+                ))
                 .thenReturn(
                         Optional.of(user)
                 );

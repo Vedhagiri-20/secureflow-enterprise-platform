@@ -197,3 +197,8 @@ th {
         width: 100%;
     }
 }
+
+.view-button {
+    color: #ffffff;
+    background: #2b4b44;
+}

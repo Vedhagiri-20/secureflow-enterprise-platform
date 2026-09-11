@@ -1,7 +1,10 @@
 package com.secureflow.controller;
 
+import com.secureflow.dto.ApplicationDetailResponse;
 import com.secureflow.dto.ManagerApplicationResponse;
 import com.secureflow.dto.ManagerDashboardResponse;
+import com.secureflow.dto.WorkflowHistoryResponse;
+import com.secureflow.service.ApplicationViewService;
 import com.secureflow.service.ManagerService;
 import java.util.List;
 import org.springframework.security.core.Authentication;
@@ -16,12 +19,14 @@ import org.springframework.web.bind.annotation.RestController;
 public class ManagerController {
 
     private final ManagerService managerService;
+    private final ApplicationViewService applicationViewService;
 
     public ManagerController(
-            ManagerService managerService
+            ManagerService managerService,
+            ApplicationViewService applicationViewService
     ) {
-        this.managerService =
-                managerService;
+        this.managerService = managerService;
+        this.applicationViewService = applicationViewService;
     }
 
     @GetMapping("/dashboard")
@@ -40,6 +45,30 @@ public class ManagerController {
     ) {
         return managerService
                 .getPendingApplications(
+                        authentication.getName()
+                );
+    }
+
+    @GetMapping("/applications/{workflowId}")
+    public ApplicationDetailResponse getApplication(
+            @PathVariable Long workflowId,
+            Authentication authentication
+    ) {
+        return applicationViewService
+                .getManagerApplication(
+                        workflowId,
+                        authentication.getName()
+                );
+    }
+
+    @GetMapping("/applications/{workflowId}/history")
+    public List<WorkflowHistoryResponse> getHistory(
+            @PathVariable Long workflowId,
+            Authentication authentication
+    ) {
+        return applicationViewService
+                .getManagerHistory(
+                        workflowId,
                         authentication.getName()
                 );
     }

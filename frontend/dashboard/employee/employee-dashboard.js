@@ -19,13 +19,13 @@ const token =
 if (!employeeEmail
         || employeeRole !== "EMPLOYEE"
         || !token) {
-
     goToLogin();
 }
 
 document.getElementById(
     "employeeEmail"
-).textContent = employeeEmail || "";
+).textContent =
+    employeeEmail || "";
 
 async function loadPage() {
     clearMessage();
@@ -66,23 +66,28 @@ async function loadDashboard() {
 
     document.getElementById(
         "availableCount"
-    ).textContent = data.available;
+    ).textContent =
+        data.available;
 
     document.getElementById(
         "assignedCount"
-    ).textContent = data.assigned;
+    ).textContent =
+        data.assigned;
 
     document.getElementById(
         "reviewCount"
-    ).textContent = data.underReview;
+    ).textContent =
+        data.underReview;
 
     document.getElementById(
         "forwardedCount"
-    ).textContent = data.forwarded;
+    ).textContent =
+        data.forwarded;
 
     document.getElementById(
         "rejectedCount"
-    ).textContent = data.rejected;
+    ).textContent =
+        data.rejected;
 }
 
 async function loadAvailableApplications() {
@@ -150,55 +155,72 @@ function renderAvailableApplications(
                 </td>
             </tr>
         `;
+
         return;
     }
 
-    table.innerHTML = applications
-        .map(application => `
-            <tr>
-                <td>
-                    ${escapeHtml(
-                        application.workItemNumber
-                    )}
-                </td>
+    table.innerHTML =
+        applications
+            .map(application => `
+                <tr>
 
-                <td>
-                    ${escapeHtml(
-                        application.applicantName
-                    )}
-                </td>
+                    <td>
+                        ${escapeHtml(
+                            application.workItemNumber
+                        )}
+                    </td>
 
-                <td>
-                    ${escapeHtml(
-                        application.loanType
-                    )}
-                </td>
+                    <td>
+                        ${escapeHtml(
+                            application.applicantName
+                        )}
+                    </td>
 
-                <td>
-                    ${formatAmount(
-                        application.loanAmount
-                    )}
-                </td>
+                    <td>
+                        ${escapeHtml(
+                            application.loanType
+                        )}
+                    </td>
 
-                <td>
-                    ${escapeHtml(
-                        application.priority || "-"
-                    )}
-                </td>
+                    <td>
+                        ${formatAmount(
+                            application.loanAmount
+                        )}
+                    </td>
 
-                <td>
-                    <button
-                        class="action-button review-button"
-                        onclick="startReview(
-                            ${application.workflowId}
-                        )"
-                    >
-                        Start Review
-                    </button>
-                </td>
-            </tr>
-        `)
-        .join("");
+                    <td>
+                        ${escapeHtml(
+                            application.priority || "-"
+                        )}
+                    </td>
+
+                    <td>
+                        <div class="action-group">
+
+                            <button
+                                class="action-button view-button"
+                                onclick="viewApplication(
+                                    ${application.workflowId}
+                                )"
+                            >
+                                View
+                            </button>
+
+                            <button
+                                class="action-button review-button"
+                                onclick="startReview(
+                                    ${application.workflowId}
+                                )"
+                            >
+                                Start Review
+                            </button>
+
+                        </div>
+                    </td>
+
+                </tr>
+            `)
+            .join("");
 }
 
 function renderAssignedApplications(
@@ -218,63 +240,74 @@ function renderAssignedApplications(
                 </td>
             </tr>
         `;
+
         return;
     }
 
-    table.innerHTML = applications
-        .map(application => `
-            <tr>
-                <td>
-                    ${escapeHtml(
-                        application.workItemNumber
-                    )}
-                </td>
+    table.innerHTML =
+        applications
+            .map(application => `
+                <tr>
 
-                <td>
-                    ${escapeHtml(
-                        application.applicantName
-                    )}
-                </td>
-
-                <td>
-                    ${escapeHtml(
-                        application.loanType
-                    )}
-                </td>
-
-                <td>
-                    ${formatAmount(
-                        application.loanAmount
-                    )}
-                </td>
-
-                <td>
-                    <span class="status">
-                        ${formatStatus(
-                            application.status
+                    <td>
+                        ${escapeHtml(
+                            application.workItemNumber
                         )}
-                    </span>
-                </td>
+                    </td>
 
-                <td>
-                    ${renderActions(
-                        application
-                    )}
-                </td>
-            </tr>
-        `)
-        .join("");
+                    <td>
+                        ${escapeHtml(
+                            application.applicantName
+                        )}
+                    </td>
+
+                    <td>
+                        ${escapeHtml(
+                            application.loanType
+                        )}
+                    </td>
+
+                    <td>
+                        ${formatAmount(
+                            application.loanAmount
+                        )}
+                    </td>
+
+                    <td>
+                        <span class="status">
+                            ${formatStatus(
+                                application.status
+                            )}
+                        </span>
+                    </td>
+
+                    <td>
+                        ${renderActions(
+                            application
+                        )}
+                    </td>
+
+                </tr>
+            `)
+            .join("");
 }
 
 function renderActions(application) {
-    if (application.status !==
-            "UNDER_REVIEW") {
-        return "-";
-    }
-
-    return `
+    let actions = `
         <div class="action-group">
 
+            <button
+                class="action-button view-button"
+                onclick="viewApplication(
+                    ${application.workflowId}
+                )"
+            >
+                View
+            </button>
+    `;
+
+    if (application.status === "UNDER_REVIEW") {
+        actions += `
             <button
                 class="action-button forward-button"
                 onclick="forwardApplication(
@@ -292,9 +325,17 @@ function renderActions(application) {
             >
                 Reject
             </button>
+        `;
+    }
 
-        </div>
-    `;
+    actions += "</div>";
+
+    return actions;
+}
+
+function viewApplication(workflowId) {
+    window.location.href =
+        `../../workflow/details/workflow-details.html?id=${workflowId}`;
 }
 
 async function startReview(workflowId) {
@@ -368,15 +409,15 @@ async function performAction(
 
             throw new Error(
                 data.message
-                    || "Action failed"
+                || "Action failed"
             );
         }
+
+        await loadPage();
 
         showSuccess(
             successMessage
         );
-
-        await loadPage();
 
     } catch (error) {
         showMessage(
@@ -435,7 +476,9 @@ function formatStatus(status) {
 
 function escapeHtml(value) {
     const element =
-        document.createElement("div");
+        document.createElement(
+            "div"
+        );
 
     element.textContent =
         value || "-";
@@ -450,8 +493,6 @@ function clearMessage() {
         );
 
     message.textContent = "";
-    message.style.color =
-        "#ff8888";
 }
 
 function showMessage(text) {

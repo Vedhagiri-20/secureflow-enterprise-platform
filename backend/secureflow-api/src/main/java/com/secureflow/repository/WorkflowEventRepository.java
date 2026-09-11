@@ -11,4 +11,7 @@ public interface WorkflowEventRepository
             findByWorkflowWorkflowIdOrderByChangedAtAsc(
                     Long workflowId
             );
+
+    List<WorkflowEvent>
+            findAllByOrderByChangedAtDesc();
 }

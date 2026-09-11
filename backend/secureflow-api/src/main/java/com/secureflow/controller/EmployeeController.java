@@ -1,7 +1,10 @@
 package com.secureflow.controller;
 
+import com.secureflow.dto.ApplicationDetailResponse;
 import com.secureflow.dto.EmployeeApplicationResponse;
 import com.secureflow.dto.EmployeeDashboardResponse;
+import com.secureflow.dto.WorkflowHistoryResponse;
+import com.secureflow.service.ApplicationViewService;
 import com.secureflow.service.DashboardService;
 import com.secureflow.service.WorkflowService;
 import java.util.List;
@@ -18,16 +21,16 @@ public class EmployeeController {
 
     private final DashboardService dashboardService;
     private final WorkflowService workflowService;
+    private final ApplicationViewService applicationViewService;
 
     public EmployeeController(
             DashboardService dashboardService,
-            WorkflowService workflowService
+            WorkflowService workflowService,
+            ApplicationViewService applicationViewService
     ) {
-        this.dashboardService =
-                dashboardService;
-
-        this.workflowService =
-                workflowService;
+        this.dashboardService = dashboardService;
+        this.workflowService = workflowService;
+        this.applicationViewService = applicationViewService;
     }
 
     @GetMapping("/dashboard")
@@ -45,7 +48,6 @@ public class EmployeeController {
             getAvailableApplications(
                     Authentication authentication
             ) {
-
         return workflowService
                 .getAvailableApplications(
                         authentication.getName()
@@ -57,9 +59,32 @@ public class EmployeeController {
             getEmployeeApplications(
                     Authentication authentication
             ) {
-
         return workflowService
                 .getEmployeeApplications(
+                        authentication.getName()
+                );
+    }
+
+    @GetMapping("/applications/{workflowId}")
+    public ApplicationDetailResponse getApplication(
+            @PathVariable Long workflowId,
+            Authentication authentication
+    ) {
+        return applicationViewService
+                .getEmployeeApplication(
+                        workflowId,
+                        authentication.getName()
+                );
+    }
+
+    @GetMapping("/applications/{workflowId}/history")
+    public List<WorkflowHistoryResponse> getHistory(
+            @PathVariable Long workflowId,
+            Authentication authentication
+    ) {
+        return applicationViewService
+                .getEmployeeHistory(
+                        workflowId,
                         authentication.getName()
                 );
     }
